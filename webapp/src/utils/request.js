@@ -31,7 +31,6 @@ const checkStatus = response => {
   }
 
   let reMsg;
-  console.log(response);
   if(response.status >=400 && response.status < 500){
     response.clone().json().then(content => {
       if (content) {
@@ -129,7 +128,6 @@ export default function request(url, option) {
   // };
   const Authorization = sessionStorage.getItem('token');
   if(Authorization){
-    console.log(newOptions.headers);
     if(!newOptions.headers){
       newOptions.headers={}
     }

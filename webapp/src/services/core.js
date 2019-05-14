@@ -4,7 +4,6 @@ const baseurl = '/server/api'
 
 // 待确认规则 列表
 export async function ruleTasks() {
-  debugger
   return request('/api/sw/user/getRootGroup');
 }
 

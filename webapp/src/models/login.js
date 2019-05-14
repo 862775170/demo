@@ -15,11 +15,9 @@ export default {
 
   effects: {
     *login({ payload }, { call, put }) {
+      debugger;
       const response = yield call(accountLogin, payload);
-      
-      console.log(response);
-      
-      // response.currentAuthority = response.result.roleKey;
+      response.currentAuthority = response.result.info;
       response.type = 'account';
       response.status = 'ok';
       yield put({
@@ -35,8 +33,6 @@ export default {
         sessionStorage.setItem('userid', result.info.id);
         sessionStorage.setItem('rootIds', result.info.root_ids);
         sessionStorage.setItem('ChageRole', true);
-        console.log(result);
-        
         reloadAuthorized();
         const urlParams = new URL(window.location.href);
         const params = getPageQuery();
@@ -116,6 +112,7 @@ export default {
       setAuthority(payload.currentAuthority);
       return {
         ...state,
+        currentUser,
         status: payload.status,
         type: payload.type,
       };
