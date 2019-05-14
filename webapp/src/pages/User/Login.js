@@ -5,7 +5,7 @@ import { formatMessage, FormattedMessage } from 'umi/locale';
 import { Alert, Col } from 'antd';
 import Login from '@/components/Login';
 import styles from './Login.less';
-import Base64 from '@/utils/base64'
+import CryptoJS from 'crypto-js/md5';
 
 const { Tab, UserName, Password, Mobile, Capt, Submit } = Login;
 
@@ -29,19 +29,18 @@ class LoginPage extends Component {
   };
 
   handleSubmit = (err, values) => {
-    //const base64 = new Base64();
-    //const password = base64.encode(values.password);
     const { type } = this.state;
-    //const {username} = values;
-    //const {codevalidate} = values;
+    const {password} = values;
+    let psd = CryptoJS(password).toString();
     if (!err) {
       const { dispatch } = this.props;
       dispatch({
         type: 'login/login',
         payload: {
           ...values,
+          password: psd,
           //codevalidate,
-          type,
+          type: 0,
         },
       });
     }
@@ -76,7 +75,7 @@ class LoginPage extends Component {
               !submitting &&
               this.renderMessage(formatMessage({ id: 'app.login.message-invalid-credentials' }))} */}
           <UserName
-            name="username"
+            name="loginId"
             placeholder={`${formatMessage({ id: 'app.login.userName' })}`}
             rules={[
               {

@@ -78,9 +78,23 @@ export default {
   proxy: {
     '/server/api/': {
       // target: 'http://10.10.27.99:20011/',
-      target: 'http://192.168.218.71:8088/',
+      // target: 'http://211.144.114.26:19001/api/',
+      target:'http://127.0.0.1:8888/',
       changeOrigin: true,
       pathRewrite: { '^/server/api': '' },
+    },
+    '/api/': {
+      // target: 'http://10.10.27.99:20011/',
+      target: 'http://211.144.114.26:19001/',
+      // target:'http://127.0.0.1:8888/',
+      changeOrigin: true,
+      pathRewrite: { '^/api': 'api/' },
+      headers:{
+        Host:'211.144.114.26:19001',
+        Origin:'http://211.144.114.26:19001',
+        Referer:'http://211.144.114.26:19001/platform/',
+        'X-Requested-With':'XMLHttpRequest'
+      }
     },
   },
   ignoreMomentLocale: true,

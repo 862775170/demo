@@ -123,10 +123,18 @@ export default function request(url, option) {
       };
     }
   }
-  newOptions.headers = {
-    Authorization: sessionStorage.getItem('Authorization'),
-    ...newOptions.headers
-  };
+  // newOptions.headers = {
+  //   // Authorization: sessionStorage.getItem('Authorization'),
+  //   ...newOptions.headers
+  // };
+  const Authorization = sessionStorage.getItem('Authorization');
+  if(Authorization){
+    newOptions.headers = {
+      Authorization,
+      ...newOptions.headers
+    }
+  }
+  
 
   const expirys = options.expirys && 60;
   // options.expirys !== false, return the cache,
