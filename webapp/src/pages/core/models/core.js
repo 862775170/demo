@@ -13,6 +13,8 @@ export default {
 
     // 待确认规则 列表
     *getRuleTasks({ payload }, { call, put }) {
+      console.log(11111);
+      
       const response = yield call(ruleTasks, payload);
       yield put({
         type: 'saveUserList',

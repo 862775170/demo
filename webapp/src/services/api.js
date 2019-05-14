@@ -127,7 +127,7 @@ export async function getFakeCaptcha(mobile) {
 
 // 接口
 export async function accountLogin(params) {
-  return request('/server/api/user/login', {
+  return request('/api/sw/user/login', {
     method: 'POST',
     body: params,
   });
