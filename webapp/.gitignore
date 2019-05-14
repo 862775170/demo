@@ -1,20 +1,14 @@
-##ignore this file##
-/server/demo/target/
-/server/demo/.classpath
-/server/demo/.project
-/server/demo/.mvn/
-/server/demo/mvnw*
-/server/demo/.settings
-
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
 **/node_modules
 # roadhog-api-doc ignore
-/webapp/src/utils/request-temp.js
+/src/utils/request-temp.js
 _roadhog-api-doc
 
 # production
-/webapp/.vscode
+/dist
+/.vscode
 
 # misc
 .DS_Store
