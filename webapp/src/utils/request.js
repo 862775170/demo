@@ -127,12 +127,13 @@ export default function request(url, option) {
   //   // Authorization: sessionStorage.getItem('Authorization'),
   //   ...newOptions.headers
   // };
-  const Authorization = sessionStorage.getItem('Authorization');
+  const Authorization = sessionStorage.getItem('token');
   if(Authorization){
-    newOptions.headers = {
-      Authorization,
-      ...newOptions.headers
+    console.log(newOptions.headers);
+    if(!newOptions.headers){
+      newOptions.headers={}
     }
+    newOptions.headers['access-token']=Authorization
   }
   
 
@@ -160,7 +161,7 @@ export default function request(url, option) {
       const type=response.headers.get("content-type")||''
       if (newOptions.method === 'DELETE' || response.status === 204) {
         return response.text();
-      }if(type.indexOf('application/json') !== -1) {
+      }if(type.indexOf('application/json') !== -1 || type.indexOf('text/html')!==-1) {
         return response.json();
       }
       return response.blob();

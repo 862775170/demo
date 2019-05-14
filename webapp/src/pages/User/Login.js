@@ -39,7 +39,6 @@ class LoginPage extends Component {
         payload: {
           ...values,
           password: psd,
-          //codevalidate,
           type: 0,
         },
       });
