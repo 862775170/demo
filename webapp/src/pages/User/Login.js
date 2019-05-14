@@ -4,8 +4,9 @@ import { formatMessage, FormattedMessage } from 'umi/locale';
 // import Link from 'umi/link';
 import { Alert, Col } from 'antd';
 import Login from '@/components/Login';
-import styles from './Login.less';
 import CryptoJS from 'crypto-js/md5';
+import styles from './Login.less';
+
 
 const { Tab, UserName, Password, Mobile, Capt, Submit } = Login;
 
@@ -29,9 +30,9 @@ class LoginPage extends Component {
   };
 
   handleSubmit = (err, values) => {
-    const { type } = this.state;
+    // const { type } = this.state;
     const {password} = values;
-    let psd = CryptoJS(password).toString();
+    const psd = CryptoJS(password).toString();
     if (!err) {
       const { dispatch } = this.props;
       dispatch({

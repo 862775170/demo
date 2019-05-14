@@ -6,9 +6,9 @@ export async function query() {
   return request('/api/users');
 }
 
-// export async function queryCurrent() {
-//   return request(`${ baseurl }/info`);
-// }
+export async function queryCurrent() {
+  return request('/api/sw/user/getUserInfo');
+}
 
 export async function getUserRoles() {
   return request(`${ baseurl  }/info/roles`);

@@ -1,4 +1,4 @@
-import { query as queryUsers, getUserRoles } from '@/services/user';
+import { query as queryUsers, getUserRoles,queryCurrent } from '@/services/user';
 
 export default {
   namespace: 'user',
@@ -16,20 +16,20 @@ export default {
         payload: response,
       });
     },
-    // *fetchCurrent(_, { call, put }) {
-    //   const response = yield call(queryCurrent);
-    //   response.name = response.data.username;
-    //   response.userid = response.data.userId;
-    //   response.roleName = response.data.roleName;
-    //   response.roleId = response.data.roleId;
-    //   response.avatar = '/icons/icon-128x128.png';
-    //   const roles = yield call(getUserRoles);
-    //   response.roles = roles.data;
-    //   yield put({
-    //     type: 'saveCurrentUser',
-    //     payload: response,
-    //   });
-    // },
+    *fetchCurrent(_, { call, put }) {
+      const response = yield call(queryCurrent);
+      const {result}=response;
+      console.log(response);
+      
+      
+      result.avatar = '/icons/icon-128x128.png';
+      // const roles = yield call(getUserRoles);
+      // response.roles = roles.data;
+      yield put({
+        type: 'saveCurrentUser',
+        payload: result,
+      });
+    },
     
   },
 

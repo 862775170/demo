@@ -73,22 +73,24 @@ export default class GlobalHeaderRight extends PureComponent {
   };
 
   render() {
+    console.log(this.props);
+    
     const {
       currentUser,
-      fetchingNotices,
-      onNoticeVisibleChange,
+      // fetchingNotices,
+      // onNoticeVisibleChange,
       onMenuClick,
-      onNoticeClear,
+      // onNoticeClear,
       theme,
     } = this.props;
 
-    const { roles=[] } = currentUser;
-    const DropdownMenu = (<Menu onClick={this.onChangeRole}>
-      {roles.map(item => {
-          return <Menu.Item key={item.roleId}>
-            {item.roleName}
-                 </Menu.Item> })}
-                          </Menu>);
+    // const { roles=[] } = currentUser;
+    // const DropdownMenu = (<Menu onClick={this.onChangeRole}>
+    //   {roles.map(item => {
+    //       return <Menu.Item key={item.roleId}>
+    //         {item.roleName}
+    //              </Menu.Item> })}
+    //                       </Menu>);
 
     const menu = (
       <Menu className={styles.menu} selectedKeys={[]} onClick={onMenuClick}>
@@ -111,8 +113,8 @@ export default class GlobalHeaderRight extends PureComponent {
         </Menu.Item>
       </Menu>
     );
-    const noticeData = this.getNoticeData();
-    const unreadMsg = this.getUnreadData(noticeData);
+    // const noticeData = this.getNoticeData();
+    // const unreadMsg = this.getUnreadData(noticeData);
     let className = styles.right;
     if (theme === 'dark') {
       className = `${styles.right}  ${styles.dark}`;

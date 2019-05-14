@@ -15,11 +15,10 @@ export default {
 
   effects: {
     *login({ payload }, { call, put }) {
-      debugger;
       const response = yield call(accountLogin, payload);
-      response.currentAuthority = response.result.info;
-      response.type = 'account';
-      response.status = 'ok';
+      response.currentUser = response.result.info;
+      // response.type = 'account';
+      // response.status = 'ok';
       yield put({
         type: 'changeLoginStatus', 
         payload: response,
@@ -109,7 +108,9 @@ export default {
 
   reducers: {
     changeLoginStatus(state, { payload }) {
-      setAuthority(payload.currentAuthority);
+      // setAuthority(payload.currentAuthority);
+      console.log(payload);
+      const currentUser = payload
       return {
         ...state,
         currentUser,
