@@ -1,11 +1,13 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import { Layout, Menu, Breadcrumb, Icon, Table,Form, Input, Divider, Modal } from 'antd';
+import { Layout, Menu, Breadcrumb, Icon, Table,Form, Divider, Modal, Button, Select } from 'antd';
 import DescriptionList from '@/components/DescriptionList';
 
 const { Description } = DescriptionList;
 const { Content, Sider } = Layout;
 const FormItem = Form.Item;
+const { SubMenu } = Menu;
+const { Option } = Select;
 
 @connect(({ core, loading }) => ({
   core,
@@ -18,7 +20,9 @@ class RuleCore extends PureComponent {
   state = {
     done: false,
     isEdit: false,
+    subEdit: false,
     crumbs: '待确认规则',
+    operationkey: 'tab1',
   };
 
   // 创建用户lable 和 input 布局
@@ -50,18 +54,15 @@ class RuleCore extends PureComponent {
 
   // 左边栏切换
   leftSidebarToggle = (item) => {
-    if(item.key === "1"){
+    this.setState({
+      operationkey: item.key,
+      crumbs: item.item.props.title,
+      subEdit: false,
+    })
+    if(item.key === "tab2"){
       this.setState({
-        isEdit: false,
-        crumbs: '待确认规则',
+        subEdit: true,
       })
-      this.coreRuleTasks();       // 待确认规则 列表
-    }else{
-      this.setState({
-        isEdit: true,
-        crumbs: '我的规则',
-      })
-      // this.coreRuleMyRule();      //我的规则 全部列表 接口  
     }
   }
 
@@ -97,7 +98,7 @@ class RuleCore extends PureComponent {
 
   render() {
     const { loading, form: { getFieldDecorator }, core: { coreData }, core: { myData } } = this.props;
-    const { isEdit, done, visible, crumbs } = this.state;
+    const { isEdit, done, visible, crumbs, operationkey, subEdit} = this.state;
 
     // 模态框 确定  取消按钮
     const modalFooter = done
@@ -117,14 +118,6 @@ class RuleCore extends PureComponent {
         title: '时间',
         dataIndex: 'ruleName',
       },  
-      // {
-      //   title: '发送间隔',
-      //   dataIndex: 'createBy4',
-      // },
-      // {
-      //   title: '发送时间',
-      //   dataIndex: 'createBy115',
-      // },
       {
         title: '操作',
         render: (record) => (
@@ -137,14 +130,6 @@ class RuleCore extends PureComponent {
     ]; 
     
     const columns2 = [
-      // {
-      //   title: '最后一次传输时间',
-      //   dataIndex: 'ruleName',
-      // },
-      {
-        title: '发送人',
-        dataIndex: 'createBy',
-      },
       {
         title: '规则描述',
         dataIndex: 'creat5',
@@ -157,23 +142,58 @@ class RuleCore extends PureComponent {
         title: '接收人',
         dataIndex: 'create3',
       },
-      // {
-      //   title: '发送间隔',
-      //   dataIndex: 'create2',
-      // },
-      // {
-      //   title: '发送时间',
-      //   dataIndex: 'creat1',
-      // },
-      // {
-      //   title: '传输类型',
-      //   dataIndex: 'create1',
-      // },
       {
         title: '生效时间',
         dataIndex: 'createBy0',
       }
     ]; 
+
+    const columns3 = [
+      {
+        title: '规则描述',
+        dataIndex: 'creat5',
+      },
+      {
+        title: '目标路径',
+        dataIndex: 'creat4',
+      },
+      {
+        title: '发送人',
+        dataIndex: 'create3',
+      },
+      {
+        title: '生效时间',
+        dataIndex: 'createBy0',
+      }
+    ]; 
+
+    // const getAddForm = () => {
+    //   return (
+    //     <Form onSubmit={this.handleSubmit}>
+
+    //       <div style={{width:'422px', margin: ' 0 auto'}}>
+    //         <DescriptionList size="large" style={{ marginBottom: 32 }}>
+    //           <div><Description term="好友">1000000000</Description></div>
+    //           <div><Description term="类型">1000000000</Description></div>
+    //           <div><Description term="规则名称">1000000000</Description></div>
+    //           <div><Description term="规则描述">1000000000</Description></div>
+    //           <div><Description term="扫描方式">1000000000</Description></div>
+    //         </DescriptionList>
+    //         <Divider />
+    //       </div>
+          
+    //       <FormItem {...this.formLayout} label="存储路径">
+    //         {getFieldDecorator('route', {
+    //           rules: [{ 
+    //             required: true, 
+    //             message: '请输入要存储路径!'
+    //           }],
+    //           // initialValue: current.userName,
+    //         })(<Input placeholder="请输入路径" />)}
+    //       </FormItem>
+    //     </Form>
+    //   );
+    // };
 
     const getAddForm = () => {
       return (
@@ -181,23 +201,40 @@ class RuleCore extends PureComponent {
 
           <div style={{width:'422px', margin: ' 0 auto'}}>
             <DescriptionList size="large" style={{ marginBottom: 32 }}>
-              <div><Description term="好友">1000000000</Description></div>
-              <div><Description term="类型">1000000000</Description></div>
-              <div><Description term="规则名称">1000000000</Description></div>
               <div><Description term="规则描述">1000000000</Description></div>
-              <div><Description term="扫描方式">1000000000</Description></div>
             </DescriptionList>
             <Divider />
           </div>
-          
-          <FormItem {...this.formLayout} label="存储路径">
-            {getFieldDecorator('route', {
+          <FormItem {...this.formLayout} label="源路径">
+            {getFieldDecorator('route1', {
               rules: [{ 
-                required: true, 
+                required: false, 
                 message: '请输入要存储路径!'
               }],
               // initialValue: current.userName,
-            })(<Input placeholder="请输入路径" />)}
+            })(
+              <Select placeholder="请选择要分配的角色">
+                <Option value="ss">测试</Option>
+              </Select>
+            )}
+          </FormItem>
+          <FormItem {...this.formLayout} label="接收人">
+            {getFieldDecorator('route', {
+              rules: [{ 
+                required: false, 
+                message: '请输入要存储路径!'
+              }],
+              // initialValue: current.userName,
+            })(
+              <Select mode="multiple" placeholder="请选择要分配的角色">
+                {/* {roleList.map(roleIds => (
+                  <Option key={roleIds.roleId} value={roleIds.roleId}>
+                    { roleIds.roleName }
+                  </Option>
+                ))} */}
+                <Option>测试</Option>
+              </Select>
+            )}
           </FormItem>
         </Form>
       );
@@ -210,9 +247,8 @@ class RuleCore extends PureComponent {
       showTotal: total => `总数 ${total} 条`,
     };
 
-    let tab;
-    if(isEdit === false){
-      tab = (     
+    const contentList = {
+      tab1: (
         <Table
           rowKey="id"
           pagination={false}
@@ -223,11 +259,10 @@ class RuleCore extends PureComponent {
           // eslint-disable-next-line react/jsx-no-duplicate-props
           pagination={paginationProps}
         />
-      )
-    }else{
-      tab = (
+      ),
+      tab2: (
         <Table
-          rowKey="ruleId"
+          rowKey="id"
           pagination={false}
           loading={loading}
           dataSource={myData}
@@ -236,26 +271,45 @@ class RuleCore extends PureComponent {
           // eslint-disable-next-line react/jsx-no-duplicate-props
           pagination={paginationProps}
         />
+      ),
+      tab3: (
+        <Table
+          rowKey="id"
+          pagination={false}
+          loading={loading}
+          dataSource={coreData}
+          columns={columns3}
+          size="middle"
+          // eslint-disable-next-line react/jsx-no-duplicate-props
+          pagination={paginationProps}
+        />
       )
-    }
+    };
 
     return (
       <Layout>
         <Sider width={200} style={{ background: '#fff' }}>
           <Menu
             mode="inline"
-            defaultSelectedKeys={['1']}
+            defaultSelectedKeys={['tab1']}
             defaultOpenKeys={['sub1']}
             style={{ height: '100%', borderRight: '1px solid #e8e8e8' }}
           >
-            <Menu.Item key="1" onClick={this.leftSidebarToggle}>
-              <Icon type="home" />
-              待确认规则
+            <Menu.Item key="tab1" onClick={this.leftSidebarToggle}>
+              <Icon type="home" />待确认规则
             </Menu.Item>
-            <Menu.Item key="2" onClick={this.leftSidebarToggle}>
-              <Icon type="mail" />
-              我的规则
-            </Menu.Item>
+            <SubMenu
+              key="1"
+              title={
+                <span>
+                  <Icon type="appstore" />
+                  <span>我的规则</span>
+                </span>
+              }
+            >
+              <Menu.Item key="tab2" onClick={this.leftSidebarToggle}>发送规则</Menu.Item>
+              <Menu.Item key="tab3" onClick={this.leftSidebarToggle}>确认规则</Menu.Item>
+            </SubMenu>
           </Menu>
         </Sider>
         <Content style={{ background: '#fff', padding: '12px 24px 24px 24px', margin: 0, minHeight: 280, }}>
@@ -263,11 +317,15 @@ class RuleCore extends PureComponent {
             <Breadcrumb.Item>规则中心</Breadcrumb.Item>
             <Breadcrumb.Item>{ crumbs }</Breadcrumb.Item>
           </Breadcrumb>
-          { tab }
+          <div style={{display: subEdit ? 'block' : 'none' }}>
+            <Button icon="plus" type="primary" onClick={() => this.showEditModal()}>新建</Button>
+          </div>
+          <Divider />
+          { contentList[operationkey] }
         </Content>
 
         <Modal
-          title={done ? null : `${isEdit ? '规则' : '规则'}确认`}
+          title={done ? null : `${isEdit ? '发送' : '规则'}规则`}
           width={640}
           bodyStyle={done ? { padding: '72px 0' } : { padding: '28px 0 0' }}
           destroyOnClose

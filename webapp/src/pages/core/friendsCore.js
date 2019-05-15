@@ -24,19 +24,19 @@ const { TabPane } = Tabs;
 
 const columns = [
   {
-    title: '文件名',
+    title: '发送方',
     dataIndex: 'name',
   },
   {
-    title: '文件大小',
+    title: '接收方',
     dataIndex: 'size',
   },
   {
-    title: '状态',
+    title: '规则描述',
     dataIndex: 'status',
   },
   {
-    title: '操作时间',
+    title: '时间',
     dataIndex: 'updatedAt',
     key: 'updatedAt',
   },
@@ -266,13 +266,13 @@ class FriendsCore extends PureComponent {
             <Breadcrumb.Item><a href="">数据中心</a></Breadcrumb.Item>
           </Breadcrumb>
           <Tabs defaultActiveKey="tab1" onChange={this.callback} style={{marginTop: '15px'}}>
-            <TabPane tab="规则" key="tab3">
-              规则
-            </TabPane>
-            <TabPane tab="已发送" key="tab1">
+            <TabPane tab="规则" key="tab1">
               {contentList[operationkey]}
             </TabPane>
-            <TabPane tab="已收取" key="tab2">
+            <TabPane tab="已发送" key="tab2">
+              {contentList[operationkey]}
+            </TabPane>
+            <TabPane tab="已收取" key="tab3">
               {contentList[operationkey]}
             </TabPane>
             {/* <TabPane tab="任务" key="tab4">
