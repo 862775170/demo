@@ -106,25 +106,25 @@ class RuleCore extends PureComponent {
     
     const columns1 = [
       {
-        title: '时间',
-        dataIndex: 'ruleName',
-      },
-      {
-        title: '传输人',
+        title: '发送方',
         dataIndex: 'createBy',
-      },
+      },   
       {
-        title: '文件描述',
+        title: '规则描述',
         dataIndex: 'createBy1',
       },
       {
-        title: '发送间隔',
-        dataIndex: 'createBy4',
-      },
-      {
-        title: '发送时间',
-        dataIndex: 'createBy115',
-      },
+        title: '时间',
+        dataIndex: 'ruleName',
+      },  
+      // {
+      //   title: '发送间隔',
+      //   dataIndex: 'createBy4',
+      // },
+      // {
+      //   title: '发送时间',
+      //   dataIndex: 'createBy115',
+      // },
       {
         title: '操作',
         render: (record) => (
@@ -137,38 +137,38 @@ class RuleCore extends PureComponent {
     ]; 
     
     const columns2 = [
+      // {
+      //   title: '最后一次传输时间',
+      //   dataIndex: 'ruleName',
+      // },
       {
-        title: '最后一次传输时间',
-        dataIndex: 'ruleName',
-      },
-      {
-        title: '传输人',
+        title: '发送人',
         dataIndex: 'createBy',
       },
       {
-        title: '文件描述',
+        title: '规则描述',
         dataIndex: 'creat5',
       },
       {
-        title: '保存路径',
+        title: '源路径',
         dataIndex: 'creat4',
       },
       {
         title: '接收人',
         dataIndex: 'create3',
       },
-      {
-        title: '发送间隔',
-        dataIndex: 'create2',
-      },
-      {
-        title: '发送时间',
-        dataIndex: 'creat1',
-      },
-      {
-        title: '传输类型',
-        dataIndex: 'create1',
-      },
+      // {
+      //   title: '发送间隔',
+      //   dataIndex: 'create2',
+      // },
+      // {
+      //   title: '发送时间',
+      //   dataIndex: 'creat1',
+      // },
+      // {
+      //   title: '传输类型',
+      //   dataIndex: 'create1',
+      // },
       {
         title: '生效时间',
         dataIndex: 'createBy0',

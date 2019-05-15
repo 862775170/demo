@@ -266,18 +266,18 @@ class FriendsCore extends PureComponent {
             <Breadcrumb.Item><a href="">数据中心</a></Breadcrumb.Item>
           </Breadcrumb>
           <Tabs defaultActiveKey="tab1" onChange={this.callback} style={{marginTop: '15px'}}>
+            <TabPane tab="规则" key="tab3">
+              规则
+            </TabPane>
             <TabPane tab="已发送" key="tab1">
               {contentList[operationkey]}
             </TabPane>
             <TabPane tab="已收取" key="tab2">
               {contentList[operationkey]}
             </TabPane>
-            <TabPane tab="规则" key="tab3">
-              规则
-            </TabPane>
-            <TabPane tab="任务" key="tab4">
+            {/* <TabPane tab="任务" key="tab4">
               任务
-            </TabPane>
+            </TabPane> */}
             <TabPane tab="搜索" key="tab5">
               <div>{renderAdvancedForm()}</div>
               {contentList[operationkey]}

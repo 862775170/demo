@@ -20,7 +20,7 @@ export default {
       });
     },
 
-    //我的规则 全部列表接口
+    // 我的规则 全部列表接口
     *getRuleMyRule({ payload }, { call, put }) {
       const response = yield call(ruleMyRule, payload);
       yield put({
