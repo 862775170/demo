@@ -5,43 +5,30 @@ import {
   Menu, 
   Breadcrumb, 
   Icon, 
-  Tabs, 
   Table,
-  Button, 
-  Col, 
-  Row, 
   Form, 
   Input, 
-  InputNumber, 
-  Select,
-  DatePicker,
-  Card,
   Divider,
   Modal,
-  TimePicker, 
 } from 'antd';
 import DescriptionList from '@/components/DescriptionList';
-import moment from 'moment';
 
 const { Description } = DescriptionList;
-const { SubMenu } = Menu;
-const { Header, Content, Sider } = Layout;
-const TabPane = Tabs.TabPane;
+const { Content, Sider } = Layout;
 const FormItem = Form.Item;
-const { Option } = Select;
 
 @connect(({ core, loading }) => ({
   core,
   loading: loading.models.core,
 }))
-//规则中心
+// 规则中心
 @Form.create()
 class RuleCore extends PureComponent {
 
   state = {
     done: false,
-    isEdit: false, 
-    operationkey: 'tab1',
+    isEdit: false,
+    crumbs: '待确认规则',
   };
 
   // 创建用户lable 和 input 布局
@@ -63,7 +50,7 @@ class RuleCore extends PureComponent {
     });
   }
 
-  //我的规则 全部列表 接口  
+  // 我的规则 全部列表 接口  
   coreRuleMyRule = () => {
     const { dispatch } = this.props;
     dispatch({
@@ -71,25 +58,20 @@ class RuleCore extends PureComponent {
     });
   }
 
-  callback = (key) => {
-    this.setState({
-      operationkey: key,
-    });
-  };
-
-  //左边栏切换
+  // 左边栏切换
   leftSidebarToggle = (item) => {
     if(item.key === "1"){
       this.setState({
         isEdit: false,
+        crumbs: '待确认规则',
       })
       this.coreRuleTasks();       // 待确认规则 列表
     }else{
       this.setState({
         isEdit: true,
-        operationkey: 'tab1',
+        crumbs: '我的规则',
       })
-      this.coreRuleMyRule();      //我的规则 全部列表 接口  
+      // this.coreRuleMyRule();      //我的规则 全部列表 接口  
     }
   }
 
@@ -109,12 +91,13 @@ class RuleCore extends PureComponent {
   };
 
   //  弹出  模态框
-  showEditModal = item => { 
+  showEditModal = () => { 
     this.setState({
       visible: true,
       isEdit: false,
     }); 
   };
+
   // 模态框 附属性
   handleCancel = () => {
     this.setState({
@@ -124,32 +107,83 @@ class RuleCore extends PureComponent {
 
   render() {
     const { loading, form: { getFieldDecorator }, core: { coreData }, core: { myData } } = this.props;
-    const { operationkey, isEdit, done, visible } = this.state;
+    const { isEdit, done, visible, crumbs } = this.state;
 
-    //模态框 确定  取消按钮
+    // 模态框 确定  取消按钮
     const modalFooter = done
       ? { footer: null, onCancel: this.handleCancel }
       : { okText: '保存', onOk: this.handleSubmit, onCancel: this.handleCancel };
     
-    const columns = [
+    const columns1 = [
       {
-        title: '文件名',
+        title: '时间',
         dataIndex: 'ruleName',
       },
       {
-        title: '提交人',
+        title: '传输人',
         dataIndex: 'createBy',
+      },
+      {
+        title: '文件描述',
+        dataIndex: 'createBy1',
+      },
+      {
+        title: '发送间隔',
+        dataIndex: 'createBy4',
+      },
+      {
+        title: '发送时间',
+        dataIndex: 'createBy115',
       },
       {
         title: '操作',
         render: (record) => (
           <Fragment>
-            <a onClick={() => this.showEditModal(record)}>确认</a>
-            <Divider type="vertical" style={{display:'none'}}/>
+            <a onClick={() => this.showEditModal(record)}>保存</a>
+            <Divider type="vertical" style={{display:'none'}} />
           </Fragment>
         ),
       },
-    ];    
+    ]; 
+    
+    const columns2 = [
+      {
+        title: '最后一次传输时间',
+        dataIndex: 'ruleName',
+      },
+      {
+        title: '传输人',
+        dataIndex: 'createBy',
+      },
+      {
+        title: '文件描述',
+        dataIndex: 'creat5',
+      },
+      {
+        title: '保存路径',
+        dataIndex: 'creat4',
+      },
+      {
+        title: '接收人',
+        dataIndex: 'create3',
+      },
+      {
+        title: '发送间隔',
+        dataIndex: 'create2',
+      },
+      {
+        title: '发送时间',
+        dataIndex: 'creat1',
+      },
+      {
+        title: '传输类型',
+        dataIndex: 'create1',
+      },
+      {
+        title: '生效时间',
+        dataIndex: 'createBy0',
+      }
+    ]; 
 
     const getAddForm = () => {
       return (
@@ -172,127 +206,13 @@ class RuleCore extends PureComponent {
                 required: true, 
                 message: '请输入要存储路径!'
               }],
-              //initialValue: current.userName,
+              // initialValue: current.userName,
             })(<Input placeholder="请输入路径" />)}
           </FormItem>
         </Form>
       );
     };
-
-    const renderAdvancedForm = () => {
-      return (
-        <Form onSubmit={this.Search}>
-          <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-            <Col md={8} sm={24}>
-              <FormItem {...this.formLayout} label="更新日期">
-                {getFieldDecorator('date')(
-                  <DatePicker style={{ width: '100%' }} placeholder="请输入更新日期" />
-                )}
-              </FormItem>
-            </Col>
-            <Col md={8} sm={24}>
-              <FormItem {...this.formLayout} label="收发时间段">
-                {getFieldDecorator('number')(
-                  <TimePicker onChange={this.getTime} defaultOpenValue={moment('00:00:00', 'HH:mm:ss')} />
-                )}
-              </FormItem>
-            </Col>
-            <Col md={8} sm={24}>
-              <FormItem {...this.formLayout} label="使用状态">
-                {getFieldDecorator('status')(
-                  <Select placeholder="请选择" style={{ width: '100%' }}>
-                    <Option value="0">关闭</Option>
-                    <Option value="1">运行中</Option>
-                  </Select>
-                )}
-              </FormItem>
-            </Col>
-          </Row>
-          <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-            <Col md={8} sm={24}>
-              <FormItem {...this.formLayout} label="更新日期">
-                {getFieldDecorator('date')(
-                  <DatePicker style={{ width: '100%' }} placeholder="请输入更新日期" />
-                )}
-              </FormItem>
-            </Col>
-            <Col md={8} sm={24}>
-              <FormItem {...this.formLayout} label="使用状态">
-                {getFieldDecorator('status3')(
-                  <Select placeholder="请选择" style={{ width: '100%' }}>
-                    <Option value="0">关闭</Option>
-                    <Option value="1">运行中</Option>
-                  </Select>
-                )}
-              </FormItem>
-            </Col>
-            <Col md={8} sm={24}>
-              <FormItem {...this.formLayout} label="使用状态">
-                {getFieldDecorator('status4')(
-                  <Select placeholder="请选择" style={{ width: '100%' }}>
-                    <Option value="0">关闭</Option>
-                    <Option value="1">运行中</Option>
-                  </Select>
-                )}
-              </FormItem>
-            </Col>
-            <Col md={8} sm={24}>
-              <FormItem {...this.formLayout} label="使用状态">
-                {getFieldDecorator('status4')(
-                  <Select placeholder="请选择" style={{ width: '100%' }}>
-                    <Option value="0">关闭</Option>
-                    <Option value="1">运行中</Option>
-                  </Select>
-                )}
-              </FormItem>
-            </Col>
-            <Col md={8} sm={24}>
-              <span>
-                <Button type="primary" htmlType="submit">查询</Button>
-                <Button style={{ marginLeft: 8 }} onClick={this.handleFormReset}>重置</Button>
-              </span>
-            </Col>
-          </Row>
-        </Form>
-      );
-    };
-
-    const contentList = {
-      tab1: (
-        <Table
-          rowKey="ruleId"
-          pagination={false}
-          loading={loading}
-          dataSource={myData}
-          columns={columns}
-          size="middle"
-          pagination={paginationProps}
-        />
-      ),
-      tab2: (
-        <Table
-          rowKey="ruleId"
-          pagination={false}
-          loading={loading}
-          dataSource={myData}
-          columns={columns}
-          size="middle"
-          pagination={paginationProps}
-        />
-      ),
-      tab4: (
-        <Table
-          rowKey="ruleId"
-          pagination={false}
-          loading={loading}
-          dataSource={myData}
-          columns={columns}
-          size="middle"
-          pagination={paginationProps}
-        />
-      ),
-    };
-
+    
     // table组件属性
     const paginationProps = {
       showSizeChanger: true,
@@ -302,38 +222,28 @@ class RuleCore extends PureComponent {
 
     let tab;
     if(isEdit === false){
-      tab = (
-        <Tabs defaultActiveKey="tab0" style={{marginTop: '15px'}}>
-          <TabPane tab="全部" key="tab0">     
-            <Table
-              rowKey="id"
-              pagination={false}
-              loading={loading}
-              dataSource={coreData}
-              columns={columns}
-              size="middle"
-              pagination={paginationProps}
-            />
-          </TabPane>
-        </Tabs>
+      tab = (     
+        <Table
+          rowKey="id"
+          pagination={false}
+          loading={loading}
+          dataSource={coreData}
+          columns={columns1}
+          size="middle"
+          pagination={paginationProps}
+        />
       )
     }else{
       tab = (
-        <Tabs defaultActiveKey="tab1" onChange={this.callback} style={{marginTop: '15px'}}> 
-          <TabPane tab="全部" key="tab1">
-            {contentList[operationkey]}
-          </TabPane>
-          <TabPane tab="接收规则" key="tab2">
-            {contentList[operationkey]}
-          </TabPane>
-          <TabPane tab="发送规则" key="tab3">
-            规则
-          </TabPane>
-          <TabPane tab="搜索" key="tab4">
-            <div>{renderAdvancedForm()}</div>
-            {contentList[operationkey]}
-          </TabPane>
-        </Tabs>  
+        <Table
+          rowKey="ruleId"
+          pagination={false}
+          loading={loading}
+          dataSource={myData}
+          columns={columns2}
+          size="middle"
+          pagination={paginationProps}
+        />
       )
     }
 
@@ -347,19 +257,19 @@ class RuleCore extends PureComponent {
             style={{ height: '100%', borderRight: '1px solid #e8e8e8' }}
           >
             <Menu.Item key="1" onClick={this.leftSidebarToggle}>
-              <Icon type="mail" />
+              <Icon type="home" />
               待确认规则
             </Menu.Item>
             <Menu.Item key="2" onClick={this.leftSidebarToggle}>
-              <Icon type="calendar" />
+              <Icon type="mail" />
               我的规则
             </Menu.Item>
           </Menu>
         </Sider>
         <Content style={{ background: '#fff', padding: '12px 24px 24px 24px', margin: 0, minHeight: 280, }}>
-          <Breadcrumb>
+          <Breadcrumb style={{height: '36px',lineHeight: '25px'}}>
             <Breadcrumb.Item>规则中心</Breadcrumb.Item>
-            <Breadcrumb.Item><a href="">待确认规则</a></Breadcrumb.Item>
+            <Breadcrumb.Item>{ crumbs }</Breadcrumb.Item>
           </Breadcrumb>
           { tab }
         </Content>
