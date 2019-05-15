@@ -8,7 +8,7 @@ import DocumentTitle from 'react-document-title';
 import SelectLang from '@/components/SelectLang';
 import styles from './UserLayout.less';
 // import logo from '../assets/logo.svg';
-import logo from '../assets/flogo.png';
+import logo from '../assets/login.png';
 import getPageTitle from '@/utils/getPageTitle';
 
 // const links = [
@@ -31,7 +31,7 @@ import getPageTitle from '@/utils/getPageTitle';
 
 const copyright = (
   <Fragment>
-    Copyright <Icon type="copyright" /> 2019 深证通·金融云业务运营支撑系统 V0.0.1
+    Copyright <Icon type="copyright" /> 上海德拓信息技术股份有限公司
   </Fragment>
 );
 
@@ -66,7 +66,7 @@ class UserLayout extends Component {
                   <img alt="logo" className={styles.logo} src={logo} style={{width:'200px',height:'50px'}} />                  
                 </Link>
               </div>
-              <div className={styles.desc}>金融云业务运营支撑管理系统</div>
+              <div className={styles.desc}>文件传输系统</div>
             </div>
             {children}
           </div>

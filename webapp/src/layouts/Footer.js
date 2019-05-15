@@ -28,7 +28,7 @@ const FooterView = () => (
       ]}
       copyright={
         <Fragment>
-          Copyright <Icon type="copyright" /> 2019 深证通·金融云业务运营支持系统 V0.0.1
+          Copyright <Icon type="copyright" /> 上海德拓信息技术股份有限公司
         </Fragment>
       }
     />
