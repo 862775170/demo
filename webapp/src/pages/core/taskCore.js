@@ -1,188 +1,93 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import {
-  Layout, 
-  Menu, 
-  Breadcrumb, 
-  Icon, 
-  Tabs, 
-  Table,
-  Button, 
-  Col, 
-  Row, 
-  Form, 
-  Input, 
-  InputNumber, 
-  Select,
-  DatePicker,
-  Card,
-} from 'antd';
+import { Layout, Menu, Breadcrumb, Icon, Table, Form } from 'antd';
 
-const { SubMenu } = Menu;
-const { Header, Content, Sider } = Layout;
-const TabPane = Tabs.TabPane;
-const FormItem = Form.Item;
-const { Option } = Select;
+const { Content, Sider } = Layout;
 
-const columns = [
-  {
-    title: '文件名',
-    dataIndex: 'name',
-  },
-  {
-    title: '文件大小',
-    dataIndex: 'size',
-  },
-  {
-    title: '状态',
-    dataIndex: 'status',
-  },
-  {
-    title: '操作时间',
-    dataIndex: 'updatedAt',
-    key: 'updatedAt',
-  },
-];
-
-@connect(({ profile, loading }) => ({
-  profile,
-  loading: loading.models.profile,
+@connect(({ core, loading }) => ({
+  core,
+  loading: loading.models.core,
 }))
-//任务中心
+// 任务中心
 @Form.create()
 class TaskCore extends PureComponent {
 
   state = {
+    crumbs: '当日发送',
     operationkey: 'tab1',
-    rowSelection: [],
   };
 
-  callback = (key) => {
+  // 左边栏切换
+  leftSidebarToggle = (item) => {
     this.setState({
-      operationkey: key,
-    });
-  };
-
-  
-  
+      operationkey: item.key,
+      crumbs: item.item.props.title,
+    })
+  }
 
   render() {
-    const { loading, form: { getFieldDecorator }, } = this.props;
-    const { operationkey, rowSelection } = this.state;
+    const { loading, core: { coreData } } = this.props;
+    const { crumbs, operationkey } = this.state;
     
-    const dataValue = [
+    // 当日发送
+    const columns1 = [
       {
-        name: '测试文件1',
-        size: 10,
-        status: "正常",
-        updatedAt: '2019-1-12',
+        title: '接收人',
+        dataIndex: 'ruleName',
       },
       {
-        name: '测试文件2',
-        size: 10,
-        status: "正常",
-        updatedAt: '2019-1-12',
+        title: '文件描述',
+        dataIndex: 'createBy1',
       },
       {
-        name: '测试文件3',
-        size: 10,
-        status: "正常",
-        updatedAt: '2019-1-12',
+        title: '文件路径',
+        dataIndex: 'createBy',
+      },
+      {
+        title: '文件名',
+        dataIndex: 'createBy4',
+      },
+      {
+        title: '发送时间',
+        dataIndex: 'createBy115',
+      },
+      {
+        title: '传输状态',
+        dataIndex: 'createBy1005',
       }
-    ];
+    ]; 
 
-    const renderAdvancedForm = () => {
-      return (
-        <Form onSubmit={this.handleSearch}>
-          <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-            <Col md={8} sm={24}>
-              <FormItem label="规则名称">
-                {getFieldDecorator('name')(<Input placeholder="请输入"/>)}
-              </FormItem>
-            </Col>
-            <Col md={8} sm={24}>
-              <FormItem label="使用状态">
-                {getFieldDecorator('status')(
-                  <Select placeholder="请选择" style={{ width: '100%' }}>
-                    <Option value="0">关闭</Option>
-                    <Option value="1">运行中</Option>
-                  </Select>
-                )}
-              </FormItem>
-            </Col>
-            <Col md={8} sm={24}>
-              <FormItem label="调用次数">
-                {getFieldDecorator('number')(<InputNumber style={{ width: '100%' }} />)}
-              </FormItem>
-            </Col>
-          </Row>
-          <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-            <Col md={8} sm={24}>
-              <FormItem label="更新日期">
-                {getFieldDecorator('date')(
-                  <DatePicker style={{ width: '100%' }} placeholder="请输入更新日期" />
-                )}
-              </FormItem>
-            </Col>
-            <Col md={8} sm={24}>
-              <FormItem label="使用状态">
-                {getFieldDecorator('status3')(
-                  <Select placeholder="请选择" style={{ width: '100%' }}>
-                    <Option value="0">关闭</Option>
-                    <Option value="1">运行中</Option>
-                  </Select>
-                )}
-              </FormItem>
-            </Col>
-            <Col md={8} sm={24}>
-              <FormItem label="使用状态">
-                {getFieldDecorator('status4')(
-                  <Select placeholder="请选择" style={{ width: '100%' }}>
-                    <Option value="0">关闭</Option>
-                    <Option value="1">运行中</Option>
-                  </Select>
-                )}
-              </FormItem>
-            </Col>
-          </Row>
-          <div style={{ overflow: 'hidden' }}>
-            <div style={{ marginBottom: 24 }}>
-              <Button type="primary" htmlType="submit">
-                查询
-              </Button>
-              <Button style={{ marginLeft: 8 }} onClick={this.handleFormReset}>
-                重置
-              </Button>
-            </div>
-          </div>
-        </Form>
-      );
-    };
-
-    const contentList = {
-      tab1: (
-        <Table
-          rowSelection={rowSelection}
-          pagination={false}
-          loading={loading}
-          dataSource={dataValue}
-          columns={columns}
-          size="middle"
-          pagination={paginationProps}
-        />
-      ),
-      tab2: (
-        <Table
-          rowSelection={rowSelection}
-          pagination={false}
-          loading={loading}
-          dataSource={dataValue}
-          columns={columns}
-          size="middle"
-          pagination={paginationProps}
-        />
-      ),
-    };
+    // 当日接收
+    const columns2 = [
+      {
+        title: '发送人',
+        dataIndex: 'ruleName',
+      },
+      {
+        title: '文件描述',
+        dataIndex: 'createBy1',
+      },
+      {
+        title: '保存路径',
+        dataIndex: 'createBy',
+      },
+      {
+        title: '原文件名',
+        dataIndex: 'createBy4',
+      },
+      {
+        title: '保存文件名',
+        dataIndex: 'createBy115',
+      },
+      {
+        title: '接收时间',
+        dataIndex: 'data',
+      },
+      {
+        title: '传输状态',
+        dataIndex: 'createBy1005',
+      }
+    ]; 
 
     // table组件属性
     const paginationProps = {
@@ -191,46 +96,86 @@ class TaskCore extends PureComponent {
       showTotal: total => `总数 ${total} 条`,
     };
 
+    const contentList = {
+      tab1: (
+        <Table
+          rowKey="id"
+          pagination={false}
+          loading={loading}
+          dataSource={coreData}
+          columns={columns1}
+          size="middle"
+          // eslint-disable-next-line react/jsx-no-duplicate-props
+          pagination={paginationProps}
+        />
+      ),
+      tab2: (
+        <Table
+          rowKey="id"
+          pagination={false}
+          loading={loading}
+          dataSource={coreData}
+          columns={columns2}
+          size="middle"
+          // eslint-disable-next-line react/jsx-no-duplicate-props
+          pagination={paginationProps}
+        />
+      ),
+      tab3: (
+        <Table
+          rowKey="id"
+          pagination={false}
+          loading={loading}
+          dataSource={coreData}
+          columns={columns1}
+          size="middle"
+          // eslint-disable-next-line react/jsx-no-duplicate-props
+          pagination={paginationProps}
+        />
+      ),
+      tab4: (
+        <Table
+          rowKey="id"
+          pagination={false}
+          loading={loading}
+          dataSource={coreData}
+          columns={columns2}
+          size="middle"
+          // eslint-disable-next-line react/jsx-no-duplicate-props
+          pagination={paginationProps}
+        />
+      ),
+    };
+
     return (
       <Layout>
         <Sider width={200} style={{ background: '#fff' }}>
           <Menu
             mode="inline"
-            defaultSelectedKeys={['1']}
+            defaultSelectedKeys={['tab1']}
             defaultOpenKeys={['sub1']}
             style={{ height: '100%', borderRight: '1px solid #e8e8e8' }}
           >
-            <Menu.Item key="1">
-              <Icon type="mail" />
-              当日发送
+            <Menu.Item key="tab1" title="当日发送" onClick={this.leftSidebarToggle}>
+              <Icon type="home" />当日发送
             </Menu.Item>
-            <Menu.Item key="2">
-              <Icon type="calendar" />
-              当日发起
+            <Menu.Item key="tab2" title="当日接收" onClick={this.leftSidebarToggle}>
+              <Icon type="mail" />当日接收
             </Menu.Item>
-            <Menu.Item key="3">
-              <Icon type="calendar" />
-              已发送
+            <Menu.Item key="tab3" title="已发送" onClick={this.leftSidebarToggle}>
+              <Icon type="calendar" />已发送
             </Menu.Item>
-            <Menu.Item key="4">
-              <Icon type="calendar" />
-              已收取
+            <Menu.Item key="tab4" title="已收取" onClick={this.leftSidebarToggle}>
+              <Icon type="calendar" />已收取
             </Menu.Item>
           </Menu>
         </Sider>
         <Content style={{ background: '#fff', padding: '12px 24px 24px 24px', margin: 0, minHeight: 280, }}>
-          <Breadcrumb>
+          <Breadcrumb style={{height: '36px',lineHeight: '25px'}}>
             <Breadcrumb.Item>任务中心</Breadcrumb.Item>
-            <Breadcrumb.Item><a href="">当日发送</a></Breadcrumb.Item>
+            <Breadcrumb.Item>{ crumbs }</Breadcrumb.Item>
           </Breadcrumb>
-          <Tabs defaultActiveKey="tab1" onChange={this.callback} style={{marginTop: '15px'}}>
-            <TabPane tab="全部" key="tab1">
-              {contentList[operationkey]}
-            </TabPane>
-            <TabPane tab="搜索" key="tab2">
-              {contentList[operationkey]}
-            </TabPane>
-          </Tabs>
+          { contentList[operationkey] }
         </Content>
       </Layout>
     );
