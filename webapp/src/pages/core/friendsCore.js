@@ -10,21 +10,17 @@ import {
   Button, 
   Col, 
   Row, 
-  Form, 
-  Input, 
-  InputNumber, 
+  Form,  
   Select,
   DatePicker,
-  Card,
   TimePicker,
 } from 'antd';
 import moment from 'moment';
 
-const { SubMenu } = Menu;
-const { Header, Content, Sider } = Layout;
-const TabPane = Tabs.TabPane;
+const { Content, Sider } = Layout;
 const FormItem = Form.Item;
 const { Option } = Select;
+const { TabPane } = Tabs;
 
 const columns = [
   {
@@ -50,7 +46,7 @@ const columns = [
   profile,
   loading: loading.models.profile,
 }))
-//好友中心
+// 好友中心
 @Form.create()
 class FriendsCore extends PureComponent {
 
@@ -70,7 +66,7 @@ class FriendsCore extends PureComponent {
     });
   };
 
-  //收发时间段方法
+  // 收发时间段方法
   getTime = (time, timeString) => {
     console.log(time, timeString);
   }
@@ -186,7 +182,14 @@ class FriendsCore extends PureComponent {
     
     const rowSelection = {
       selectedRowKeys,
-      //onChange: this.onSelectChange,
+      // onChange: this.onSelectChange,
+    };
+
+    // table组件属性
+    const paginationProps = {
+      showSizeChanger: true,
+      showQuickJumper: false,
+      showTotal: total => `总数 ${total} 条`,
     };
 
     const contentList = {
@@ -199,6 +202,7 @@ class FriendsCore extends PureComponent {
           dataSource={dataValue}
           columns={columns}
           size="middle"
+          // eslint-disable-next-line react/jsx-no-duplicate-props
           pagination={paginationProps}
         />
       ),
@@ -211,6 +215,7 @@ class FriendsCore extends PureComponent {
           dataSource={dataValue}
           columns={columns}
           size="middle"
+          // eslint-disable-next-line react/jsx-no-duplicate-props
           pagination={paginationProps}
         />
       ),
@@ -223,16 +228,10 @@ class FriendsCore extends PureComponent {
           dataSource={dataValue}
           columns={columns}
           size="middle"
+          // eslint-disable-next-line react/jsx-no-duplicate-props
           pagination={paginationProps}
         />
       ),
-    };
-
-    // table组件属性
-    const paginationProps = {
-      showSizeChanger: true,
-      showQuickJumper: false,
-      showTotal: total => `总数 ${total} 条`,
     };
 
     return (
@@ -245,31 +244,20 @@ class FriendsCore extends PureComponent {
             style={{ height: '100%', borderRight: '1px solid #e8e8e8' }}
           >
             <Menu.Item key="1">
-              <Icon type="mail" />
-              数据中心
+              <Icon type="mail" />数据中心
             </Menu.Item>
             <Menu.Item key="2">
-              <Icon type="calendar" />
-              运营中心
+              <Icon type="calendar" />运营中心
             </Menu.Item>
             <Menu.Item key="3">
-              <Icon type="calendar" />
-              销售交易部
+              <Icon type="calendar" />销售交易部
             </Menu.Item>
             <Menu.Item key="4">
-              <Icon type="calendar" />
-              运营管理部
+              <Icon type="calendar" />运营管理部
             </Menu.Item>
             <Menu.Item key="5">
-              <Icon type="calendar" />
-              人力资源部
+              <Icon type="calendar" />人力资源部
             </Menu.Item>
-            {/* <SubMenu key="sub3" title={<span><Icon type="notification" />subnav 3</span>}>
-              <Menu.Item key="9">option9</Menu.Item>
-              <Menu.Item key="10">option10</Menu.Item>
-              <Menu.Item key="11">option11</Menu.Item>
-              <Menu.Item key="12">option12</Menu.Item>
-            </SubMenu> */}
           </Menu>
         </Sider>
         <Content style={{ background: '#fff', padding: '12px 24px 24px 24px', margin: 0, minHeight: 280, }}>

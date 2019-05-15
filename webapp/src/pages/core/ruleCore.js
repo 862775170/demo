@@ -1,16 +1,6 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import {
-  Layout, 
-  Menu, 
-  Breadcrumb, 
-  Icon, 
-  Table,
-  Form, 
-  Input, 
-  Divider,
-  Modal,
-} from 'antd';
+import { Layout, Menu, Breadcrumb, Icon, Table,Form, Input, Divider, Modal } from 'antd';
 import DescriptionList from '@/components/DescriptionList';
 
 const { Description } = DescriptionList;
@@ -230,6 +220,7 @@ class RuleCore extends PureComponent {
           dataSource={coreData}
           columns={columns1}
           size="middle"
+          // eslint-disable-next-line react/jsx-no-duplicate-props
           pagination={paginationProps}
         />
       )
@@ -242,6 +233,7 @@ class RuleCore extends PureComponent {
           dataSource={myData}
           columns={columns2}
           size="middle"
+          // eslint-disable-next-line react/jsx-no-duplicate-props
           pagination={paginationProps}
         />
       )
