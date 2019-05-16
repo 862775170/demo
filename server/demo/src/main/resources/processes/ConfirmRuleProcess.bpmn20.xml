@@ -7,7 +7,7 @@
     <sequenceFlow id="flow2" sourceRef="usertask1" targetRef="servicetask1"></sequenceFlow>
     <endEvent id="endevent1" name="End"></endEvent>
     <sequenceFlow id="flow3" sourceRef="servicetask1" targetRef="endevent1"></sequenceFlow>
-    <serviceTask id="servicetask1" name="写入数据库" flowable:class="com.example.demo.delegate.InsertRuleTargerDelegate"></serviceTask>
+    <serviceTask id="servicetask1" name="写入数据库" flowable:class="com.example.demo.delegate.InsertRuleConfirmDelegate"></serviceTask>
   </process>
 
   <bpmndi:BPMNDiagram id="BPMNDiagram_ConfirmRuleProcess">

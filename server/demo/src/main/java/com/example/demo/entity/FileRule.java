@@ -23,7 +23,7 @@ public class FileRule {
 
 	private String fileRegExp;
 
-	private String cron;
+//	private String cron;
 
 	private String userId;
 
@@ -53,14 +53,6 @@ public class FileRule {
 
 	public void setFileRegExp(String fileRegExp) {
 		this.fileRegExp = fileRegExp;
-	}
-
-	public String getCron() {
-		return cron;
-	}
-
-	public void setCron(String cron) {
-		this.cron = cron;
 	}
 
 	public String getUserId() {

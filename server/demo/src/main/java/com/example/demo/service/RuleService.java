@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.example.demo.entity.Rule;
-import com.example.demo.entity.RuleTarget;
+import com.example.demo.entity.RuleConfirm;
 
 public interface RuleService {
 	void startCreateProcess(Rule rule, Integer[] userIds);
@@ -25,6 +25,6 @@ public interface RuleService {
 	 * @param userId
 	 * @return
 	 */
-	List<RuleTarget> getMyRuleConfirm(Integer userId);
+	List<RuleConfirm> getMyRuleConfirm(Integer userId);
 
 }

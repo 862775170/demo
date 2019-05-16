@@ -15,10 +15,10 @@ import org.springframework.stereotype.Service;
 
 import com.example.demo.common.TokenUtils;
 import com.example.demo.dao.RuleDao;
-import com.example.demo.dao.RuleTargetDao;
+import com.example.demo.dao.RuleConfirmDao;
 import com.example.demo.dao.UserDao;
 import com.example.demo.entity.Rule;
-import com.example.demo.entity.RuleTarget;
+import com.example.demo.entity.RuleConfirm;
 import com.example.demo.entity.User;
 import com.example.demo.service.RuleService;
 
@@ -32,7 +32,7 @@ public class RuleServiceImpl implements RuleService {
 	@Autowired
 	private RuleDao ruleDao;
 	@Autowired
-	private RuleTargetDao ruleTargetDao;
+	private RuleConfirmDao ruleTargetDao;
 	@Autowired
 	private UserDao userDao;
 
@@ -91,7 +91,7 @@ public class RuleServiceImpl implements RuleService {
 		List<Rule> rules = ruleDao.findByUserId(userId);
 		List<Map<String, Object>> collect = null;
 		HashSet<Integer> hashSet = new HashSet<>();
-		List<RuleTarget> findInRuleId = ruleTargetDao
+		List<RuleConfirm> findInRuleId = ruleTargetDao
 				.findByRuleIdIn(rules.stream().map(s -> s.getRuleId()).collect(Collectors.toList()));
 		collect = findInRuleId.stream().filter(f -> hashSet.add(f.getUserId())).map(r -> {
 			Map<String, Object> hashMap = new HashMap<>();
@@ -106,7 +106,7 @@ public class RuleServiceImpl implements RuleService {
 
 	@Override
 	public List<Map<String, Object>> getFriendsDetails(Integer ruleId) {
-		List<RuleTarget> ruleTargets = ruleTargetDao.findByRuleId(ruleId);
+		List<RuleConfirm> ruleTargets = ruleTargetDao.findByRuleId(ruleId);
 		List<Map<String, Object>> collect = ruleTargets.stream().map(r -> {
 			Map<String, Object> hashMap = new HashMap<>();
 			User targetUser = userDao.findById(r.getUserId()).get();
@@ -124,7 +124,7 @@ public class RuleServiceImpl implements RuleService {
 	}
 
 	@Override
-	public List<RuleTarget> getMyRuleConfirm(Integer userId) {
+	public List<RuleConfirm> getMyRuleConfirm(Integer userId) {
 
 		return ruleTargetDao.findByUserId(userId);
 //		List<Map<String, Object>> collect = ruleTargets.stream().map(m -> {

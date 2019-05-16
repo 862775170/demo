@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.demo.common.Result;
 import com.example.demo.common.TokenUtils;
 import com.example.demo.entity.Rule;
-import com.example.demo.entity.RuleTarget;
+import com.example.demo.entity.RuleConfirm;
 import com.example.demo.service.RuleService;
 
 import io.swagger.annotations.ApiOperation;
@@ -57,7 +57,7 @@ public class RuleController {
 	@ApiOperation("获得我确认的规则")
 	public Result getMyRuleConfirm() {
 		Integer userId = TokenUtils.getUserId();
-		List<RuleTarget> rules = ruleService.getMyRuleConfirm(userId);
+		List<RuleConfirm> rules = ruleService.getMyRuleConfirm(userId);
 		return Result.ok(rules);
 	}
 

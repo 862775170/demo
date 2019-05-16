@@ -1,38 +1,41 @@
 package com.example.demo.entity;
 
 import java.time.LocalTime;
-import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.OneToOne;
 
 @Entity
-public class Rule {
+public class RuleConfirm {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
+	private Integer id;
+
 	private Integer ruleId;
 
-	private String ruleName;
-	
-	private String sourcePath;
+	private String savePath;
 
 	private Integer userId;
 
 	private Integer createBy;
 
 	private LocalTime createTime;
-	@OneToMany(mappedBy = "rule")
-	private List<RuleConfirm> ruleTargets;
+	@OneToOne
+	@JoinTable(name = "ruleId")
+	private Rule rule;
 
-	public List<RuleConfirm> getRuleTargets() {
-		return ruleTargets;
+	public Rule getRule() {
+		return rule;
 	}
 
-	public void setRuleTargets(List<RuleConfirm> ruleTargets) {
-		this.ruleTargets = ruleTargets;
+	public void setRule(Rule rule) {
+		this.rule = rule;
 	}
 
 	public Integer getRuleId() {
@@ -43,28 +46,12 @@ public class Rule {
 		this.ruleId = ruleId;
 	}
 
-	public String getRuleName() {
-		return ruleName;
+	public String getSavePath() {
+		return savePath;
 	}
 
-	public void setRuleName(String ruleName) {
-		this.ruleName = ruleName;
-	}
-
-	public String getSourcePath() {
-		return sourcePath;
-	}
-
-	public void setSourcePath(String sourcePath) {
-		this.sourcePath = sourcePath;
-	}
-
-	public Integer getUserId() {
-		return userId;
-	}
-
-	public void setUserId(Integer userId) {
-		this.userId = userId;
+	public void setSavePath(String savePath) {
+		this.savePath = savePath;
 	}
 
 	public Integer getCreateBy() {
@@ -82,4 +69,21 @@ public class Rule {
 	public void setCreateTime(LocalTime createTime) {
 		this.createTime = createTime;
 	}
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public Integer getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Integer userId) {
+		this.userId = userId;
+	}
+
 }
