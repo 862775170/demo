@@ -28,7 +28,7 @@ export default {
       if (result) {
         sessionStorage.setItem('auth', result.info.auth.join(','));
         sessionStorage.setItem('token', result.token);
-        sessionStorage.setItem('userInfo', result.info);
+        sessionStorage.setItem('userInfo',JSON.stringify(result.info));
         sessionStorage.setItem('userid', result.info.id);
         sessionStorage.setItem('rootIds', result.info.root_ids);
         sessionStorage.setItem('ChageRole', true);

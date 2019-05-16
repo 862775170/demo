@@ -1,4 +1,13 @@
-import { ruleTasks, ruleMyRule } from '@/services/core';
+import { 
+  ruleTasks, 
+  ruleMyRule, 
+  fileList,
+  userGetRootGroup, 
+  userlistAllGroupUser,
+  submitRule,
+  confirmRule,
+  ruleConfirmRule,
+} from '@/services/core';
 
 //规则中心
 export default {
@@ -20,7 +29,13 @@ export default {
       });
     },
 
-    // 我的规则 全部列表接口
+    // 待确认规则  保存
+    *getRuleConfirmRule({ payload, callback }, { call }) {
+      const response = yield call(ruleConfirmRule, payload);
+      if (callback) callback(response);  // 后端返回回调
+    },
+
+    // 我的规则      发送规则
     *getRuleMyRule({ payload }, { call, put }) {
       const response = yield call(ruleMyRule, payload);
       yield put({
@@ -28,6 +43,42 @@ export default {
         payload: response.data,
       });
     },
+
+    // 我的规则      确认规则
+    *getConfirmRule({ payload }, { call, put }) {
+      const response = yield call(confirmRule, payload);
+      yield put({
+        type: 'saveMyList',
+        payload: response.data,
+      });
+    },
+
+    
+
+    // 源路径
+    *getFileList({ payload, callback }, { call }) {
+      const response = yield call(fileList, payload);
+      if (callback) callback(response);  // 后端返回回调
+    },
+
+    //接收方 目录结构
+    *getUserGetRootGroup({ payload, callback }, { call }) {
+      const response = yield call(userGetRootGroup, payload);
+      if (callback) callback(response);  // 后端返回回调
+    },
+    // 接收方 
+    *getUserlistAllGroupUser({ payload, callback }, { call }) {
+      const response = yield call(userlistAllGroupUser, payload);
+      if (callback) callback(response);  // 后端返回回调
+    },
+    //  新建规则  提交 借口
+    *getSubmitRule({ payload, callback }, { call }) {
+      const response = yield call(submitRule, payload);
+      if (callback) callback(response);  // 后端返回回调
+    },
+    
+
+
 
     // 新建用户
     *userAdd({ payload, callback }, { call }) {
