@@ -1,6 +1,6 @@
 package com.example.demo.delegate;
 
-import java.time.LocalTime;
+import java.util.Date;
 
 import org.flowable.engine.delegate.DelegateExecution;
 import org.flowable.engine.delegate.JavaDelegate;
@@ -17,12 +17,12 @@ public class InsertRuleConfirmDelegate implements JavaDelegate {
 		RuleConfirm entity = new RuleConfirm();
 		Integer ruleId = execution.getVariable("ruleId", Integer.class);
 		String savePath = execution.getVariable("savePath", String.class);
-		Integer userId = execution.getVariable("userId", Integer.class);
+		String userId = execution.getVariable("userId", String.class);
 		entity.setRuleId(ruleId);
 		entity.setSavePath(savePath);
 		entity.setUserId(userId);
 		entity.setCreateBy(userId);
-		entity.setCreateTime(LocalTime.now());
+		entity.setCreateTime(new Date());
 		bean.save(entity);
 	}
 

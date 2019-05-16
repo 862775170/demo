@@ -1,6 +1,7 @@
 package com.example.demo.delegate;
 
 import java.time.LocalTime;
+import java.util.Date;
 
 import org.flowable.engine.delegate.DelegateExecution;
 import org.flowable.engine.delegate.JavaDelegate;
@@ -22,14 +23,15 @@ public class InsertRuleDelegate implements JavaDelegate {
 		RuleDao bean = SpringUtils.getBean(RuleDao.class);
 		Rule entity = new Rule();
 		String sourcePath = execution.getVariable("sourcePath", String.class);
-		Integer userId = execution.getVariable("userId", Integer.class);
+		String userId = execution.getVariable("userId", String.class);
 		String ruleName = execution.getVariable("ruleName", String.class);
-		Integer createBy = execution.getVariable("createBy", Integer.class);
+		String createBy = execution.getVariable("createBy", String.class);
+		Date createTime = execution.getVariable("createTime", Date.class);
 		entity.setSourcePath(sourcePath);
 		entity.setRuleName(ruleName);
-		entity.setUserId(userId);
+		entity.setUserId(createBy);
 		entity.setCreateBy(createBy);
-		entity.setCreateTime(LocalTime.now());
+		entity.setCreateTime(createTime);
 		bean.save(entity);
 		execution.setVariable("ruleId", entity.getRuleId());
 	}

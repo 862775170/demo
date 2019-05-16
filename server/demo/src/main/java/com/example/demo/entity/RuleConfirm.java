@@ -1,13 +1,11 @@
 package com.example.demo.entity;
 
-import java.time.LocalTime;
+import java.util.Date;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.OneToOne;
 
@@ -21,11 +19,11 @@ public class RuleConfirm {
 
 	private String savePath;
 
-	private Integer userId;
+	private String userId;
 
-	private Integer createBy;
+	private String createBy;
 
-	private LocalTime createTime;
+	private Date createTime;
 	@OneToOne
 	@JoinTable(name = "ruleId")
 	private Rule rule;
@@ -54,22 +52,6 @@ public class RuleConfirm {
 		this.savePath = savePath;
 	}
 
-	public Integer getCreateBy() {
-		return createBy;
-	}
-
-	public void setCreateBy(Integer createBy) {
-		this.createBy = createBy;
-	}
-
-	public LocalTime getCreateTime() {
-		return createTime;
-	}
-
-	public void setCreateTime(LocalTime createTime) {
-		this.createTime = createTime;
-	}
-
 	public Integer getId() {
 		return id;
 	}
@@ -78,12 +60,28 @@ public class RuleConfirm {
 		this.id = id;
 	}
 
-	public Integer getUserId() {
+	public String getUserId() {
 		return userId;
 	}
 
-	public void setUserId(Integer userId) {
+	public void setUserId(String userId) {
 		this.userId = userId;
+	}
+
+	public String getCreateBy() {
+		return createBy;
+	}
+
+	public void setCreateBy(String createBy) {
+		this.createBy = createBy;
+	}
+
+	public Date getCreateTime() {
+		return createTime;
+	}
+
+	public void setCreateTime(Date createTime) {
+		this.createTime = createTime;
 	}
 
 }

@@ -1,6 +1,6 @@
 package com.example.demo.entity;
 
-import java.time.LocalTime;
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Entity;
@@ -16,14 +16,14 @@ public class Rule {
 	private Integer ruleId;
 
 	private String ruleName;
-	
+
 	private String sourcePath;
 
-	private Integer userId;
+	private String userId;
 
-	private Integer createBy;
+	private String createBy;
 
-	private LocalTime createTime;
+	private Date createTime;
 	@OneToMany(mappedBy = "rule")
 	private List<RuleConfirm> ruleTargets;
 
@@ -59,27 +59,28 @@ public class Rule {
 		this.sourcePath = sourcePath;
 	}
 
-	public Integer getUserId() {
+	public String getUserId() {
 		return userId;
 	}
 
-	public void setUserId(Integer userId) {
+	public void setUserId(String userId) {
 		this.userId = userId;
 	}
 
-	public Integer getCreateBy() {
+	public String getCreateBy() {
 		return createBy;
 	}
 
-	public void setCreateBy(Integer createBy) {
+	public void setCreateBy(String createBy) {
 		this.createBy = createBy;
 	}
 
-	public LocalTime getCreateTime() {
+	public Date getCreateTime() {
 		return createTime;
 	}
 
-	public void setCreateTime(LocalTime createTime) {
+	public void setCreateTime(Date createTime) {
 		this.createTime = createTime;
 	}
+
 }

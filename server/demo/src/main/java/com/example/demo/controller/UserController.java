@@ -1,6 +1,8 @@
 package com.example.demo.controller;
 
+import java.io.UnsupportedEncodingException;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -8,6 +10,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestTemplate;
 
 import com.example.demo.common.Result;
 import com.example.demo.dao.UserDao;
@@ -43,6 +47,13 @@ public class UserController {
 		List<User> findAll = userDao.findAll();
 		return Result.ok(findAll);
 	}
-	
-	
+
+	@Autowired
+	private RestTemplate restTemplate;
+
+	@GetMapping("/test")
+	public Object test() throws RestClientException, UnsupportedEncodingException {
+		return restTemplate.getForObject("http://211.144.114.26:19001/api/sw/user/getUserInfo", String.class);
+	}
+
 }

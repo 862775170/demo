@@ -7,15 +7,15 @@ import com.example.demo.entity.Rule;
 import com.example.demo.entity.RuleConfirm;
 
 public interface RuleService {
-	void startCreateProcess(Rule rule, Integer[] userIds);
+	void startCreateProcess(Rule rule, String[] userIds);
 
 	List<Map<String, Object>> getTasks(String assignee);
 
 	void confirmRuleProcess(String savePath, String taskId);
 
-	List<Rule> getRules(Integer userId);
+	List<Rule> getRules(String userId);
 
-	List<Map<String, Object>> getFriends();
+	List<Map<String, Object>> getFriends(String userId);
 
 	List<Map<String, Object>> getFriendsDetails(Integer ruleId);
 
@@ -25,6 +25,6 @@ public interface RuleService {
 	 * @param userId
 	 * @return
 	 */
-	List<RuleConfirm> getMyRuleConfirm(Integer userId);
+	List<RuleConfirm> getMyRuleConfirm(String userId);
 
 }
