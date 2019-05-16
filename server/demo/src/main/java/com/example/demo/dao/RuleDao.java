@@ -8,6 +8,6 @@ import com.example.demo.entity.Rule;
 
 public interface RuleDao extends JpaRepository<Rule, Integer> {
 
-	List<Rule> findByUserId(Integer userId);
-	
+	List<Rule> findByUserId(String userId);
+
 }

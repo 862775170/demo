@@ -13,10 +13,10 @@ public class StartConfirmRuleProcessDelegate implements JavaDelegate {
 
 	@Override
 	public void execute(DelegateExecution execution) {
-		Integer[] userIds = execution.getVariable("userIds", Integer[].class);
+		String[] userIds = execution.getVariable("userIds", String[].class);
 		RuntimeService bean = SpringUtils.getBean(RuntimeService.class);
 		Map<String, Object> variabless = execution.getVariables();
-		for (Integer userId : userIds) {
+		for (String userId : userIds) {
 			Map<String, Object> variables = new HashMap<>(variabless);
 			variables.put("userId", userId);
 			bean.startProcessInstanceByKey("ConfirmRuleProcess", variables);

@@ -6,53 +6,58 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinTable;
+import javax.persistence.OneToOne;
 
-/**
- * 文件传输规则表
- * 
- * @author HL-ACER
- *
- */
 @Entity
-public class FileRule {
+public class RuleConfirm {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	private Long ruleId;
+	private Integer id;
 
-	private String fileRuleName;
+	private Integer ruleId;
 
-	private String fileRegExp;
-
-//	private String cron;
+	private String savePath;
 
 	private String userId;
 
 	private String createBy;
 
 	private Date createTime;
+	@OneToOne
+	@JoinTable(name = "ruleId")
+	private Rule rule;
 
-	public Long getRuleId() {
+	public Rule getRule() {
+		return rule;
+	}
+
+	public void setRule(Rule rule) {
+		this.rule = rule;
+	}
+
+	public Integer getRuleId() {
 		return ruleId;
 	}
 
-	public void setRuleId(Long ruleId) {
+	public void setRuleId(Integer ruleId) {
 		this.ruleId = ruleId;
 	}
 
-	public String getFileRuleName() {
-		return fileRuleName;
+	public String getSavePath() {
+		return savePath;
 	}
 
-	public void setFileRuleName(String fileRuleName) {
-		this.fileRuleName = fileRuleName;
+	public void setSavePath(String savePath) {
+		this.savePath = savePath;
 	}
 
-	public String getFileRegExp() {
-		return fileRegExp;
+	public Integer getId() {
+		return id;
 	}
 
-	public void setFileRegExp(String fileRegExp) {
-		this.fileRegExp = fileRegExp;
+	public void setId(Integer id) {
+		this.id = id;
 	}
 
 	public String getUserId() {
