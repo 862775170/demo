@@ -11,18 +11,22 @@ import {
   Modal, 
   Button, 
   Select, 
-  Input, 
-  TreeSelect 
+  Input,
+  Drawer, 
+  Row,
+  Col,
+  Tree, 
 } from 'antd';
 import DescriptionList from '@/components/DescriptionList';
 import moment from 'moment';
+import { log } from 'util';
 
+const { TreeNode } = Tree;
 const { Description } = DescriptionList;
 const { Content, Sider } = Layout;
 const FormItem = Form.Item;
 const { SubMenu } = Menu;
 const { Option } = Select;
-const TreeNode = TreeSelect.TreeNode;
 
 @connect(({ core, loading }) => ({
   core,
@@ -42,8 +46,13 @@ class RuleCore extends PureComponent {
     allGroupUser: [],
     userId: sessionStorage.getItem('userid'),
     taskId: '',   //储存  弹出  保存  模态框
-  };
+    visibles: false,
+    treeData: [
+      { filename_KeywordIkPinyin:'/' ,file_id:sessionStorage.getItem('rootIds') }
+    ],
+    path: '',
 
+  };
   // 创建用户lable 和 input 布局
   formLayout = {
     labelCol: { span: 7 },
@@ -71,7 +80,7 @@ class RuleCore extends PureComponent {
         subEdit: true,
         isEdit: true,
       })
-      this.coreRuleMyRule();
+      this.coreRuleMyRule();  // 我的规则   发送规则
     }
     // 确认规则
     if(item.key === "tab3"){
@@ -113,21 +122,11 @@ class RuleCore extends PureComponent {
   showRouteModal = item => {
     this.setState({
       visible: true,
-      isEdit: false,
+      isEdit: true,
+      visibles: false,
       taskId: item.id,
     });
-    
   }
-
-  //  弹出  新建 模态框
-  showEditModal = () => {
-    this.setState({
-      visible: true,
-      isEdit: true,
-    });
-    this.ruleGetFileList();             // 源路径
-    this.ruleGetUserGetRootGroup();     // 接收方
-  };
 
   // 源路径
   ruleGetFileList = () => {
@@ -138,6 +137,7 @@ class RuleCore extends PureComponent {
       payload:{ fileId },
       callback: (result) => {
         this.state.fileArr = result.result;
+        this.setState({treeData:result.result});
       } 
     });
   }
@@ -176,9 +176,9 @@ class RuleCore extends PureComponent {
     form.validateFields((err, fieldsValue) => {
       if (err) return;
       if(isEdit){
-        this.urleGetSubmitRule(fieldsValue);   //新建规则提交方法
-      }else{        
         this.urleGetRuleConfirmRule(fieldsValue);
+      }else{  
+        this.urleGetSubmitRule(fieldsValue);   //新建规则提交方法
       }
       this.handleCancel();   // 模态框 附属性
     });
@@ -190,11 +190,14 @@ class RuleCore extends PureComponent {
     const userInfo = sessionStorage.getItem("userInfo");
     const user = JSON.parse(userInfo);
     const createBy = user.nick_name;
+    const path = this.state;
+    const savePath = path.path;
     dispatch({
       type: 'core/getSubmitRule',
-      payload:{ ...fields, createBy },
+      payload:{ ...fields, createBy, savePath },
       callback: () => {
-        this.coreRuleMyRule();
+        this.coreRuleMyRule();    // 我的规则   发送规则
+        this.onClose();   //关闭抽屉
       } 
     });
   }
@@ -219,12 +222,74 @@ class RuleCore extends PureComponent {
     });
   };
 
+  //抽屉  源路径实现方法  start
+  showDrawer = () => {
+    this.setState({
+      visibles: true,
+      isEdit: false,
+    });
+    this.ruleGetUserGetRootGroup();     // 接收方
+  };
+  onClose = () => {
+    this.setState({
+      visibles: false,
+    });
+  };
+  onLoadData = treeNode => {
+      const { dispatch } = this.props;
+      return new Promise(resolve => {
+      if (treeNode.props.children) {
+        resolve();
+        return;
+      }
+      const { file_id:fileId } = treeNode.props.dataRef;
+      dispatch({
+        type: 'core/getFileList',
+        payload:{ fileId },
+        callback: (result) => {
+          const fileArr = [];
+          const dataValue = result.result;
+          for( let i of dataValue){
+            if(i.isdir === true){
+              fileArr.push(i);
+            }
+          }
+          treeNode.props.dataRef.children = fileArr;
+          this.setState({
+            treeData: [...this.state.treeData],
+          });
+          resolve();
+        } 
+      });
+    })
+  };
+  getOnSelect = (selectedKeys, e) => {
+    if(e.selectedNodes.length > 0){
+      const path = e.selectedNodes[0].props.dataRef.fullpath;
+      this.setState({
+        path: path,  //源路径
+      });      
+    }
+  }
+  renderTreeNodes = data => data.map(item => {
+    if (item.children) {
+      return (
+        <TreeNode title={item.filename_KeywordIkPinyin} key={item.file_id} dataRef={item}>
+          {this.renderTreeNodes(item.children)}
+        </TreeNode>
+      );
+    }
+    return <TreeNode title={item.filename_KeywordIkPinyin} key={item.file_id} dataRef={item} />;
+  });
+// eng
+
   render() {
     const { loading, form: { getFieldDecorator }, core: { coreData }, core: { myData } } = this.props;
     const { 
       isEdit,
       done, 
-      visible, 
+      visible,
+      visibles, 
       crumbs, 
       operationkey, 
       subEdit, 
@@ -259,7 +324,7 @@ class RuleCore extends PureComponent {
         title: '操作',
         render: (record) => (
           <Fragment>
-            <a onClick={() => this.showRouteModal(record)}>保存</a>
+            <a onClick={() => this.showRouteModal(record)}>确认</a>
             <Divider type="vertical" style={{display:'none'}} />
           </Fragment>
         ),
@@ -280,7 +345,17 @@ class RuleCore extends PureComponent {
         title: '生效时间',
         dataIndex: 'createTime',
         render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>,
-      }
+      },
+      {
+        title: '操作',
+        render: (record) => (
+          <Fragment>
+            <a onClick={() => this.showRouteModal(record)}>详情</a>
+            <Divider type="vertical"/>
+            <a onClick={() => this.showRouteModal(record)}>删除</a>
+          </Fragment>
+        ),
+      },
     ]; 
 
     // 确定规则
@@ -301,7 +376,16 @@ class RuleCore extends PureComponent {
         title: '生效时间',
         dataIndex: 'createTime',
         render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>,
-      }
+      },
+      {
+        title: '操作',
+        render: (record) => (
+          <Fragment>
+            <a onClick={() => this.showRouteModal(record)}>详情</a>
+            <Divider type="vertical" style={{display:'none'}}/>
+          </Fragment>
+        ),
+      },
     ]; 
 
     const getRouteForm = () => {
@@ -310,7 +394,7 @@ class RuleCore extends PureComponent {
           <FormItem {...this.formLayout} label="更改路径">
             {getFieldDecorator('savePath', {
               rules: [{ 
-                required: true, 
+                required: isEdit, 
                 message: '请输入更改路劲! '
               }],
             })(<Input placeholder="请输入路劲" />)}
@@ -319,50 +403,43 @@ class RuleCore extends PureComponent {
       );
     };
 
-    //新建按钮
+    // 新建按钮
     const getAddForm = () => {
       return (
-        <Form onSubmit={this.handleSubmit}>
-          <FormItem {...this.formLayout} label="规则名">
-            {getFieldDecorator('ruleName', {
-              rules: [{ 
-                required: true, 
-                message: '请输入规则名! '
-              }],
-            })(<Input placeholder="请输入规则名" />)}
-          </FormItem>
-          <FormItem {...this.formLayout} label="源路径">
-            {getFieldDecorator('sourcePath', {
-              rules: [{ 
-                required: true, 
-                message: '请选择要存储的源路径!'
-              }],
-            })(
-              <Select placeholder="请选择源路径">
-                {fileArr.map(fileData => (
-                  <Option key={fileData.file_id} value={fileData.file_id}>
-                    { fileData.filename_KeywordIkPinyin }
-                  </Option>
-                ))}
-              </Select>
-            )}
-          </FormItem>
-          <FormItem {...this.formLayout} label="接收方">
-            {getFieldDecorator('userIds', {
-                rules: [{
-                  required: true, 
-                  message: '请选择接收方名称! '
-                }],
-            })(
-              <Select mode="multiple" placeholder="请选择收方名称">
-                {allGroupUser.map(ruleArr => (
-                  <Option key={ruleArr.id} value={ruleArr.id}>
-                    { ruleArr.user_name }
-                  </Option>
-                ))}
-              </Select>
-            )}
-          </FormItem>
+        <Form layout="vertical">
+          <Row gutter={16}>
+            <Col span={12}>
+              <FormItem label="规则名">
+                {getFieldDecorator('ruleName', {
+                  rules: [{ required: visibles, message: '请输入规则名! ' }],
+                })(<Input placeholder="请输入规则名" />)}
+              </FormItem>
+            </Col>
+          </Row>
+          <Row gutter={16}>
+            <Col span={12}>
+              <FormItem label="源路径">
+                <Tree loadData={this.onLoadData} onSelect={ this.getOnSelect }>{this.renderTreeNodes(this.state.treeData)}</Tree>
+              </FormItem>
+            </Col>
+          </Row>
+          <Row gutter={16}>
+            <Col span={12}>
+              <FormItem label="接收方">
+                {getFieldDecorator('userIds', {
+                  rules: [{ required: visibles, message: '请选择接收方名! ' }],
+                })(
+                  <Select mode="multiple" placeholder="请选择收方名">
+                    {allGroupUser.map(ruleArr => (
+                      <Option key={ruleArr.id} value={ruleArr.id}>
+                        { ruleArr.user_name }
+                      </Option>
+                    ))}
+                  </Select>
+                )}
+              </FormItem>
+            </Col>
+          </Row>
         </Form>
       );
     };
@@ -389,7 +466,7 @@ class RuleCore extends PureComponent {
       ),
       tab2: (
         <Table
-          rowKey="id"
+          rowKey="ruleId"
           pagination={false}
           loading={loading}
           dataSource={myData}
@@ -435,7 +512,7 @@ class RuleCore extends PureComponent {
               }
             >
               <Menu.Item key="tab2" title="发送规则" onClick={this.leftSidebarToggle}>发送规则</Menu.Item>
-              <Menu.Item key="tab3" title="确认规则" onClick={this.leftSidebarToggle}>确认规则</Menu.Item>
+              <Menu.Item key="tab3" title="接收规则" onClick={this.leftSidebarToggle}>接收规则</Menu.Item>
             </SubMenu>
           </Menu>
         </Sider>
@@ -445,22 +522,51 @@ class RuleCore extends PureComponent {
             <Breadcrumb.Item>{ crumbs }</Breadcrumb.Item>
           </Breadcrumb>
           <div style={{display: subEdit ? 'block' : 'none' }}>
-            <Button icon="plus" type="primary" onClick={() => this.showEditModal()}>新建</Button>
-            <Divider style={{marginTop: '10px'}}/>
+            <Button icon="plus" type="primary" onClick={this.showDrawer}>新建</Button>
           </div>
+          <Divider style={{marginTop: '10px'}}/>
           { contentList[operationkey] }
         </Content>
 
+        {/* 保存规则 */}
         <Modal
-          title={done ? null : `${isEdit ? '新建' : '保存'}规则`}
+          title={done ? null : '保存规则'}
           width={640}
           bodyStyle={done ? { padding: '72px 0' } : { padding: '28px 0 0' }}
           destroyOnClose
           visible={visible}
           {...modalFooter}
         >
-          {isEdit ? getAddForm() : getRouteForm()}
+          {getRouteForm()}
         </Modal>
+
+        {/* 新建规则 */}
+        <Drawer
+          title="新建规则"
+          width={720}
+          onClose={this.onClose}
+          visible={this.state.visibles}
+          destroyOnClose
+        >
+          { getAddForm() }
+          <div
+            style={{
+              position: 'absolute',
+              left: 0,
+              bottom: 0,
+              width: '100%',
+              borderTop: '1px solid #e9e9e9',
+              padding: '10px 16px',
+              background: '#fff',
+              textAlign: 'right',
+            }}
+          >
+            <Button onClick={this.onClose} style={{ marginRight: 8 }}>取消</Button>
+            <Button onClick={this.handleSubmit} type="primary">确定</Button>
+          </div>
+        </Drawer>
+
+
       </Layout>
     );
   }

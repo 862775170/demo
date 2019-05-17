@@ -14,6 +14,7 @@ import {
   Select,
   DatePicker,
   TimePicker,
+  Divider,
 } from 'antd';
 import moment from 'moment';
 
@@ -263,8 +264,9 @@ class FriendsCore extends PureComponent {
         <Content style={{ background: '#fff', padding: '12px 24px 24px 24px', margin: 0, minHeight: 280, }}>
           <Breadcrumb>
             <Breadcrumb.Item>好友中心</Breadcrumb.Item>
-            <Breadcrumb.Item><a href="">数据中心</a></Breadcrumb.Item>
+            <Breadcrumb.Item>数据中心</Breadcrumb.Item>
           </Breadcrumb>
+          <Divider style={{marginTop: '10px'}}/>
           <Tabs defaultActiveKey="tab1" onChange={this.callback} style={{marginTop: '15px'}}>
             <TabPane tab="规则" key="tab1">
               {contentList[operationkey]}
