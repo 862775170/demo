@@ -56,10 +56,10 @@ public class RuleController {
 	}
 
 	@GetMapping("/my/confirm/rule")
-	@ApiOperation("获得我确认的规则")
+	@ApiOperation("获得确认的规则")
 	public Result getMyRuleConfirm(String userId) {
 //		Integer userId = TokenUtils.getUserId();
-		List<RuleConfirm> rules = ruleService.getMyRuleConfirm(userId);
+		List<Map<Object, Object>> rules = ruleService.getMyRuleConfirm(userId);
 		return Result.ok(rules);
 	}
 

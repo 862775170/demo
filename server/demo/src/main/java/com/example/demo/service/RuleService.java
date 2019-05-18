@@ -25,6 +25,6 @@ public interface RuleService {
 	 * @param userId
 	 * @return
 	 */
-	List<RuleConfirm> getMyRuleConfirm(String userId);
+	List<Map<Object, Object>> getMyRuleConfirm(String userId);
 
 }

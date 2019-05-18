@@ -13,6 +13,7 @@ import org.flowable.task.api.Task;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.demo.common.ObjectUtils;
 import com.example.demo.dao.RuleConfirmDao;
 import com.example.demo.dao.RuleDao;
 import com.example.demo.dao.UserDao;
@@ -127,9 +128,16 @@ public class RuleServiceImpl implements RuleService {
 	}
 
 	@Override
-	public List<RuleConfirm> getMyRuleConfirm(String userId) {
+	public List<Map<Object, Object>> getMyRuleConfirm(String userId) {
 		List<RuleConfirm> findByUserId = ruleTargetDao.findByUserId(userId);
-		return findByUserId;
+		List<Map<Object, Object>> collect = findByUserId.stream().map(m -> {
+			Integer ruleId = m.getRuleId();
+			Rule one = ruleDao.findByRuleId(ruleId);
+			Map<Object, Object> objectToMap = ObjectUtils.objectToMap(m);
+			objectToMap.put("rule", ObjectUtils.objectToMap(one));
+			return objectToMap;
+		}).collect(Collectors.toList());
+		return collect;
 //		List<Map<String, Object>> collect = ruleTargets.stream().map(m -> {
 //			Map<String, Object> obj = new HashMap<>();
 //			obj.put("savePath", m.getSavePath());

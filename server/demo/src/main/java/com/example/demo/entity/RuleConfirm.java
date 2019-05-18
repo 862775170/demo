@@ -29,6 +29,14 @@ public class RuleConfirm {
 
 	private Date createTime;
 
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
 	public Integer getRuleId() {
 		return ruleId;
 	}
@@ -43,14 +51,6 @@ public class RuleConfirm {
 
 	public void setSavePath(String savePath) {
 		this.savePath = savePath;
-	}
-
-	public Integer getId() {
-		return id;
-	}
-
-	public void setId(Integer id) {
-		this.id = id;
 	}
 
 	public String getUserId() {
