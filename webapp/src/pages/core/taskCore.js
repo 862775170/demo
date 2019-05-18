@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Layout, Menu, Breadcrumb, Icon, Table, Form } from 'antd';
+import { Layout, Menu, Breadcrumb, Icon, Table, Form, Divider } from 'antd';
 
 const { Content, Sider } = Layout;
 
@@ -175,6 +175,7 @@ class TaskCore extends PureComponent {
             <Breadcrumb.Item>任务中心</Breadcrumb.Item>
             <Breadcrumb.Item>{ crumbs }</Breadcrumb.Item>
           </Breadcrumb>
+          <Divider style={{marginTop: '10px'}}/>
           { contentList[operationkey] }
         </Content>
       </Layout>

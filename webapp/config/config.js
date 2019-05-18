@@ -79,7 +79,7 @@ export default {
     '/server/api/': {
       // target: 'http://10.10.27.99:20011/',
       // target: 'http://211.144.114.26:19001/api/',
-      target:'http://127.0.0.1:8888/',
+      target:'http://192.168.20.118:8088/',
       changeOrigin: true,
       pathRewrite: { '^/server/api': '' },
     },
