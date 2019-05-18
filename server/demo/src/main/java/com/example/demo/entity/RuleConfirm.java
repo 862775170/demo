@@ -2,12 +2,16 @@ package com.example.demo.entity;
 
 import java.util.Date;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
+import javax.persistence.Transient;
 
 @Entity
 public class RuleConfirm {
@@ -24,17 +28,6 @@ public class RuleConfirm {
 	private String createBy;
 
 	private Date createTime;
-	@OneToOne
-	@JoinTable(name = "ruleId")
-	private Rule rule;
-
-	public Rule getRule() {
-		return rule;
-	}
-
-	public void setRule(Rule rule) {
-		this.rule = rule;
-	}
 
 	public Integer getRuleId() {
 		return ruleId;

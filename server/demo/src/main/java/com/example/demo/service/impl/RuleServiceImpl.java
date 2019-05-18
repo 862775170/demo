@@ -72,7 +72,11 @@ public class RuleServiceImpl implements RuleService {
 
 	@Override
 	public List<Rule> getRules(String userId) {
-		return ruleDao.findByUserId(userId);
+		List<Rule> findByUserId = ruleDao.findByUserId(userId);
+//		findByUserId.forEach(action -> {
+//			List<RuleConfirm> ruleConfirms = ruleTargetDao.findByRuleId(action.getRuleId());
+//		});
+		return findByUserId;
 //		List<Map<String, Object>> maps = list.stream().map(r -> {
 //			Map<String, Object> map = new HashMap<>();
 //			map.put("ruleId", r.getRuleId());
@@ -124,8 +128,8 @@ public class RuleServiceImpl implements RuleService {
 
 	@Override
 	public List<RuleConfirm> getMyRuleConfirm(String userId) {
-
-		return ruleTargetDao.findByUserId(userId);
+		List<RuleConfirm> findByUserId = ruleTargetDao.findByUserId(userId);
+		return findByUserId;
 //		List<Map<String, Object>> collect = ruleTargets.stream().map(m -> {
 //			Map<String, Object> obj = new HashMap<>();
 //			obj.put("savePath", m.getSavePath());

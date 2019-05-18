@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -52,8 +53,8 @@ public class UserController {
 	private RestTemplate restTemplate;
 
 	@GetMapping("/test")
-	public Object test() throws RestClientException, UnsupportedEncodingException {
-		return restTemplate.getForObject("http://211.144.114.26:19001/api/sw/user/getUserInfo", String.class);
+	public Object test(String uri) throws RestClientException, UnsupportedEncodingException {
+		return restTemplate.getForObject("http://211.144.114.26:19001" + uri, String.class);
 	}
 
 }

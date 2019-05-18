@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.codec.digest.HmacUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.tomcat.util.codec.binary.Base64;
@@ -28,16 +27,19 @@ public class HttpConfig {
 	private String accessKey;
 	private String secretKey;
 	private String host;
-
+	private String prefix;
 	private String proxyHost;
 
 	private static final Logger log = LoggerFactory.getLogger(HttpConfig.class);
 
-	private String buildSignKey(String uri) {
+	private String buildSignKey(String baseUri) {
+		String uri = baseUri.replace(prefix, "");
 		StringBuffer buffer = new StringBuffer(base);
 		buffer.append(" ").append(accessKey);
+		log.info("uri=>{},secretKey=>{}", uri, secretKey);
 		@SuppressWarnings("deprecation")
-		String hmacSha1Hex = HmacUtils.hmacSha1Hex(secretKey.getBytes(), uri.getBytes());
+		String hmacSha1Hex = HmacUtils.hmacSha1Hex(secretKey, uri);
+		System.out.println(hmacSha1Hex);
 		String sing = Base64.encodeBase64String(hmacSha1Hex.getBytes());
 		buffer.append(":").append(sing);
 
@@ -47,9 +49,6 @@ public class HttpConfig {
 	@Bean
 	public RestTemplate restTemplate() {
 		HttpClientBuilder httpClientBuilder = HttpClientBuilder.create();
-		if (StringUtils.isNoneEmpty(this.proxyHost)) {
-//			httpClientBuilder.setProxy(httpthis.proxyHost);
-		}
 		HttpClient httpClient = httpClientBuilder.build();
 		ClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
 
@@ -58,14 +57,10 @@ public class HttpConfig {
 //		restTemplate.getMessageConverters().set(1, new StringHttpMessageConverter(Charsets.UTF_8));
 		List<ClientHttpRequestInterceptor> interceptors = new ArrayList<>();
 		interceptors.add((HttpRequest request, byte[] body, ClientHttpRequestExecution execution) -> {
-			log.debug(request.getURI().getPath());
-			log.debug(request.getURI().toString());
-			log.debug(request.getURI().getPath());
-			log.debug(request.getURI().getAuthority());
 			String path = request.getURI().getPath();
 			String buildSignKey = buildSignKey(path);
 			request.getHeaders().add("authorization", buildSignKey);
-			log.info("request uri =>{} authorization => {} ", path, buildSignKey);
+			log.info("request uri =>{} authorization => {}", path, buildSignKey);
 			return execution.execute(request, body);
 		});
 		restTemplate.setInterceptors(interceptors);
@@ -104,4 +99,11 @@ public class HttpConfig {
 		this.proxyHost = proxyHost;
 	}
 
+	public String getPrefix() {
+		return prefix;
+	}
+
+	public void setPrefix(String prefix) {
+		this.prefix = prefix;
+	}
 }
