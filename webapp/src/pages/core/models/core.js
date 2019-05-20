@@ -7,6 +7,8 @@ import {
   submitRule,
   confirmRule,
   ruleConfirmRule,
+  ruleDelete,
+  ruleConfirmUpdate,
 } from '@/services/core';
 
 //规则中心
@@ -43,8 +45,13 @@ export default {
         payload: response.data,
       });
     },
+    // 我的规则  删除
+    *getRuleDelete({ payload, callback }, { call }) {
+      const response = yield call(ruleDelete, payload);
+      if (callback) callback(response);
+    },
 
-    // 我的规则      确认规则
+    // 我的规则      接收规则
     *getConfirmRule({ payload }, { call, put }) {
       const response = yield call(confirmRule, payload);
       yield put({
@@ -52,7 +59,11 @@ export default {
         payload: response.data,
       });
     },
-
+    //接收规则 详情
+    *getRuleConfirmUpdate({ payload, callback }, { call }) {
+      const response = yield call(ruleConfirmUpdate, payload);
+      if (callback) callback(response);  // 后端返回回调
+    },
     
 
     // 源路径
@@ -74,15 +85,6 @@ export default {
     //  新建规则  提交 借口
     *getSubmitRule({ payload, callback }, { call }) {
       const response = yield call(submitRule, payload);
-      if (callback) callback(response);  // 后端返回回调
-    },
-    
-
-
-
-    // 新建用户
-    *userAdd({ payload, callback }, { call }) {
-      const response = yield call(postUserAdd, payload);
       if (callback) callback(response);  // 后端返回回调
     },
     
