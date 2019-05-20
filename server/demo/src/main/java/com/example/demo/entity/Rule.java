@@ -30,6 +30,11 @@ public class Rule {
 
 	private Date createTime;
 
+	/**
+	 * default false 删除=true 没有删除=false
+	 */
+	private Boolean isDelete;
+
 	public Integer getRuleId() {
 		return ruleId;
 	}
@@ -76,6 +81,20 @@ public class Rule {
 
 	public void setCreateTime(Date createTime) {
 		this.createTime = createTime;
+	}
+
+	public Boolean getIsDelete() {
+		return isDelete;
+	}
+
+	public void setIsDelete(Boolean isDelete) {
+		this.isDelete = isDelete;
+	}
+
+	@Override
+	public String toString() {
+		return "Rule [ruleId=" + ruleId + ", ruleName=" + ruleName + ", sourcePath=" + sourcePath + ", userId=" + userId
+				+ ", createBy=" + createBy + ", createTime=" + createTime + ", isDelete=" + isDelete + "]";
 	}
 
 }

@@ -33,6 +33,25 @@ public class RuleController {
 		return Result.ok();
 	}
 
+	@PostMapping("/update")
+	@ApiOperation("修改发送规则")
+	public Result updateRule(@RequestBody Rule rule) {
+		return Result.ok();
+	}
+
+	@PostMapping("ruleConfirm/update")
+	@ApiOperation("修改确认规则")
+	public Result updateRuleConfirm(@RequestBody RuleConfirm confirm) {
+		return Result.ok();
+	}
+
+	@PostMapping("/delete")
+	@ApiOperation("删除规则")
+	public Result deleteRule(String userId, Integer ruleId) {
+		ruleService.deleteRule(userId, ruleId);
+		return Result.ok();
+	}
+
 	@PostMapping("/confirmRule")
 	@ApiOperation("接收人却认规则")
 	public Result confirmRule(String savePath, String taskId) {
@@ -68,6 +87,18 @@ public class RuleController {
 	public Result getFriends(String userId) {
 		List<Map<String, Object>> friends = ruleService.getFriends(userId);
 		return Result.ok(friends);
+	}
+
+	/**
+	 * @param userId
+	 * @return
+	 */
+	@GetMapping("rule/relation")
+	@ApiOperation("获得与我相关的规则")
+	public Result getRuleRelation(String userId) {
+		List<Map<Object, Object>> rules = ruleService.getRuleRelation(userId);
+
+		return Result.ok(rules);
 	}
 
 	@GetMapping("/getRule/details")

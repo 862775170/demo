@@ -27,4 +27,14 @@ public interface RuleService {
 	 */
 	List<Map<Object, Object>> getMyRuleConfirm(String userId);
 
+	/**
+	 * 规则关系
+	 * 
+	 * @param userId
+	 * @return
+	 */
+	List<Map<Object, Object>> getRuleRelation(String userId);
+
+	void deleteRule(String userId, Integer ruleId);
+
 }

@@ -32,6 +32,7 @@ public class InsertRuleDelegate implements JavaDelegate {
 		entity.setUserId(createBy);
 		entity.setCreateBy(createBy);
 		entity.setCreateTime(createTime);
+		entity.setIsDelete(false);
 		bean.save(entity);
 		execution.setVariable("ruleId", entity.getRuleId());
 	}
