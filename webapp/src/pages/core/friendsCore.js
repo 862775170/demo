@@ -26,7 +26,7 @@ const { TabPane } = Tabs;
 const columns = [
   {
     title: '发送方',
-    dataIndex: 'name',
+    dataIndex: 'userId',
   },
   {
     title: '接收方',
@@ -43,23 +43,42 @@ const columns = [
   },
 ];
 
-@connect(({ profile, loading }) => ({
-  profile,
-  loading: loading.models.profile,
+@connect(({ friends, loading }) => ({
+  friends,
+  loading: loading.models.friends,
 }))
 // 好友中心
 @Form.create()
 class FriendsCore extends PureComponent {
 
   state = {
+    userId: sessionStorage.getItem('userid'),
+    friendsArr: [],
     operationkey: 'tab1',
-    selectedRowKeys: [],
   };
 
   formLayout = {
     labelCol: { span: 7 },
     wrapperCol: { span: 13 },
   };
+
+  //初始化方法
+  componentDidMount() {
+    this.coreFriendsList();       // 好友中心 好友列
+  }
+
+  // 好友中心 好友列
+  coreFriendsList = () => {
+    const { dispatch } = this.props;
+    const { userId } = this.state;
+    dispatch({
+      type: 'friends/getFriends',
+      payload: { userId },
+      callback: (result) => {
+        this.state.friendsArr = result.data;
+      } 
+    });
+  }
 
   callback = (key) => {
     this.setState({
@@ -76,8 +95,8 @@ class FriendsCore extends PureComponent {
   
 
   render() {
-    const { loading, form: { getFieldDecorator }, } = this.props;
-    const { operationkey, selectedRowKeys } = this.state;
+    const { loading, form: { getFieldDecorator } } = this.props;
+    const { operationkey, friendsArr } = this.state;
     
     const dataValue = [
       {
@@ -180,11 +199,6 @@ class FriendsCore extends PureComponent {
         </Form>
       );
     };
-    
-    const rowSelection = {
-      selectedRowKeys,
-      // onChange: this.onSelectChange,
-    };
 
     // table组件属性
     const paginationProps = {
@@ -197,7 +211,6 @@ class FriendsCore extends PureComponent {
       tab1: (
         <Table
           rowKey="id"
-          rowSelection={rowSelection}
           pagination={false}
           loading={loading}
           dataSource={dataValue}
@@ -210,7 +223,6 @@ class FriendsCore extends PureComponent {
       tab2: (
         <Table
           rowKey="id"
-          rowSelection={rowSelection}
           pagination={false}
           loading={loading}
           dataSource={dataValue}
@@ -223,7 +235,6 @@ class FriendsCore extends PureComponent {
       tab5: (
         <Table
           rowKey="id"
-          rowSelection={rowSelection}
           pagination={false}
           loading={loading}
           dataSource={dataValue}
@@ -236,31 +247,24 @@ class FriendsCore extends PureComponent {
     };
 
     return (
-      <Layout>
-        <Sider width={200} style={{ background: '#fff' }}>
+      <Layout style={{width: '100%',height:'93%',position: 'absolute',marginTop: '2px'}}>
+        <Sider width={200}>
           <Menu
             mode="inline"
-            defaultSelectedKeys={['1']}
+            defaultSelectedKeys={['admin']}
             defaultOpenKeys={['sub1']}
             style={{ height: '100%', borderRight: '1px solid #e8e8e8' }}
           >
-            <Menu.Item key="1">
-              <Icon type="mail" />数据中心
-            </Menu.Item>
-            <Menu.Item key="2">
-              <Icon type="calendar" />运营中心
-            </Menu.Item>
-            <Menu.Item key="3">
-              <Icon type="calendar" />销售交易部
-            </Menu.Item>
-            <Menu.Item key="4">
-              <Icon type="calendar" />运营管理部
-            </Menu.Item>
-            <Menu.Item key="5">
-              <Icon type="calendar" />人力资源部
-            </Menu.Item>
+            {
+              friendsArr.map((item) => {
+                return <Menu.Item key={item.userId}>
+                <Icon type="mail" />{item.userName}
+              </Menu.Item>
+              })
+            }
           </Menu>
         </Sider>
+        
         <Content style={{ background: '#fff', padding: '12px 24px 24px 24px', margin: 0, minHeight: 280, }}>
           <Breadcrumb>
             <Breadcrumb.Item>好友中心</Breadcrumb.Item>

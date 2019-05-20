@@ -148,7 +148,7 @@ class TaskCore extends PureComponent {
     };
 
     return (
-      <Layout>
+      <Layout style={{width: '100%',height:'93%',position: 'absolute',marginTop: '2px'}}>
         <Sider width={200} style={{ background: '#fff' }}>
           <Menu
             mode="inline"
