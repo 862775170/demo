@@ -22,7 +22,9 @@ import com.example.demo.dao.RuleDao;
 import com.example.demo.dao.UserDao;
 import com.example.demo.entity.Rule;
 import com.example.demo.entity.RuleConfirm;
+import com.example.demo.service.FileService;
 import com.example.demo.service.RuleService;
+import com.example.demo.service.UserService;
 
 @Service
 public class RuleServiceImpl implements RuleService {
@@ -38,8 +40,11 @@ public class RuleServiceImpl implements RuleService {
 	private RuleDao ruleDao;
 	@Autowired
 	private RuleConfirmDao ruleTargetDao;
+
 	@Autowired
-	private UserDao userDao;
+	private FileService fileService;
+	@Autowired
+	private UserService userService;
 
 	@Override
 	public void startCreateProcess(Rule rule, String[] userIds) {
@@ -50,7 +55,9 @@ public class RuleServiceImpl implements RuleService {
 		variables.put("ruleName", rule.getRuleName());
 		variables.put("userId", rule.getUserId());
 		variables.put("sourcePath", rule.getSourcePath());
+		variables.put("rootIds", rule.getRootIds());
 		variables.put("createTime", rule.getCreateTime());
+		variables.put("sourcePathName", fileService.getFileFullPath(rule.getSourcePath(), rule.getRootIds()));
 		runtimeService.startProcessInstanceByKey("CreateRuleProcess", variables);
 	}
 
@@ -81,31 +88,31 @@ public class RuleServiceImpl implements RuleService {
 	@Override
 	public List<Rule> getRules(String userId) {
 		List<Rule> findByUserId = ruleDao.findByUserId(userId);
-//		findByUserId.forEach(action -> {
-//			List<RuleConfirm> ruleConfirms = ruleTargetDao.findByRuleId(action.getRuleId());
-//		});
-		return findByUserId.stream().filter(r -> r.getIsDelete() == null ? true : !r.getIsDelete())
+		List<Rule> collect = findByUserId.stream().filter(r -> r.getIsDelete() == null ? true : !r.getIsDelete())
 				.collect(Collectors.toList());
+		return collect;
 	}
 
 	@Override
 	public List<Map<String, Object>> getFriends(String userId) {
 //		Integer userId = TokenUtils.getUserId();
 		List<Rule> rules = ruleDao.findByUserId(userId);
+
 		List<RuleConfirm> ruleConfirms = ruleTargetDao.findByUserId(userId);
-		List<Map<String, Object>> collect = null;
 		HashSet<String> hashSet = new HashSet<>();
 		List<RuleConfirm> findInRuleId = ruleTargetDao
 				.findByRuleIdIn(rules.stream().map(s -> s.getRuleId()).collect(Collectors.toList()));
 		ruleConfirms.addAll(findInRuleId);
-		collect = ruleConfirms.stream().filter(f -> hashSet.add(f.getUserId())).map(r -> {
-			Map<String, Object> hashMap = new HashMap<>();
-//			User targetUser = userDao.findById(r.getUserId()).get();
-			hashMap.put("userId", r.getUserId());
-			hashMap.put("userName", r.getUserId());
-			return hashMap;
-		}).collect(Collectors.toList());
+		ruleConfirms = ruleConfirms.stream().filter(f -> hashSet.add(f.getUserId())).collect(Collectors.toList());
+		Map<String, String> userNames = userService.getUserNames(new ArrayList<>(hashSet));
 
+		List<Map<String, Object>> collect = ruleConfirms.stream().map(r -> {
+			Map<String, Object> map = new HashMap<>();
+			String confirmUserId = r.getUserId();
+			map.put("userId", confirmUserId);
+			map.put("userName", userNames.get(confirmUserId));
+			return map;
+		}).collect(Collectors.toList());
 		return collect;
 	}
 
@@ -115,16 +122,11 @@ public class RuleServiceImpl implements RuleService {
 		List<Map<String, Object>> collect = ruleTargets.stream().map(r -> {
 			Map<String, Object> hashMap = new HashMap<>();
 //			User targetUser = userDao.findById(r.getUserId()).get();
-			Rule rule = ruleDao.findById(r.getRuleId()).get();
 			hashMap.put("id", r.getId());
-			hashMap.put("ruleId", r.getRuleId());
-			hashMap.put("ruleName", rule.getRuleName());
-			hashMap.put("savePath", r.getSavePath());
 			hashMap.put("userId", r.getUserId());
 //			hashMap.put("username", targetUser.getUsername());
 			return hashMap;
 		}).collect(Collectors.toList());
-
 		return collect;
 	}
 

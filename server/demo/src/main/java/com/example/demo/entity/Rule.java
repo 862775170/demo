@@ -24,6 +24,10 @@ public class Rule {
 
 	private String sourcePath;
 
+	private String sourcePathName;
+
+	private String rootIds;
+
 	private String userId;
 
 	private String createBy;
@@ -91,10 +95,27 @@ public class Rule {
 		this.isDelete = isDelete;
 	}
 
+	public String getRootIds() {
+		return rootIds;
+	}
+
+	public void setRootIds(String rootIds) {
+		this.rootIds = rootIds;
+	}
+
+	public String getSourcePathName() {
+		return sourcePathName;
+	}
+
+	public void setSourcePathName(String sourcePathName) {
+		this.sourcePathName = sourcePathName;
+	}
+
 	@Override
 	public String toString() {
-		return "Rule [ruleId=" + ruleId + ", ruleName=" + ruleName + ", sourcePath=" + sourcePath + ", userId=" + userId
-				+ ", createBy=" + createBy + ", createTime=" + createTime + ", isDelete=" + isDelete + "]";
+		return "Rule [ruleId=" + ruleId + ", ruleName=" + ruleName + ", sourcePath=" + sourcePath + ", rootIds="
+				+ rootIds + ", userId=" + userId + ", createBy=" + createBy + ", createTime=" + createTime
+				+ ", isDelete=" + isDelete + "]";
 	}
 
 }
