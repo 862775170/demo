@@ -25,15 +25,22 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public Map<String, String> getUserNames(List<String> userIds) {
-		ResponseEntity<JsonObject> json = httpClient.postByJson("/user/multiGetUserInfo", userIds, JsonObject.class);
-		log.debug("http: /user/multiGetUserInfo result => {}", json);
-		if (json.getBody().has("result")) {
-			json.getBody().get("result").getAsJsonArray().forEach(el -> {
-				
-			});
-			;
+		Map<String, String> result = new HashMap<>();
+		if (userIds.isEmpty()) {
+			return result;
+		} else {
+			Map<String, Object> body = new HashMap<>();
+			body.put("userIds", userIds);
+			ResponseEntity<JsonObject> json = httpClient.postByJson("/user/multiGetUserInfo", body, JsonObject.class);
+			log.debug("http: /user/multiGetUserInfo result => {}", json);
+			if (json.getBody().has("result")) {
+				json.getBody().get("result").getAsJsonArray().forEach(el -> {
+					JsonObject elobj = el.getAsJsonObject();
+					result.put(elobj.get("id").getAsString(), elobj.get("nick_name").getAsString());
+				});
+			}
+			return result;
 		}
-		return new HashMap<String, String>();
 	}
 
 }

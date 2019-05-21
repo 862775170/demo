@@ -11,7 +11,7 @@ public interface RuleService {
 
 	List<Map<String, Object>> getTasks(String assignee);
 
-	void confirmRuleProcess(String savePath, String taskId);
+	void confirmRuleProcess(String savePath, String rootIds, String taskId);
 
 	List<Rule> getRules(String userId);
 
@@ -36,5 +36,17 @@ public interface RuleService {
 	List<Map<Object, Object>> getRuleRelation(String userId);
 
 	void deleteRule(String userId, Integer ruleId);
+
+	/**
+	 * 删除确认规则
+	 * 
+	 * @param userId
+	 * @param ruleId
+	 */
+	void deleteRuleConfirm(String userId, Integer id);
+
+	void updateRule(Rule rule);
+
+	void updateRuleConfirm(RuleConfirm confirm);
 
 }

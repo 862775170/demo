@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.common.ParamException;
 import com.example.demo.common.Result;
 import com.example.demo.common.TokenUtils;
 import com.example.demo.entity.Rule;
@@ -36,12 +37,20 @@ public class RuleController {
 	@PostMapping("/update")
 	@ApiOperation("修改发送规则")
 	public Result updateRule(@RequestBody Rule rule) {
+		if (rule.getRuleId() == null) {
+			throw new ParamException("400", "rule 为空");
+		}
+		ruleService.updateRule(rule);
 		return Result.ok();
 	}
 
 	@PostMapping("ruleConfirm/update")
 	@ApiOperation("修改确认规则")
 	public Result updateRuleConfirm(@RequestBody RuleConfirm confirm) {
+		if (confirm.getId() == null) {
+			throw new ParamException("400", "[id] 为空");
+		}
+		ruleService.updateRuleConfirm(confirm);
 		return Result.ok();
 	}
 
@@ -52,10 +61,17 @@ public class RuleController {
 		return Result.ok();
 	}
 
+	@PostMapping("/ruleConfirm/delete")
+	@ApiOperation("删除文件接收人")
+	public Result deleteRuleConfirm(String userId, Integer id) {
+		ruleService.deleteRuleConfirm(userId, id);
+		return Result.ok();
+	}
+
 	@PostMapping("/confirmRule")
 	@ApiOperation("接收人却认规则")
-	public Result confirmRule(String savePath, String taskId) {
-		ruleService.confirmRuleProcess(savePath, taskId);
+	public Result confirmRule(String savePath, String rootIds, String taskId) {
+		ruleService.confirmRuleProcess(savePath, rootIds, taskId);
 		return Result.ok();
 	}
 

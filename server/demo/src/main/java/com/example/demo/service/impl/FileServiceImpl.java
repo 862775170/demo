@@ -28,6 +28,7 @@ public class FileServiceImpl implements FileService {
 
 	@Override
 	public String getFileFullPath(String fullPath, String rootIds) {
+		// TODO 需要判断 full rootids 为空
 		fullPath = fullPath.substring(fullPath.indexOf(rootIds), fullPath.length());
 		String[] fileIds = fullPath.split("/");
 		Map<String, Object> map = new HashMap<>();
@@ -41,12 +42,10 @@ public class FileServiceImpl implements FileService {
 			jsonArray.forEach(jobj -> {
 				JsonObject el = jobj.getAsJsonObject();
 				if (el.has("filename_KeywordIkPinyin")) {
-
 					String fileId = el.get("file_id").getAsString();
 					String fileIdPinyin = el.get("filename_KeywordIkPinyin").getAsString();
 					result.put(fileId, fileIdPinyin);
 				}
-//				jobj.getAsJsonObject().has(memberName)filename_KeywordIkPinyin
 			});
 
 			for (String id : fileIds) {
@@ -60,11 +59,4 @@ public class FileServiceImpl implements FileService {
 
 		return null;
 	}
-
-	public static void main(String[] args) {
-		String aa = "aaa,bbb,ccc";
-
-		System.out.println(aa.substring(aa.indexOf("bbb"), aa.length()));
-	}
-
 }

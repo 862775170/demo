@@ -6,8 +6,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.flowable.engine.RuntimeService;
 import org.flowable.engine.TaskService;
 import org.flowable.task.api.Task;
@@ -17,9 +19,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.common.ObjectUtils;
+import com.example.demo.common.ParamException;
 import com.example.demo.dao.RuleConfirmDao;
 import com.example.demo.dao.RuleDao;
-import com.example.demo.dao.UserDao;
 import com.example.demo.entity.Rule;
 import com.example.demo.entity.RuleConfirm;
 import com.example.demo.service.FileService;
@@ -39,7 +41,7 @@ public class RuleServiceImpl implements RuleService {
 	@Autowired
 	private RuleDao ruleDao;
 	@Autowired
-	private RuleConfirmDao ruleTargetDao;
+	private RuleConfirmDao ruleConfirmDao;
 
 	@Autowired
 	private FileService fileService;
@@ -79,9 +81,11 @@ public class RuleServiceImpl implements RuleService {
 	}
 
 	@Override
-	public void confirmRuleProcess(String savePath, String taskId) {
+	public void confirmRuleProcess(String savePath, String rootIds, String taskId) {
 		Map<String, Object> variables = new HashMap<>();
 		variables.put("savePath", savePath);
+		variables.put("rootIds", rootIds);
+		variables.put("savePathName", fileService.getFileFullPath(savePath, rootIds));
 		taskService.complete(taskId, variables);
 	}
 
@@ -98,9 +102,9 @@ public class RuleServiceImpl implements RuleService {
 //		Integer userId = TokenUtils.getUserId();
 		List<Rule> rules = ruleDao.findByUserId(userId);
 
-		List<RuleConfirm> ruleConfirms = ruleTargetDao.findByUserId(userId);
+		List<RuleConfirm> ruleConfirms = ruleConfirmDao.findByUserId(userId);
 		HashSet<String> hashSet = new HashSet<>();
-		List<RuleConfirm> findInRuleId = ruleTargetDao
+		List<RuleConfirm> findInRuleId = ruleConfirmDao
 				.findByRuleIdIn(rules.stream().map(s -> s.getRuleId()).collect(Collectors.toList()));
 		ruleConfirms.addAll(findInRuleId);
 		ruleConfirms = ruleConfirms.stream().filter(f -> hashSet.add(f.getUserId())).collect(Collectors.toList());
@@ -118,12 +122,15 @@ public class RuleServiceImpl implements RuleService {
 
 	@Override
 	public List<Map<String, Object>> getFriendsDetails(Integer ruleId) {
-		List<RuleConfirm> ruleTargets = ruleTargetDao.findByRuleId(ruleId);
+		List<RuleConfirm> ruleTargets = ruleConfirmDao.findByRuleId(ruleId);
+		List<String> userIds = ruleTargets.stream().map(RuleConfirm::getUserId).collect(Collectors.toList());
+		Map<String, String> userNames = userService.getUserNames(userIds);
 		List<Map<String, Object>> collect = ruleTargets.stream().map(r -> {
 			Map<String, Object> hashMap = new HashMap<>();
 //			User targetUser = userDao.findById(r.getUserId()).get();
 			hashMap.put("id", r.getId());
 			hashMap.put("userId", r.getUserId());
+			hashMap.put("userName", userNames.get(r.getUserId()));
 //			hashMap.put("username", targetUser.getUsername());
 			return hashMap;
 		}).collect(Collectors.toList());
@@ -132,7 +139,7 @@ public class RuleServiceImpl implements RuleService {
 
 	@Override
 	public List<Map<Object, Object>> getMyRuleConfirm(String userId) {
-		List<RuleConfirm> findByUserId = ruleTargetDao.findByUserId(userId);
+		List<RuleConfirm> findByUserId = ruleConfirmDao.findByUserId(userId);
 		List<Map<Object, Object>> collect = findByUserId.stream().map(m -> {
 			Integer ruleId = m.getRuleId();
 			Rule one = ruleDao.findByRuleId(ruleId);
@@ -153,7 +160,7 @@ public class RuleServiceImpl implements RuleService {
 
 	@Override
 	public List<Map<Object, Object>> getRuleRelation(String userId) {
-		List<RuleConfirm> ruleConfirm = ruleTargetDao.findByUserId(userId);
+		List<RuleConfirm> ruleConfirm = ruleConfirmDao.findByUserId(userId);
 		List<Map<Object, Object>> collect = ruleConfirm.stream().map(m -> {
 			Rule rule = ruleDao.findByRuleId(m.getRuleId());
 			Map<Object, Object> map = new HashMap<>();
@@ -173,4 +180,43 @@ public class RuleServiceImpl implements RuleService {
 		rule.setIsDelete(true);
 		ruleDao.save(rule);
 	}
+
+	@Override
+	public void deleteRuleConfirm(String userId, Integer id) {
+		RuleConfirm ruleConfirm = ruleConfirmDao.findById(id).get();
+		ruleConfirm.setIsDelete(true);
+		ruleConfirmDao.save(ruleConfirm);
+	}
+
+	@Override
+	public void updateRule(Rule rule) {
+		Rule ruleEntity = ruleDao.findById(rule.getRuleId()).get();
+		if (StringUtils.isNotEmpty(rule.getSourcePath())) {
+			if (rule.getSourcePath().equals(ruleEntity.getSourcePath())) {
+				return;
+			}
+			ruleEntity.setSourcePath(rule.getSourcePath());
+			ruleEntity.setSourcePathName(fileService.getFileFullPath(rule.getSourcePath(), ruleEntity.getRootIds()));
+			ruleDao.save(ruleEntity);
+		} else {
+			throw new ParamException("400", "请选择路径");
+		}
+	}
+
+	@Override
+	public void updateRuleConfirm(RuleConfirm confirm) {
+		RuleConfirm ruleConfirmEntity = ruleConfirmDao.findById(confirm.getId()).get();
+		if (StringUtils.isNotEmpty(confirm.getSavePath())) {
+			if (confirm.getSavePath().equals(ruleConfirmEntity.getSavePath())) {
+				return;
+			}
+			ruleConfirmEntity.setSavePath(confirm.getSavePath());
+			ruleConfirmEntity.setSavePathName(
+					fileService.getFileFullPath(confirm.getSavePath(), ruleConfirmEntity.getRootIds()));
+			ruleConfirmDao.save(ruleConfirmEntity);
+		} else {
+			throw new ParamException("400", "请选择路径");
+		}
+	}
+
 }
