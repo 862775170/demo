@@ -1,10 +1,15 @@
 package com.example.demo.controller;
 
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.configurationprocessor.json.JSONObject;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,17 +19,28 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import com.example.demo.common.HttpClient;
 import com.example.demo.common.Result;
 import com.example.demo.dao.UserDao;
 import com.example.demo.entity.User;
+import com.example.demo.service.FileService;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 
 import io.swagger.annotations.ApiOperation;
 
 @RestController
 @RequestMapping("/user")
 public class UserController {
+
+	private static final Logger log = LoggerFactory.getLogger(UserController.class);
+
 	@Autowired
 	private UserDao userDao;
+
+	@Autowired
+	private FileService fileService;
 
 	@PostMapping("/reg")
 	public Result reg(User user) {
@@ -51,10 +67,16 @@ public class UserController {
 
 	@Autowired
 	private RestTemplate restTemplate;
+	@Autowired
+	private HttpClient httpClient;
 
 	@GetMapping("/test")
 	public Object test(String uri) throws RestClientException, UnsupportedEncodingException {
-		return restTemplate.getForObject("http://211.144.114.26:19001" + uri, String.class);
+		Gson gson = new Gson();
+
+//		String postByJson = fileService.getFileFullPath(uri);
+
+		return null;
 	}
 
 }

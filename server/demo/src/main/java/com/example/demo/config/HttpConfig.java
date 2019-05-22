@@ -17,7 +17,10 @@ import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.http.converter.json.GsonHttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
+
+import com.example.demo.common.SuperGsonHttpMessageConverter;
 
 @Configuration
 @ConfigurationProperties(prefix = "http")
@@ -49,10 +52,13 @@ public class HttpConfig {
 	@Bean
 	public RestTemplate restTemplate() {
 		HttpClientBuilder httpClientBuilder = HttpClientBuilder.create();
+
 		HttpClient httpClient = httpClientBuilder.build();
 		ClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
 
 		RestTemplate restTemplate = new RestTemplate(requestFactory);
+
+		restTemplate.getMessageConverters().add(0, new SuperGsonHttpMessageConverter());
 		// 解决中文乱码ss
 //		restTemplate.getMessageConverters().set(1, new StringHttpMessageConverter(Charsets.UTF_8));
 		List<ClientHttpRequestInterceptor> interceptors = new ArrayList<>();

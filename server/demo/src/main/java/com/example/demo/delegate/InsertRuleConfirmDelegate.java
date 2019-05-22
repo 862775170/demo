@@ -18,11 +18,15 @@ public class InsertRuleConfirmDelegate implements JavaDelegate {
 		Integer ruleId = execution.getVariable("ruleId", Integer.class);
 		String savePath = execution.getVariable("savePath", String.class);
 		String userId = execution.getVariable("userId", String.class);
+		String savePathName = execution.getVariable("savePathName", String.class);
+		String rootIds = execution.getVariable("rootIds", String.class);
 		entity.setRuleId(ruleId);
 		entity.setSavePath(savePath);
 		entity.setUserId(userId);
 		entity.setCreateBy(userId);
 		entity.setCreateTime(new Date());
+		entity.setRootIds(rootIds);
+		entity.setSavePathName(savePathName);
 		bean.save(entity);
 	}
 

@@ -23,11 +23,17 @@ public class RuleConfirm {
 
 	private String savePath;
 
+	private String savePathName;
+
 	private String userId;
 
 	private String createBy;
 
 	private Date createTime;
+
+	private Boolean isDelete;
+
+	private String rootIds;
 
 	public Integer getId() {
 		return id;
@@ -77,4 +83,27 @@ public class RuleConfirm {
 		this.createTime = createTime;
 	}
 
+	public Boolean getIsDelete() {
+		return isDelete;
+	}
+
+	public void setIsDelete(Boolean isDelete) {
+		this.isDelete = isDelete;
+	}
+
+	public String getSavePathName() {
+		return savePathName;
+	}
+
+	public void setSavePathName(String savePathName) {
+		this.savePathName = savePathName;
+	}
+
+	public String getRootIds() {
+		return rootIds;
+	}
+
+	public void setRootIds(String rootIds) {
+		this.rootIds = rootIds;
+	}
 }
