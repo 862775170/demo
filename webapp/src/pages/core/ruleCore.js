@@ -1,6 +1,6 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import { Layout, Menu, Checkbox, Breadcrumb, Icon, Table, Form, Divider, Modal, Button, Select, Input, Drawer, Row, Col, Tree } from 'antd';
+import { Layout, Menu,Alert,Card, Checkbox, Breadcrumb, Icon, Table, Form, Divider, Modal, Button, Select, Input, Drawer, Row, Col, Tree } from 'antd';
 import DescriptionList from '@/components/DescriptionList';
 import moment from 'moment';
 import { log } from 'util';
@@ -22,30 +22,35 @@ const CheckboxGroup = Checkbox.Group;
 class RuleCore extends PureComponent {
 
   state = {
-    isEdit: false,
-    isTitle: false,
-    isRoute: false,
     done: false,
-    subEdit: false,
     crumbs: '待确认规则',
-    operationkey: 'tab1',
-    fileArr: [],   //源路径
-    allGroupUser: [],
+    saveRuleVisible: false,    //待确定规则模态框属性
+    saveRuleoBject: {},        //待确定规则 保存规则存储对象
+
+    isRoute: false,            //发送规则  用于判断调用新建还是修改
+    visibles: false,           //发送规则  抽屉属性
+    visibleList: false,        //发送规则 接收人员列表   模态框属性
+    drawerParameter: {},       //发送规则  存储某行对象参数
+    treeData: [                //发送规则  新建和修改共用  源路径
+      { filename_KeywordIkPinyin:'/' ,file_id:sessionStorage.getItem('rootIds') }
+    ], 
+    fileArr: [],               //发送规则  新建和修改共用  源路径 数组存储获取的路径
+    allGroupUser: [],          //发送规则  新建规则  存储接收方数组值
+    ruleDetailsList: [],        //发送规则  接收人员列表
+    indeterminate: true,        //发送规则  接收人员列表  单个选择
+    checkAll: false,            //发送规则  接收人员列表  单个选择
+    checkedList: [],            //发送规则  接收人员列表  单个选择
+
+    acceptanceRule: false,   //接收规则 模态框属性
+    receiveCurrent: {},      //接收规则 存储某行对象参数
+
+    //公用
     userId: sessionStorage.getItem('userid'),
     userInfo: sessionStorage.getItem("userInfo"),
-    taskId: '',   //储存  弹出  保存  模态框
-    current: {},
-    drawerParameter: {},
-    visibles: false,
-    visibleList: false,
-    treeData: [
-      { filename_KeywordIkPinyin:'/' ,file_id:sessionStorage.getItem('rootIds') }
-    ],
     path: '',
-    ruleDetailsList: [],
-    indeterminate: true,
-    checkAll: false,
-    checkedList: [],
+    subEdit: false,
+    operationkey: 'tab1',
+    
   };
   // 创建用户lable 和 input 布局
   formLayout = {
@@ -72,7 +77,6 @@ class RuleCore extends PureComponent {
     if(item.key === "tab2"){
       this.setState({
         subEdit: true,
-        isEdit: true,
       })
       this.coreRuleMyRule();  // 我的规则   发送规则
     }
@@ -91,32 +95,38 @@ class RuleCore extends PureComponent {
       payload:{ userId },
     });
   }
-  // 待确定规则  保存
-  urleGetRuleConfirmRule = fields => {
+  //待确定规则  保存规则  确定模态框  saveRuleoBject
+  saveRuleModalOk = () => {
     const { dispatch } =  this.props;
-    const { taskId, path, userInfo } = this.state;
+    const { path, saveRuleoBject, userInfo } = this.state;  //获取所有用户 userInfo
     const user = JSON.parse(userInfo);
     const rootIds = user.root_ids;
+    const taskId = saveRuleoBject.id;
     const savePath = path;
     dispatch({
       type: 'core/getRuleConfirmRule',
-      payload:{ ...fields, savePath, rootIds, taskId },
+      payload:{ savePath, rootIds, taskId },
       callback: () => {
-        this.coreRuleTasks();
+        this.saveRuleModalCancel();  //待确定规则  保存规则  取消模态框
+        this.coreRuleTasks();        // 待确认规则 全部列表
       } 
     });
   }
-
-  // 待确定规则 弹出  保存  模态框
-  showRouteModal = item => {
+  // 待确定规则 弹出  保存规则  模态框
+  showSaveRuleModal = item => {
     this.setState({
-      visible: true,
-      isEdit: true,
-      isTitle: true,
-      taskId: item.id,
-      current: item,
+      saveRuleVisible: true,    //待确定规则模态框属性
+      saveRuleoBject: item,     //获取列表某一行参数值
     });
   }
+  //待确定规则  保存规则  取消模态框
+  saveRuleModalCancel = () => {
+    this.setState({
+      saveRuleVisible: false,
+    });
+  };
+
+  
 
 
 
@@ -130,78 +140,33 @@ class RuleCore extends PureComponent {
       payload:{ userId },
     });
   }
-  
-  // 发送规则 删除
-  coreRuleMyRuleDelete = item => {
-    Modal.confirm({
-      title: '删除',
-      content: `确定删除“${ item.createBy }”吗？`,
-      okText: '确认',
-      cancelText: '取消',
-      onOk: () => this.deleteItem(item),
-    });
-  };  
-  // 发送规则 点击确定正式删除方法
-  deleteItem = record => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'core/getRuleDelete',
-      payload: {
-        ...record
-      },
-      callback: (result) => {
-        this.coreRuleMyRule();   //我的规则   发送规则 
-      }
-    });
-  }
 
-  // 发送规则    抽屉  源路径实现方法  start
+  // 发送规则  新建规则  点击新建按钮点击此方法   抽屉  源路径实现方法  start
   showDrawer = () => {
     this.setState({
-      visibles: true,
-      isEdit: false,
-      isRoute: true,
-      drawerParameter: {}
+      isRoute: true,            //发送规则  用于判断调用新建还是修改
+      visibles: true,           //发送规则抽屉属性
+      drawerParameter: {},      //发送规则  存储某行对象参数
     });
     this.ruleGetUserGetRootGroup();     // 接收方
   };
 
-  // 发送规则 抽屉  源路径实现方法  发送规则-->详情规则 方法
-  showUpdateDrawer = item => {
-    this.setState({
-      visibles: true,
-      isEdit: false,
-      isRoute: false,
-      drawerParameter: item,
+  //发送规则 新建规则 抽屉 点击保存按钮
+  handleSubmit = e => {
+    e.preventDefault();
+    const { form } = this.props;
+    const { isRoute } = this.state;
+    form.validateFields((err, fieldsValue) => { 
+      if (err) return;
+      if(isRoute){     //true 为新建规则
+        this.urleGetSubmitRule(fieldsValue);   //新建规则提交方法
+      }else{           //false 为发送规则-->修改
+        this.coreRuleUpdate(fieldsValue);  //发送规则  修改 
+      }
+      this.onClose();   //关闭抽屉
     });
-    this.ruleGetUserGetRootGroup();     // 接收方
   };
 
-  // 发送规则 接收方  目录结构
-  ruleGetUserGetRootGroup = () => {
-    const { dispatch } =  this.props;
-    dispatch({
-      type: 'core/getUserGetRootGroup',
-      callback: (result) => {
-        const ids = result.result.id;
-        this.urleGetUserlistAllGroupUser(ids);  // 接收方 
-      } 
-    });
-  }
-  // 发送规则 接收方 
-  urleGetUserlistAllGroupUser = item => {
-    const { dispatch } =  this.props;
-    const groupId = item;
-    const page = 1;
-    const pageSize = 99999;
-    dispatch({
-      type: 'core/getUserlistAllGroupUser',
-      payload:{ groupId, page, pageSize },
-      callback: (result) => {
-        this.state.allGroupUser = result.result;
-      } 
-    });
-  }
   // 发送规则 新建规则  提交方法
   urleGetSubmitRule = fields => {
     const { dispatch } =  this.props;
@@ -216,103 +181,72 @@ class RuleCore extends PureComponent {
       payload:{ ...fields, createBy, rootIds, sourcePath },
       callback: () => {
         this.coreRuleMyRule();    // 我的规则   发送规则
-        this.onClose();   //关闭抽屉
       } 
     });
   }
 
-  // 发送规则 修改 
+  // 发送规则 新建规则 抽屉取消
+  onClose = () => {
+    this.setState({
+      visibles: false,    // false 关系抽屉
+    });
+  };
+
+  // 发送规则 新建规则   接收方  目录结构
+  ruleGetUserGetRootGroup = () => {
+    const { dispatch } =  this.props;
+    dispatch({
+      type: 'core/getUserGetRootGroup',
+      callback: (result) => {
+        const ids = result.result.id;
+        this.urleGetUserlistAllGroupUser(ids);  // 接收方 
+      } 
+    });
+  }
+  // 发送规则 新建规则  接收方 
+  urleGetUserlistAllGroupUser = item => {
+    const { dispatch } =  this.props;
+    const groupId = item;
+    const page = 1;
+    const pageSize = 99999;
+    dispatch({
+      type: 'core/getUserlistAllGroupUser',
+      payload:{ groupId, page, pageSize },
+      callback: (result) => {
+        this.state.allGroupUser = result.result;
+      } 
+    });
+  }
+
+
+  // 发送规则 修改  调出抽屉  
+  showUpdateDrawer = item => {
+    this.setState({
+      isRoute: false,            //发送规则  false调用修改
+      visibles: true,            //发送规则抽屉属性
+      drawerParameter: item,     //发送规则  存储某行对象参数
+    });
+    this.ruleGetUserGetRootGroup();     // 接收方
+  };
+
+  // 发送规则 修改  提交方法
   coreRuleUpdate = fields => {
-    debugger;
     const { dispatch } = this.props;
     const { userInfo, path, drawerParameter } = this.state;
     const user = JSON.parse(userInfo);
     const createBy = user.nick_name;
-    const rootIds = drawerParameter.rootIds;
+    const ruleId = drawerParameter.ruleId;
     const sourcePath = path;
     dispatch({
       type: 'core/getRuleUpdate',
-      payload:{ ...fields, createBy, sourcePath },
+      payload:{ ...fields, createBy, sourcePath, ruleId },
       callback: () => {
         this.coreRuleMyRule();    // 我的规则   发送规则
-        this.onClose();   //关闭抽屉
       } 
     });
   }
 
-  // 发送规则 接收人员列表
-  coleGetRileDetails = item => {
-    const { dispatch } =  this.props;
-    dispatch({
-      type: 'core/getRuleDetails',
-      payload:{ item },
-      callback: (rel) => {
-        this.state.ruleDetailsList = rel.data;
-      } 
-    });
-    this.setState({
-      visibleList: true,
-    });
-  }
-
-  //发送规则 接收人员列表  单个选择
-  onChangEalon = checkedList => {
-    this.setState({
-      checkedList,
-      indeterminate: !!checkedList.length && checkedList.length < plainOptions.length,
-      checkAll: checkedList.length === plainOptions.length,
-    });
-  };
-
-  // 发送规则 接收人员列表  全选
-  onCheckAllChange = e => {
-    this.setState({
-      checkedList: e.target.checked ? plainOptions : [],
-      indeterminate: false,
-      checkAll: e.target.checked,
-    });
-  }
-
-//---------------------------------------------------接收规则
-  //接收规则 列表
-  coreConfirmRule = () => {
-    const { dispatch } = this.props;
-    const { userId } = this.state;
-    dispatch({
-      type: 'core/getConfirmRule',
-      payload:{ userId },
-    });
-  }
-
-  //接收规则 修改
-  showReceiveModal = item => {
-    this.setState({
-      visible: true,
-      isEdit: true,
-      isTitle: false,
-      taskId: item.id,
-      current: item,
-    });
-  }
-
-  //接收规则 修改
-  urlRuleConfirmUpdate = fields => {
-    const { dispatch } =  this.props;
-    const { taskId, path } = this.state;
-    const id = taskId;
-    const savePath = path;
-    dispatch({
-      type: 'core/getRuleConfirmUpdate',
-      payload:{ ...fields,savePath, id },
-      callback: () => {
-        this.coreConfirmRule();// 我的规则   接收规则
-      } 
-    });
-  }
-
-  
-//---------------------------------------------------公共   方法
-  //公共 源路径
+  //发送规则  新建和修改共用  源路径
   ruleGetFileList = () => {
     const { dispatch } = this.props;
     const fileId = sessionStorage.getItem('rootIds');
@@ -325,53 +259,7 @@ class RuleCore extends PureComponent {
       } 
     });
   }
-
-  //公共 模态框 点击保存按钮
-  handleSubmit = e => {
-    e.preventDefault();
-    const { form } = this.props;
-    const { isEdit, isTitle, isRoute } = this.state;
-    form.validateFields((err, fieldsValue) => {
-      if(isEdit){
-        if(isTitle){  // true 为保存规则
-          this.urleGetRuleConfirmRule(fieldsValue);  // 待确定规则  保存
-        }else{       //  false 为接收规则详情
-          this.urlRuleConfirmUpdate(fieldsValue);    //接收规则  修改
-        }
-      }else{  
-        if(isRoute){     //true 为新建规则
-          if (err) return;
-          this.urleGetSubmitRule(fieldsValue);   //新建规则提交方法
-        }else{           //false 为发送规则-->修改
-          if (err) return;
-          this.coreRuleUpdate(fieldsValue);  //发送规则  修改 
-        }
-      }
-      this.handleCancel();   // 模态框 附属性
-    });
-    
-  };
-
-  // 接收人员列表  取消
-  receiveCancel = () => {
-    this.setState({
-      visibleList: false,
-    });
-  }
-
-  // 模态框 附属性
-  handleCancel = () => {
-    this.setState({
-      visible: false,
-    });
-  };
-
-  //抽屉公共方法
-  onClose = () => {
-    this.setState({
-      visibles: false,
-    });
-  };
+  //发送规则  新建和修改共用  源路径
   onLoadData = treeNode => {
       const { dispatch } = this.props;
       return new Promise(resolve => {
@@ -400,6 +288,7 @@ class RuleCore extends PureComponent {
       });
     })
   };
+  //发送规则  新建和修改共用  源路径
   getOnSelect = (selectedKeys, e) => {
     if(e.selectedNodes.length > 0){
       const titleValue = e.selectedNodes[0].props.title;
@@ -414,6 +303,7 @@ class RuleCore extends PureComponent {
       });      
     }
   }
+  //发送规则  新建和修改共用  源路径
   renderTreeNodes = data => data.map(item => {
     if (item.children) {
       return (
@@ -424,16 +314,143 @@ class RuleCore extends PureComponent {
     }
     return <TreeNode title={item.filename_KeywordIkPinyin} key={item.file_id} dataRef={item} />;
   });
-// eng
+
+
+  // 发送规则 删除
+  coreRuleMyRuleDelete = item => {
+    Modal.confirm({
+      title: '删除',
+      content: `确定删除“${ item.createBy }”吗？`,
+      okText: '确认',
+      cancelText: '取消',
+      onOk: () => this.deleteItem(item),
+    });
+  };  
+  // 发送规则 删除 点击确定正式删除方法
+  deleteItem = record => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'core/getRuleDelete',
+      payload: {
+        ...record
+      },
+      callback: (result) => {
+        this.coreRuleMyRule();   //我的规则   发送规则 
+      }
+    });
+  }
+
+
+  // 发送规则 接收人员列表
+  coleGetRileDetails = item => {
+    const { dispatch } =  this.props;
+    dispatch({
+      type: 'core/getRuleDetails',
+      payload:{ item },
+      callback: (rel) => {
+        this.state.ruleDetailsList = rel.data;
+      } 
+    });
+    this.setState({
+      visibleList: true,
+    });
+  }
+
+  //发送规则 接收人员列表  单个选择
+  onChangEalon = ckList => {
+    this.setState({
+      checkedList: ckList,
+    })
+  };
+
+  //发送规则  接收人员列表  删除   
+  receiveOk = () => {
+    const { dispatch } =  this.props;
+    const { userId, checkedList } = this.state;
+    dispatch({
+      type: 'core/getRuleConfirmDelete',
+      payload:{ userId, checkedList },
+      callback: () => {
+        this.coreRuleMyRule();   //我的规则   发送规则 
+        this.receiveCancel();    // 接收人员列表  取消 模态框
+      } 
+    });
+  }
+
+  // 接收人员列表  取消 模态框
+  receiveCancel = () => {
+    this.setState({
+      visibleList: false,
+    });
+  }
+
+
+
+
+//---------------------------------------------------接收规则
+  //接收规则 列表
+  coreConfirmRule = () => {
+    const { dispatch } = this.props;
+    const { userId } = this.state;
+    dispatch({
+      type: 'core/getConfirmRule',
+      payload:{ userId },
+    });
+  }
+
+  //接收规则 修改  点击修改弹出模态框
+  showReceiveModal = item => {
+    this.setState({
+      acceptanceRule: true,
+      receiveCurrent: item,
+    });
+  }
+
+  //接收规则 修改
+  ruleModalOk = () => {
+    const { dispatch } =  this.props;
+    const { taskId, path, receiveCurrent } = this.state;
+    const id = receiveCurrent.id;
+    const rootIds = receiveCurrent.rootIds;
+    const savePath = path;
+    dispatch({
+      type: 'core/getRuleConfirmUpdate',
+      payload:{ savePath, id, rootIds },
+      callback: () => {
+        this.coreConfirmRule(); // 我的规则   接收规则
+        this.ruleModalCancel(); // 接收规则  修改规则  取消模态框
+      } 
+    });
+  }
+  
+  //接收规则  修改规则  取消模态框
+  ruleModalCancel = () => {
+    this.setState({
+      acceptanceRule: false,
+    });
+  };
+
+
 
   render() {
     const { loading, form: { getFieldDecorator }, core: { coreData }, core: { myData } } = this.props;
-    const { isEdit,isTitle,done, visible, visibles, visibleList, crumbs, operationkey, subEdit, fileArr, allGroupUser,current,isRoute,drawerParameter,ruleDetailsList,} = this.state;
-
-    // 模态框 确定  取消按钮
-    const modalFooter = done
-      ? { footer: null, onCancel: this.handleCancel }
-      : { okText: '保存', onOk: this.handleSubmit, onCancel: this.handleCancel };
+    const { 
+      saveRuleVisible, 
+      saveRuleoBject,
+      done,  
+      visibles, 
+      visibleList, 
+      crumbs, 
+      operationkey, 
+      subEdit, 
+      fileArr, 
+      allGroupUser,
+      isRoute,
+      drawerParameter,
+      ruleDetailsList,
+      acceptanceRule,
+      receiveCurrent,
+    } = this.state;
     
     // 待处理规则
     const columns1 = [
@@ -461,7 +478,7 @@ class RuleCore extends PureComponent {
         title: '操作',
         render: (record) => (
           <Fragment>
-            <a onClick={() => this.showRouteModal(record)}>确认</a>
+            <a onClick={() => this.showSaveRuleModal(record)}>确认</a>
             <Divider type="vertical" style={{display:'none'}} />
           </Fragment>
         ),
@@ -503,10 +520,10 @@ class RuleCore extends PureComponent {
         title: '规则描述',
         dataIndex: 'ruleName',
       },
-      // {
-      //   title: '保存路径',
-      //   dataIndex: 'savePath',
-      // },
+      {
+        title: '保存路径',
+        dataIndex: 'savePathName',
+      },
       {
         title: '发送人',
         dataIndex: 'createBy',
@@ -526,22 +543,6 @@ class RuleCore extends PureComponent {
         ),
       },
     ]; 
-
-    // 待确定规则（确定） 和 接收规则（修改） 公用一个Modal组件
-    const getRouteForm = () => {
-      return (
-        <Form onSubmit={this.handleSubmit}>
-          <FormItem style={{margin:'0 auto',width: '428px'}}>
-            <p style={{margin: '0 auto'}}>发送方: {current.createBy}</p>
-            <p style={{margin: '0 auto'}}>规则描述: {current.ruleName}</p>
-            <Divider style={{marginTop: '10px'}}/>
-          </FormItem>
-          <FormItem {...this.formLayout} label={isTitle ? '选择路径' : '更改保存路径'}>
-            <Tree loadData={this.onLoadData} onSelect={ this.getOnSelect }>{this.renderTreeNodes(this.state.treeData)}</Tree>
-          </FormItem>
-        </Form>
-      );
-    };
 
     // 发送规则   新建
     const getAddForm = () => {
@@ -667,17 +668,24 @@ class RuleCore extends PureComponent {
           { contentList[operationkey] }
         </Content>
 
-        {/* 待确定规则（确定） 和 接收规则（修改） 公用一个Modal组件 */}
+        {/* 待确定规则（确定）*/}
         <Modal
-          title={done ? null : `${isTitle ? '保存规则' : '接收规则详情'}`}
+          title='保存规则'
           width={640}
           bodyStyle={done ? { padding: '72px 0' } : { padding: '28px 0 0' }}
           destroyOnClose
-          visible={visible}
-          {...modalFooter}
+          visible={saveRuleVisible}
+          onOk={this.saveRuleModalOk}
+          onCancel={this.saveRuleModalCancel}
         >
-          {getRouteForm()}
-        </Modal>
+          <Card bordered={false} style={{ marginBottom:'20px' }}>
+            <p style={{margin: '0 auto'}}>发送方: {saveRuleoBject.createBy}</p>
+            <p style={{margin: '0 auto'}}>规则描述: {saveRuleoBject.ruleName}</p>
+            <Divider style={{marginTop: '10px'}}/>
+            <p style={{margin: '0 auto'}}>选择路径</p>
+            <Tree loadData={this.onLoadData} onSelect={ this.getOnSelect }>{this.renderTreeNodes(this.state.treeData)}</Tree>
+          </Card>
+        </Modal>    
 
         {/* 发送规则  接收人员列表 */}
         <Modal
@@ -689,23 +697,19 @@ class RuleCore extends PureComponent {
           onOk={this.receiveOk}
           onCancel={this.receiveCancel}
         >
-          <div>
-            <div style={{ borderBottom: '1px solid #E9E9E9' }}>
-              <Checkbox
-                indeterminate={this.state.indeterminate}
-                onChange={this.onCheckAllChange}
-                checked={this.state.checkAll}
-              >
-                全选
-              </Checkbox>
-            </div>
-            <br />
-            <CheckboxGroup
-              options={ruleDetailsList}
-              value={this.state.checkedList}
-              onChange={this.onChangEalon}
-            />
-          </div>
+          <Alert message="勾选删除" type="info" showIcon style={{marginBottom: '10px'}}/>
+          
+          <Checkbox.Group style={{ width: '100%' }} onChange={this.onChangEalon}>
+            <Row>
+              {
+                ruleDetailsList.map(item => (
+                  <Col span={8}>
+                    <Checkbox key={item.id} value={item.id}>{ item.userName }</Checkbox>
+                  </Col>
+                ))
+              }
+            </Row>
+          </Checkbox.Group>
         </Modal>
 
         {/* 发送规则  新建规则 */}
@@ -713,7 +717,7 @@ class RuleCore extends PureComponent {
           title={isRoute ? '新建规则' : '修改规则'}
           width={720}
           onClose={this.onClose}
-          visible={this.state.visibles}
+          visible={visibles}
           destroyOnClose
         >
           { getAddForm() }
@@ -733,6 +737,25 @@ class RuleCore extends PureComponent {
             <Button onClick={this.handleSubmit} type="primary">确定</Button>
           </div>
         </Drawer>
+
+        {/* 接收规则（修改）*/}
+        <Modal
+          title='接收规则详情'
+          width={640}
+          bodyStyle={done ? { padding: '72px 0' } : { padding: '28px 0 0' }}
+          destroyOnClose
+          visible={acceptanceRule}
+          onOk={this.ruleModalOk}
+          onCancel={this.ruleModalCancel}
+        >
+          <Card bordered={false} style={{ marginBottom:'20px' }}>
+            <p style={{margin: '0 auto'}}>发送方: {receiveCurrent.createBy}</p>
+            <p style={{margin: '0 auto'}}>规则描述: {receiveCurrent.ruleName}</p>
+            <Divider style={{marginTop: '10px'}}/>
+            <p style={{margin: '0 auto'}}>选择路径</p>
+            <Tree loadData={this.onLoadData} onSelect={ this.getOnSelect }>{this.renderTreeNodes(this.state.treeData)}</Tree>
+          </Card>
+        </Modal>
 
       </Layout>
     );

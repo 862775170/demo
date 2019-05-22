@@ -16,6 +16,7 @@ export async function ruleConfirmRule(params) {
   });
 }
 
+
 // 源路径
 export async function fileList(params){
   return request('/api/sw/file/list', {
@@ -77,10 +78,19 @@ export async function ruleUpdate(params) {
   });
 }
 
-// 接收人员列表
+// 接收人员列表  查询
 export async function ruleDetails(params) {
   const { ruleId } = params.item;
   return request(`${baseurl}/rule/getRule/details?ruleId=${ruleId}`);
+}
+
+// 接收人员列表  勾选人员删除
+export async function ruleConfirmDelete(params) {
+  const { userId, checkedList } = params;
+  return request(`${baseurl}/rule/ruleConfirm/delete?userId=${userId}`, {
+    method: 'POST',
+    body: checkedList,
+  });
 }
 
 //发送规则  删除
@@ -95,13 +105,14 @@ export async function ruleDelete(params) {
   });
 }
 
+
 // 我的规则 ----   接收规则
 export async function confirmRule(params) {
   const { userId } = params;
   return request(`${baseurl}/rule/my/confirm/rule?userId=${userId}`);
 }
 
-//接收规则 详情
+//接收规则 修改
 export async function ruleConfirmUpdate(params) {
   return request(`${baseurl}/rule/ruleConfirm/update`, {
     method: 'POST',

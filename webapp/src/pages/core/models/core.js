@@ -11,6 +11,7 @@ import {
   ruleConfirmUpdate,
   ruleUpdate,
   ruleDetails,
+  ruleConfirmDelete,
 } from '@/services/core';
 
 //规则中心
@@ -39,6 +40,8 @@ export default {
       if (callback) callback(response);  // 后端返回回调
     },
 
+
+
     // 我的规则      发送规则
     *getRuleMyRule({ payload }, { call, put }) {
       const response = yield call(ruleMyRule, payload);
@@ -52,9 +55,14 @@ export default {
       const response = yield call(ruleUpdate, payload);
       if (callback) callback(response);  // 后端返回回调
     },
-    //接收人员列表
+    //接收人员列表  查询
     *getRuleDetails({ payload, callback }, { call }) {
       const response = yield call(ruleDetails, payload);
+      if (callback) callback(response);  
+    },
+    //接收人员列表  勾选人员删除
+    *getRuleConfirmDelete({ payload, callback }, { call }) {
+      const response = yield call(ruleConfirmDelete, payload);
       if (callback) callback(response);  
     },
     // 我的规则  删除
