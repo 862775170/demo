@@ -9,6 +9,8 @@ import {
   ruleConfirmRule,
   ruleDelete,
   ruleConfirmUpdate,
+  ruleUpdate,
+  ruleDetails,
 } from '@/services/core';
 
 //规则中心
@@ -44,6 +46,16 @@ export default {
         type: 'saveMyList',
         payload: response.data,
       });
+    },
+    //发送规则  详情 修改
+    *getRuleUpdate({ payload, callback }, { call }) {
+      const response = yield call(ruleUpdate, payload);
+      if (callback) callback(response);  // 后端返回回调
+    },
+    //接收人员列表
+    *getRuleDetails({ payload, callback }, { call }) {
+      const response = yield call(ruleDetails, payload);
+      if (callback) callback(response);  
     },
     // 我的规则  删除
     *getRuleDelete({ payload, callback }, { call }) {
@@ -106,7 +118,7 @@ export default {
     //我的规则 全部列表接口
     saveMyList(state, action) {
       const result= action.payload.map(d => {
-        return {...d,...d.variables}}
+        return {...d,...d.variables,...d.rule}}
       );
       return {
         ...state,

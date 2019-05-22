@@ -10,8 +10,8 @@ export async function ruleTasks(params) {
 
 // 待确认规则  保存
 export async function ruleConfirmRule(params) {
-  const { savePath, taskId } = params;
-  return request(`${baseurl}/rule/confirmRule?savePath=${savePath}&taskId=${taskId}`, {
+  const { savePath, taskId, rootIds } = params;
+  return request(`${baseurl}/rule/confirmRule?savePath=${savePath}&taskId=${taskId}&rootIds=${rootIds}`, {
     method: 'POST',
   });
 }
@@ -66,6 +66,23 @@ export async function ruleMyRule(params) {
   const { userId } = params;
   return request(`${baseurl}/rule/myRule?userId=${userId}`);
 }
+//发送规则  详情 修改
+export async function ruleUpdate(params) {
+  return request(`${baseurl}/rule/update`, {
+    method: 'POST',
+    body: {
+      ...params,
+      method: 'post',
+    },
+  });
+}
+
+// 接收人员列表
+export async function ruleDetails(params) {
+  const { ruleId } = params.item;
+  return request(`${baseurl}/rule/getRule/details?ruleId=${ruleId}`);
+}
+
 //发送规则  删除
 export async function ruleDelete(params) {
   const { userId, ruleId } = params;
