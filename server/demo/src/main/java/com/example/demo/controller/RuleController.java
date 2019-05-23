@@ -1,6 +1,5 @@
 package com.example.demo.controller;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.common.ParamException;
 import com.example.demo.common.Result;
-import com.example.demo.common.TokenUtils;
 import com.example.demo.entity.Rule;
 import com.example.demo.entity.RuleConfirm;
 import com.example.demo.service.RuleService;

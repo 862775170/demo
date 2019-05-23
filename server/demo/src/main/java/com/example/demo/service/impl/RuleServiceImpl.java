@@ -2,6 +2,7 @@ package com.example.demo.service.impl;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -14,8 +15,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.flowable.engine.RuntimeService;
 import org.flowable.engine.TaskService;
 import org.flowable.task.api.Task;
+import org.hibernate.validator.constraints.UniqueElements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,15 +28,19 @@ import com.example.demo.dao.RuleConfirmDao;
 import com.example.demo.dao.RuleDao;
 import com.example.demo.entity.Rule;
 import com.example.demo.entity.RuleConfirm;
+import com.example.demo.message.FileCopyMessage;
 import com.example.demo.service.FileService;
 import com.example.demo.service.RuleService;
 import com.example.demo.service.UserService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class RuleServiceImpl implements RuleService {
 
 	private static final Logger log = LoggerFactory.getLogger(RuleServiceImpl.class);
-
+	@Autowired
+	private ObjectMapper objectMapper;
 	@Autowired
 	private RuntimeService runtimeService;
 
@@ -48,6 +55,8 @@ public class RuleServiceImpl implements RuleService {
 	private FileService fileService;
 	@Autowired
 	private UserService userService;
+	@Autowired
+	private RabbitTemplate rabbitTemplate;
 
 	@Override
 	public void startCreateProcess(Rule rule, String[] userIds) {
@@ -92,10 +101,8 @@ public class RuleServiceImpl implements RuleService {
 
 	@Override
 	public List<Rule> getRules(String userId) {
-		List<Rule> findByUserId = ruleDao.findByUserId(userId);
-		List<Rule> collect = findByUserId.stream().filter(r -> r.getIsDelete() == null ? true : !r.getIsDelete())
-				.collect(Collectors.toList());
-		return collect;
+		List<Rule> findByUserId = ruleDao.findByUserIdAndDeleteTimeIsNull(userId);
+		return findByUserId;
 	}
 
 	@Override
@@ -117,16 +124,10 @@ public class RuleServiceImpl implements RuleService {
 
 	@Override
 	public List<Map<String, Object>> getFriendsDetails(Integer ruleId) {
-		List<RuleConfirm> ruleTargets = ruleConfirmDao.findByRuleId(ruleId);
+		List<RuleConfirm> ruleTargets = ruleConfirmDao.findByRuleIdAndDeleteTimeIsNull(ruleId);
 		List<String> userIds = ruleTargets.stream().map(RuleConfirm::getUserId).collect(Collectors.toList());
 		Map<String, String> userNames = userService.getUserNames(userIds);
-		List<Map<String, Object>> collect = ruleTargets.stream().filter(p -> {
-			if (p.getIsDelete() != null && p.getIsDelete() == true) {
-				return false;
-			} else {
-				return true;
-			}
-		}).map(r -> {
+		List<Map<String, Object>> collect = ruleTargets.stream().map(r -> {
 			Map<String, Object> hashMap = new HashMap<>();
 //			User targetUser = userDao.findById(r.getUserId()).get();
 			hashMap.put("id", r.getId());
@@ -169,7 +170,7 @@ public class RuleServiceImpl implements RuleService {
 			map.put("sendUserName", rule.getUserId());
 			map.put("receiveUserName", m.getUserId());
 			map.put("ruleName", rule.getRuleName());
-			map.put("isDelete", rule.getIsDelete());
+			map.put("deleteTime", rule.getDeleteTime());
 			return map;
 		}).collect(Collectors.toList());
 		return collect;
@@ -178,7 +179,7 @@ public class RuleServiceImpl implements RuleService {
 	@Override
 	public void deleteRule(String userId, Integer ruleId) {
 		Rule rule = ruleDao.findById(ruleId).get();
-		rule.setIsDelete(true);
+		rule.setDeleteTime(new Date());
 		ruleDao.save(rule);
 	}
 
@@ -188,7 +189,7 @@ public class RuleServiceImpl implements RuleService {
 		log.info("delete ruleConfirm ids=>{}", ids);
 		for (Integer id : ids) {
 			RuleConfirm ruleConfirm = ruleConfirmDao.findById(id).get();
-			ruleConfirm.setIsDelete(true);
+			ruleConfirm.setDeleteTime(new Date());
 			entities.add(ruleConfirm);
 		}
 		ruleConfirmDao.saveAll(entities);
@@ -239,6 +240,54 @@ public class RuleServiceImpl implements RuleService {
 		List<RuleConfirm> ruleConfirm = ruleConfirmDao
 				.findByRuleIdIn(rules.stream().map(s -> s.getRuleId()).collect(Collectors.toList()));
 		return ruleConfirm.stream().map(RuleConfirm::getUserId).collect(Collectors.toList());
+	}
+
+	@Override
+	public void matchingRule(String fullPath, String userId) {
+		List<Rule> rules = ruleDao.findByUserIdAndDeleteTimeIsNull(userId);
+		log.info("matching rule sum=> {}", rules.size());
+		String fileName = getFileName(fullPath);
+		String sourceFileName = fileName;
+		for (Rule rule : rules) {
+			Integer ruleId = rule.getRuleId();
+			String sourceUserId = rule.getUserId();
+			String sourcePath = rule.getSourcePath();
+			if (fullPath.indexOf(sourcePath) != -1) {
+				List<RuleConfirm> ruleConfirms = ruleConfirmDao.findByRuleIdAndDeleteTimeIsNull(ruleId);
+				if (ruleConfirms.isEmpty()) {
+					log.info("rule confirms is null ruleId=>{}", ruleId);
+				}
+				for (RuleConfirm ruleConfirm : ruleConfirms) {
+					String targetUserId = ruleConfirm.getUserId();
+					String targetFullPath = ruleConfirm.getSavePath() + "/" + fileName;
+					String targerFileName = fileName;
+					FileCopyMessage fileCopyMessage = new FileCopyMessage();
+					fileCopyMessage.setRuleConfirmId(ruleConfirm.getId());
+					fileCopyMessage.setRuleId(ruleId);
+					fileCopyMessage.setSourceFullPath(fullPath);
+					fileCopyMessage.setSourceFileName(sourceFileName);
+					fileCopyMessage.setSourceUserId(sourceUserId);
+					fileCopyMessage.setTargetFullPath(targetFullPath);
+					fileCopyMessage.setTargetUserId(targetUserId);
+					fileCopyMessage.setTargerFileName(targerFileName);
+					String writeValueAsString;
+					try {
+						writeValueAsString = objectMapper.writeValueAsString(fileCopyMessage);
+					} catch (JsonProcessingException e) {
+						log.error(e.getMessage(), e);
+						continue;
+					}
+					rabbitTemplate.convertAndSend("file-copy-queue", writeValueAsString);
+				}
+			} else {
+				log.info("no matching ruleId=>{},fullPath=>{}", rule.getRuleId(), fullPath);
+			}
+		}
+	}
+
+	private String getFileName(String fullPath) {
+		String[] split = fullPath.split("/");
+		return split[split.length - 1];
 	}
 
 }

@@ -14,4 +14,5 @@ public interface RuleDao extends JpaRepository<Rule, Integer> {
 
 	List<Rule> findByRuleIdIn(List<Integer> ruleIds);
 
+	List<Rule> findByUserIdAndDeleteTimeIsNull(String userId);
 }

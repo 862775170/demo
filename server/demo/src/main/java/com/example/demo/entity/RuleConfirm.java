@@ -31,7 +31,7 @@ public class RuleConfirm {
 
 	private Date createTime;
 
-	private Boolean isDelete;
+	private Date deleteTime;
 
 	private String rootIds;
 
@@ -83,12 +83,12 @@ public class RuleConfirm {
 		this.createTime = createTime;
 	}
 
-	public Boolean getIsDelete() {
-		return isDelete;
+	public Date getDeleteTime() {
+		return deleteTime;
 	}
 
-	public void setIsDelete(Boolean isDelete) {
-		this.isDelete = isDelete;
+	public void setDeleteTime(Date deleteTime) {
+		this.deleteTime = deleteTime;
 	}
 
 	public String getSavePathName() {
