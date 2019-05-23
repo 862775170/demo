@@ -1,41 +1,42 @@
 import { 
-  friends, 
-  ruleConfirmRule,
+  ruleFriends, 
+  ruleRelation,
 } from '@/services/friends';
 
 //规则中心
 export default {
-  namespace: 'friends',
+  namespace: 'friend',
 
   state: {
-    friendsData: [],   //存储好友中心  好友列数据 
+    ruleList: [],   //存储好友中心  好友列数据 
   },
 
   effects: {
     // 好友中心 好友列
     *getFriends({ payload, callback }, { call }) {
-      const response = yield call(friends, payload);
+      const response = yield call(ruleFriends, payload);
       if (callback) callback(response);  // 后端返回回调
     },
 
-    // -------------
-    *getRuleConfirmRule({ payload, callback }, { call }) {
-      const response = yield call(ruleConfirmRule, payload);
+    // 好友中心 规则
+    *getRuleRelation({ payload }, { call, put }) {
+      const response = yield call(ruleRelation, payload);
       yield put({
-        type: 'saveFriendsList',
+        type: 'saveRuleList',
         payload: response.data,
       });
     },
+  },
 
-    reducers: {
-      // ------
-      saveFriendsList(state, action) {
-        return {
-          ...state,
-          friendsData: action.payload,
-        };
-      },
-    }
+  reducers: {
+    // 好友中心 规则
+    saveRuleList(state, action) {
+      return {
+        ...state,
+        ruleList: action.payload,
+      };
+    },
 
   },
+
 };

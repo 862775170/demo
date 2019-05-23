@@ -26,7 +26,7 @@ const { TabPane } = Tabs;
 const columns = [
   {
     title: '发送方',
-    dataIndex: 'userId',
+    dataIndex: 'sendUserName',
   },
   {
     title: '接收方',
@@ -34,7 +34,7 @@ const columns = [
   },
   {
     title: '规则描述',
-    dataIndex: 'status',
+    dataIndex: 'ruleName',
   },
   {
     title: '时间',
@@ -43,18 +43,19 @@ const columns = [
   },
 ];
 
-@connect(({ friends, loading }) => ({
-  friends,
-  loading: loading.models.friends,
+@connect(({ friend, loading }) => ({
+  friend,
+  loading: loading.models.friend,
 }))
 // 好友中心
 @Form.create()
 class FriendsCore extends PureComponent {
 
   state = {
-    userId: sessionStorage.getItem('userid'),
-    friendsArr: [],
-    operationkey: 'tab1',
+    userId: sessionStorage.getItem('userid'),       // 获取登录用户的用户ID
+    user_Id: '',             //好友列表用户ID
+    friendsArr: [],          // 存储好友列表数据
+    operationkey: 'tab1',    // 用于存储切换的是哪个tab
   };
 
   formLayout = {
@@ -72,19 +73,69 @@ class FriendsCore extends PureComponent {
     const { dispatch } = this.props;
     const { userId } = this.state;
     dispatch({
-      type: 'friends/getFriends',
+      type: 'friend/getFriends',
       payload: { userId },
       callback: (result) => {
-        this.state.friendsArr = result.data;
+        //存储 好友列表用户ID
+        const userId = result.data[0].userId;
+        this.setState({
+          user_Id: userId,
+        });
+        this.state.friendsArr = result.data;   // 存储好友列表数据
+        this.coreRuleRelation(userId);      // 好友中心 规则
       } 
     });
   }
 
-  callback = (key) => {
+  //点击 好友列中某个好友  查询  对应的  列表数据
+  userList = item => {
+    //存储 好友列表用户ID
+    const userId = item.key;
+    this.setState({
+      user_Id: userId,
+    });
+    const { operationkey } = this.state;  //获取tab切换状态
+    this.tabs(operationkey, userId);      //不同的用户和tab联动却换
+  }
+
+  //点击tab切换 成不同的  列表数据
+  clickTabs = key => {
+    //存储 tab却换状态
     this.setState({
       operationkey: key,
     });
+    const { user_Id } = this.state;   //获取用户列表  用户id
+    this.tabs(key, user_Id);          //不同的用户和tab联动却换
   };
+  //不同的用户和tab联动却换
+  tabs = (key, userId) => {
+    switch(key){
+      case "tab1": 
+        this.coreRuleRelation(userId);   //已发送列表
+        break;
+      case "tab2": 
+        this.coreRuleRelation(userId);   //已收取列表
+        break;
+      case "tab3": 
+        this.coreRuleRelation(userId);   //搜索列表
+        break;
+      default : 
+        this.coreRuleRelation(userId);   //规则列表
+        break;
+    }
+  }
+
+  // 好友中心 规则列表
+  coreRuleRelation = item => {
+    const { dispatch } = this.props;
+    const userId = item;
+    dispatch({
+      type: 'friend/getRuleRelation',
+      payload: { userId },
+    });
+  }
+
+  
 
   // 收发时间段方法
   getTime = (time, timeString) => {
@@ -95,7 +146,11 @@ class FriendsCore extends PureComponent {
   
 
   render() {
-    const { loading, form: { getFieldDecorator } } = this.props;
+    const { 
+      loading, 
+      form: { getFieldDecorator }, 
+      friend: { ruleList },
+    } = this.props;
     const { operationkey, friendsArr } = this.state;
     
     const dataValue = [
@@ -213,7 +268,7 @@ class FriendsCore extends PureComponent {
           rowKey="id"
           pagination={false}
           loading={loading}
-          dataSource={dataValue}
+          dataSource={ruleList}
           columns={columns}
           size="middle"
           // eslint-disable-next-line react/jsx-no-duplicate-props
@@ -257,7 +312,7 @@ class FriendsCore extends PureComponent {
           >
             {
               friendsArr.map((item) => {
-                return <Menu.Item key={item.userId}>
+                return <Menu.Item key={item.userId} onClick={this.userList}>
                 <Icon type="user" />{item.userName}
               </Menu.Item>
               })
@@ -271,7 +326,7 @@ class FriendsCore extends PureComponent {
             <Breadcrumb.Item>数据中心</Breadcrumb.Item>
           </Breadcrumb>
           <Divider style={{marginTop: '10px'}}/>
-          <Tabs defaultActiveKey="tab1" onChange={this.callback} style={{marginTop: '15px'}}>
+          <Tabs defaultActiveKey="tab1" onChange={this.clickTabs} style={{marginTop: '15px'}}>
             <TabPane tab="规则" key="tab1">
               {contentList[operationkey]}
             </TabPane>

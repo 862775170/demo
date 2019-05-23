@@ -657,7 +657,7 @@ class RuleCore extends PureComponent {
           </Menu>
         </Sider>
         <Content style={{ background: '#fff', padding: '12px 24px 24px 24px', margin: 0, minHeight: 280, }}>
-          <Breadcrumb style={{height: '36px',lineHeight: '25px'}}>
+          <Breadcrumb>
             <Breadcrumb.Item>规则中心</Breadcrumb.Item>
             <Breadcrumb.Item>{ crumbs }</Breadcrumb.Item>
           </Breadcrumb>
