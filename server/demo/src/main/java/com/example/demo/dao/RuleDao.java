@@ -12,4 +12,6 @@ public interface RuleDao extends JpaRepository<Rule, Integer> {
 
 	Rule findByRuleId(Integer ruleId);
 
+	List<Rule> findByRuleIdIn(List<Integer> ruleIds);
+
 }

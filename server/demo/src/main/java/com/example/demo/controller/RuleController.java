@@ -1,5 +1,7 @@
 package com.example.demo.controller;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -63,8 +65,8 @@ public class RuleController {
 
 	@PostMapping("/ruleConfirm/delete")
 	@ApiOperation("删除文件接收人")
-	public Result deleteRuleConfirm(String userId, Integer id) {
-		ruleService.deleteRuleConfirm(userId, id);
+	public Result deleteRuleConfirm(String userId, @RequestBody Integer[] ids) {
+		ruleService.deleteRuleConfirm(userId, Arrays.asList(ids));
 		return Result.ok();
 	}
 

@@ -100,6 +100,10 @@ export default {
     // 接收方 
     *getUserlistAllGroupUser({ payload, callback }, { call }) {
       const response = yield call(userlistAllGroupUser, payload);
+      const {result } = response
+      result.sort(({group:{group_name:group}},{group:{group_name:group1}}) => {
+        return group.localeCompare(group1)
+      })
       if (callback) callback(response);  // 后端返回回调
     },
     //  新建规则  提交 借口
