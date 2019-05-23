@@ -43,10 +43,26 @@ public interface RuleService {
 	 * @param userId
 	 * @param ruleId
 	 */
-	void deleteRuleConfirm(String userId, Integer id);
+	void deleteRuleConfirm(String userId, List<Integer> ids);
 
 	void updateRule(Rule rule);
 
 	void updateRuleConfirm(RuleConfirm confirm);
+
+	/**
+	 * 获得给我发送文件的用户
+	 * 
+	 * @param userId
+	 * @return
+	 */
+	List<String> getSendInUserId(String userId);
+
+	/**
+	 * 获得接收我发送的文件的用户
+	 * 
+	 * @param userId
+	 * @return
+	 */
+	List<String> getSendOutUserId(String userId);
 
 }

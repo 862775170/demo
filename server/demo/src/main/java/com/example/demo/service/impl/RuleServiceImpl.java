@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -99,22 +100,16 @@ public class RuleServiceImpl implements RuleService {
 
 	@Override
 	public List<Map<String, Object>> getFriends(String userId) {
-//		Integer userId = TokenUtils.getUserId();
-		List<Rule> rules = ruleDao.findByUserId(userId);
-
-		List<RuleConfirm> ruleConfirms = ruleConfirmDao.findByUserId(userId);
-		HashSet<String> hashSet = new HashSet<>();
-		List<RuleConfirm> findInRuleId = ruleConfirmDao
-				.findByRuleIdIn(rules.stream().map(s -> s.getRuleId()).collect(Collectors.toList()));
-		ruleConfirms.addAll(findInRuleId);
-		ruleConfirms = ruleConfirms.stream().filter(f -> hashSet.add(f.getUserId())).collect(Collectors.toList());
+		List<String> sendInUserId = getSendInUserId(userId);
+		List<String> sendOutUserId = getSendOutUserId(userId);
+		Set<String> hashSet = new HashSet<>();
+		hashSet.addAll(sendOutUserId);
+		hashSet.addAll(sendInUserId);
 		Map<String, String> userNames = userService.getUserNames(new ArrayList<>(hashSet));
-
-		List<Map<String, Object>> collect = ruleConfirms.stream().map(r -> {
+		List<Map<String, Object>> collect = hashSet.stream().map(id -> {
 			Map<String, Object> map = new HashMap<>();
-			String confirmUserId = r.getUserId();
-			map.put("userId", confirmUserId);
-			map.put("userName", userNames.get(confirmUserId));
+			map.put("userId", id);
+			map.put("userName", userNames.get(id));
 			return map;
 		}).collect(Collectors.toList());
 		return collect;
@@ -125,7 +120,13 @@ public class RuleServiceImpl implements RuleService {
 		List<RuleConfirm> ruleTargets = ruleConfirmDao.findByRuleId(ruleId);
 		List<String> userIds = ruleTargets.stream().map(RuleConfirm::getUserId).collect(Collectors.toList());
 		Map<String, String> userNames = userService.getUserNames(userIds);
-		List<Map<String, Object>> collect = ruleTargets.stream().map(r -> {
+		List<Map<String, Object>> collect = ruleTargets.stream().filter(p -> {
+			if (p.getIsDelete() != null && p.getIsDelete() == true) {
+				return false;
+			} else {
+				return true;
+			}
+		}).map(r -> {
 			Map<String, Object> hashMap = new HashMap<>();
 //			User targetUser = userDao.findById(r.getUserId()).get();
 			hashMap.put("id", r.getId());
@@ -182,10 +183,16 @@ public class RuleServiceImpl implements RuleService {
 	}
 
 	@Override
-	public void deleteRuleConfirm(String userId, Integer id) {
-		RuleConfirm ruleConfirm = ruleConfirmDao.findById(id).get();
-		ruleConfirm.setIsDelete(true);
-		ruleConfirmDao.save(ruleConfirm);
+	public void deleteRuleConfirm(String userId, List<Integer> ids) {
+		List<RuleConfirm> entities = new ArrayList<>();
+		log.info("delete ruleConfirm ids=>{}", ids);
+		for (Integer id : ids) {
+			RuleConfirm ruleConfirm = ruleConfirmDao.findById(id).get();
+			ruleConfirm.setIsDelete(true);
+			entities.add(ruleConfirm);
+		}
+		ruleConfirmDao.saveAll(entities);
+
 	}
 
 	@Override
@@ -217,6 +224,21 @@ public class RuleServiceImpl implements RuleService {
 		} else {
 			throw new ParamException("400", "请选择路径");
 		}
+	}
+
+	@Override
+	public List<String> getSendInUserId(String userId) {
+		List<RuleConfirm> ruleConfirms = ruleConfirmDao.findByUserId(userId);
+		List<Integer> ruleIds = ruleConfirms.stream().map(RuleConfirm::getRuleId).collect(Collectors.toList());
+		return ruleDao.findByRuleIdIn(ruleIds).stream().map(Rule::getUserId).collect(Collectors.toList());
+	}
+
+	@Override
+	public List<String> getSendOutUserId(String userId) {
+		List<Rule> rules = ruleDao.findByUserId(userId);
+		List<RuleConfirm> ruleConfirm = ruleConfirmDao
+				.findByRuleIdIn(rules.stream().map(s -> s.getRuleId()).collect(Collectors.toList()));
+		return ruleConfirm.stream().map(RuleConfirm::getUserId).collect(Collectors.toList());
 	}
 
 }

@@ -572,11 +572,12 @@ class RuleCore extends PureComponent {
                   rules: [{ required: isRoute, message: '请选择接收方名! ' }],
                 })(
                   <Select mode="multiple" placeholder="请选择收方名">
-                    {allGroupUser.map(ruleArr => (
-                      <Option key={ruleArr.id} value={ruleArr.id}>
-                        { ruleArr.user_name }
+                    {allGroupUser.map(ruleArr => {
+                      const {group:{group_name}} =ruleArr
+                      return <Option key={ruleArr.id} value={ruleArr.id}>
+                      { group_name+"."+ruleArr.nick_name }
                       </Option>
-                    ))}
+                    })}
                   </Select>
                 )}
               </FormItem>
