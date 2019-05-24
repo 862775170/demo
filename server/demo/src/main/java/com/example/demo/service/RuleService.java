@@ -65,4 +65,12 @@ public interface RuleService {
 	 */
 	List<String> getSendOutUserId(String userId);
 
+	/**
+	 * 匹配规则
+	 * 
+	 * @param fullPath
+	 * @param userId
+	 */
+	void matchingRule(String fullPath, String userId);
+
 }

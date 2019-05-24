@@ -35,9 +35,8 @@ public class Rule {
 	private Date createTime;
 
 	/**
-	 * default false 删除=true 没有删除=false
 	 */
-	private Boolean isDelete;
+	private Date deleteTime;
 
 	public Integer getRuleId() {
 		return ruleId;
@@ -87,14 +86,6 @@ public class Rule {
 		this.createTime = createTime;
 	}
 
-	public Boolean getIsDelete() {
-		return isDelete;
-	}
-
-	public void setIsDelete(Boolean isDelete) {
-		this.isDelete = isDelete;
-	}
-
 	public String getRootIds() {
 		return rootIds;
 	}
@@ -111,11 +102,12 @@ public class Rule {
 		this.sourcePathName = sourcePathName;
 	}
 
-	@Override
-	public String toString() {
-		return "Rule [ruleId=" + ruleId + ", ruleName=" + ruleName + ", sourcePath=" + sourcePath + ", rootIds="
-				+ rootIds + ", userId=" + userId + ", createBy=" + createBy + ", createTime=" + createTime
-				+ ", isDelete=" + isDelete + "]";
+	public Date getDeleteTime() {
+		return deleteTime;
+	}
+
+	public void setDeleteTime(Date deleteTime) {
+		this.deleteTime = deleteTime;
 	}
 
 }
