@@ -111,21 +111,21 @@ class FriendsCore extends PureComponent {
   tabs = (key, userId) => {
     switch(key){
       case "tab1": 
-        this.coreRuleRelation(userId);   //已发送列表
+        this.coreRuleRelation(userId);   //规则列表
         break;
       case "tab2": 
-        this.coreRuleRelation(userId);   //已收取列表
+        this.coreRuleRelation(userId);   //已发送列表
         break;
       case "tab3": 
-        this.coreRuleRelation(userId);   //搜索列表
+        this.coreRuleRelation(userId);   //已收取列表
         break;
       default : 
-        this.coreRuleRelation(userId);   //规则列表
+        this.coreRuleRelation(userId);   //搜索列表
         break;
     }
   }
 
-  // 好友中心 规则列表
+  // 规则列表
   coreRuleRelation = item => {
     const { dispatch } = this.props;
     const userId = item;
@@ -153,6 +153,7 @@ class FriendsCore extends PureComponent {
     } = this.props;
     const { operationkey, friendsArr } = this.state;
     
+    //table 假数据
     const dataValue = [
       {
         id: 1,

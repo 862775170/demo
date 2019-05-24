@@ -4,147 +4,142 @@ import { Layout, Menu, Breadcrumb, Icon, Table, Form, Divider } from 'antd';
 
 const { Content, Sider } = Layout;
 
-@connect(({ core, loading }) => ({
-  core,
-  loading: loading.models.core,
+@connect(({ task, loading }) => ({
+  task,
+  loading: loading.models.task,
 }))
 // 任务中心
 @Form.create()
 class TaskCore extends PureComponent {
 
+  // 当日发送 & 已发送
+  columns1 = [
+    {
+      title: '接收人',
+      dataIndex: 'ruleName',
+    },
+    {
+      title: '文件描述',
+      dataIndex: 'sourceFileName',
+    },
+    {
+      title: '文件路径',
+      dataIndex: 'createBy',
+    },
+    {
+      title: '文件名',
+      dataIndex: 'createBy4',
+    },
+    {
+      title: '发送时间',
+      dataIndex: 'createBy115',
+    },
+    {
+      title: '传输状态',
+      dataIndex: 'createBy1005',
+    }
+  ]; 
+
+  // 当日接收 & 已收取
+  columns2 = [
+    {
+      title: '发送人',
+      dataIndex: 'sourceUserName',
+    },
+    {
+      title: '文件描述',
+      dataIndex: 'sourceFileName',
+    },
+    {
+      title: '保存路径',
+      dataIndex: 'createBy',
+    },
+    {
+      title: '原文件名',
+      dataIndex: 'ruleName',
+    },
+    {
+      title: '保存文件名',
+      dataIndex: 'createBy115',
+    },
+    {
+      title: '接收时间',
+      dataIndex: 'data',
+    },
+    {
+      title: '传输状态',
+      dataIndex: 'createBy1005',
+    }
+  ]; 
+
   state = {
+    userId: sessionStorage.getItem('userid'),       // 获取登录用户的用户ID
     crumbs: '当日发送',
-    operationkey: 'tab1',
+    isTask: false,
   };
 
   // 左边栏切换
   leftSidebarToggle = (item) => {
     this.setState({
-      operationkey: item.key,
       crumbs: item.item.props.title,
     })
+    const { userId } = this.state;
+    switch(item.key){
+      case "tab1": 
+        //this.coreRuleRelation(userId);   //当日发送1
+        this.setState({ isTask:false });
+        break;
+      case "tab2": 
+        //this.coreRuleRelation(userId);   //当日接收2
+        this.setState({ isTask:true });
+        break;
+      case "tab3": 
+        this.coreExchageSendOut(userId);   //已发送1
+        this.setState({ isTask:false });
+        break;
+      default : 
+        this.coreExchageSendIn(userId);    //已收取2
+        this.setState({ isTask:true });
+        break;
+    }
   }
 
-  render() {
-    const { loading, core: { coreData } } = this.props;
-    const { crumbs, operationkey } = this.state;
-    
-    // 当日发送
-    const columns1 = [
-      {
-        title: '接收人',
-        dataIndex: 'ruleName',
-      },
-      {
-        title: '文件描述',
-        dataIndex: 'createBy1',
-      },
-      {
-        title: '文件路径',
-        dataIndex: 'createBy',
-      },
-      {
-        title: '文件名',
-        dataIndex: 'createBy4',
-      },
-      {
-        title: '发送时间',
-        dataIndex: 'createBy115',
-      },
-      {
-        title: '传输状态',
-        dataIndex: 'createBy1005',
-      }
-    ]; 
+  //初始化方法
+  componentDidMount() {
+    //this.coreExchageSendOut();       //当日发送
+  }
 
-    // 当日接收
-    const columns2 = [
-      {
-        title: '发送人',
-        dataIndex: 'ruleName',
-      },
-      {
-        title: '文件描述',
-        dataIndex: 'createBy1',
-      },
-      {
-        title: '保存路径',
-        dataIndex: 'createBy',
-      },
-      {
-        title: '原文件名',
-        dataIndex: 'createBy4',
-      },
-      {
-        title: '保存文件名',
-        dataIndex: 'createBy115',
-      },
-      {
-        title: '接收时间',
-        dataIndex: 'data',
-      },
-      {
-        title: '传输状态',
-        dataIndex: 'createBy1005',
+  // 已发送
+  coreExchageSendOut = userId => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'task/getExchageSendOut',
+      payload: {
+        userId: userId,
       }
-    ]; 
+    });
+  };
+  // 已收取
+  coreExchageSendIn = userId => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'task/getExchageSendIn',
+      payload: {
+        userId: userId,
+      }
+    });
+  }
+  
+
+  render() {
+    const { loading, task: { dataList } } = this.props;
+    const { crumbs, isTask } = this.state;
 
     // table组件属性
     const paginationProps = {
       showSizeChanger: true,
       showQuickJumper: false,
       showTotal: total => `总数 ${total} 条`,
-    };
-
-    const contentList = {
-      tab1: (
-        <Table
-          rowKey="id"
-          pagination={false}
-          loading={loading}
-          dataSource={coreData}
-          columns={columns1}
-          size="middle"
-          // eslint-disable-next-line react/jsx-no-duplicate-props
-          pagination={paginationProps}
-        />
-      ),
-      tab2: (
-        <Table
-          rowKey="id"
-          pagination={false}
-          loading={loading}
-          dataSource={coreData}
-          columns={columns2}
-          size="middle"
-          // eslint-disable-next-line react/jsx-no-duplicate-props
-          pagination={paginationProps}
-        />
-      ),
-      tab3: (
-        <Table
-          rowKey="id"
-          pagination={false}
-          loading={loading}
-          dataSource={coreData}
-          columns={columns1}
-          size="middle"
-          // eslint-disable-next-line react/jsx-no-duplicate-props
-          pagination={paginationProps}
-        />
-      ),
-      tab4: (
-        <Table
-          rowKey="id"
-          pagination={false}
-          loading={loading}
-          dataSource={coreData}
-          columns={columns2}
-          size="middle"
-          // eslint-disable-next-line react/jsx-no-duplicate-props
-          pagination={paginationProps}
-        />
-      ),
     };
 
     return (
@@ -176,7 +171,16 @@ class TaskCore extends PureComponent {
             <Breadcrumb.Item>{ crumbs }</Breadcrumb.Item>
           </Breadcrumb>
           <Divider style={{marginTop: '10px'}}/>
-          { contentList[operationkey] }
+          <Table
+            rowKey="id"
+            pagination={false}
+            loading={loading}
+            dataSource={dataList}
+            columns={ isTask ? this.columns1 : this.columns2 }
+            size="middle"
+            // eslint-disable-next-line react/jsx-no-duplicate-props
+            pagination={paginationProps}
+          />
         </Content>
       </Layout>
     );
