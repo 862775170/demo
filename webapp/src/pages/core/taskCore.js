@@ -12,63 +12,47 @@ const { Content, Sider } = Layout;
 @Form.create()
 class TaskCore extends PureComponent {
 
-  // 当日发送 & 已发送
+  // 已发送
   columns1 = [
     {
-      title: '接收人',
+      title: '发送人',
+      dataIndex: 'sourceUserName',
+    },
+    {
+      title: '文件规则',
       dataIndex: 'ruleName',
     },
     {
-      title: '文件描述',
+      title: '文件名',
       dataIndex: 'sourceFileName',
     },
     {
-      title: '文件路径',
-      dataIndex: 'createBy',
+      title: '接收时间',
+      dataIndex: 'time',
     },
-    {
-      title: '文件名',
-      dataIndex: 'createBy4',
-    },
-    {
-      title: '发送时间',
-      dataIndex: 'createBy115',
-    },
-    {
-      title: '传输状态',
-      dataIndex: 'createBy1005',
-    }
   ]; 
 
-  // 当日接收 & 已收取
+  // 已收取
   columns2 = [
     {
       title: '发送人',
       dataIndex: 'sourceUserName',
     },
     {
-      title: '文件描述',
+      title: '源文件',
       dataIndex: 'sourceFileName',
     },
     {
-      title: '保存路径',
-      dataIndex: 'createBy',
-    },
-    {
-      title: '原文件名',
-      dataIndex: 'ruleName',
-    },
-    {
       title: '保存文件名',
-      dataIndex: 'createBy115',
+      dataIndex: 'targetFileName',
     },
     {
-      title: '接收时间',
-      dataIndex: 'data',
+      title: '发送时间',
+      dataIndex: 'time',
     },
     {
-      title: '传输状态',
-      dataIndex: 'createBy1005',
+      title: '文件描述',
+      dataIndex: 'ruleName',
     }
   ]; 
 
@@ -86,14 +70,6 @@ class TaskCore extends PureComponent {
     const { userId } = this.state;
     switch(item.key){
       case "tab1": 
-        //this.coreRuleRelation(userId);   //当日发送1
-        this.setState({ isTask:false });
-        break;
-      case "tab2": 
-        //this.coreRuleRelation(userId);   //当日接收2
-        this.setState({ isTask:true });
-        break;
-      case "tab3": 
         this.coreExchageSendOut(userId);   //已发送1
         this.setState({ isTask:false });
         break;
@@ -106,7 +82,8 @@ class TaskCore extends PureComponent {
 
   //初始化方法
   componentDidMount() {
-    //this.coreExchageSendOut();       //当日发送
+    const { userId } = this.state;
+    this.coreExchageSendOut(userId);       //当日发送
   }
 
   // 已发送
@@ -128,8 +105,8 @@ class TaskCore extends PureComponent {
         userId: userId,
       }
     });
-  }
-  
+  };
+
 
   render() {
     const { loading, task: { dataList } } = this.props;
@@ -151,16 +128,10 @@ class TaskCore extends PureComponent {
             defaultOpenKeys={['sub1']}
             style={{ height: '100%', borderRight: '1px solid #e8e8e8' }}
           >
-            <Menu.Item key="tab1" title="当日发送" onClick={this.leftSidebarToggle}>
-              <Icon type="home" />当日发送
-            </Menu.Item>
-            <Menu.Item key="tab2" title="当日接收" onClick={this.leftSidebarToggle}>
-              <Icon type="mail" />当日接收
-            </Menu.Item>
-            <Menu.Item key="tab3" title="已发送" onClick={this.leftSidebarToggle}>
+            <Menu.Item key="tab1" title="已发送" onClick={this.leftSidebarToggle}>
               <Icon type="calendar" />已发送
             </Menu.Item>
-            <Menu.Item key="tab4" title="已收取" onClick={this.leftSidebarToggle}>
+            <Menu.Item key="tab2" title="已收取" onClick={this.leftSidebarToggle}>
               <Icon type="calendar" />已收取
             </Menu.Item>
           </Menu>
@@ -176,7 +147,7 @@ class TaskCore extends PureComponent {
             pagination={false}
             loading={loading}
             dataSource={dataList}
-            columns={ isTask ? this.columns1 : this.columns2 }
+            columns={ isTask ? this.columns2 : this.columns1 }
             size="middle"
             // eslint-disable-next-line react/jsx-no-duplicate-props
             pagination={paginationProps}
