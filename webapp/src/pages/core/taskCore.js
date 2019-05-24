@@ -15,8 +15,8 @@ class TaskCore extends PureComponent {
   // 已发送
   columns1 = [
     {
-      title: '发送人',
-      dataIndex: 'sourceUserName',
+      title: '接收人',
+      dataIndex: 'targetUserName',
     },
     {
       title: '文件规则',

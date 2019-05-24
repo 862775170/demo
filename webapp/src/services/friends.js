@@ -14,3 +14,15 @@ export async function ruleRelation(params) {
   return request(`${baseurl}/rule/rule/relation?userId=${userId}`);
 }
 
+// 好友中心 已发送
+export async function sender(params) {
+  const { sourceUserId, targetUserId } = params;
+  return request(`${baseurl}/file/exchage?sourceUserId=${sourceUserId}&targetUserId=${targetUserId}`);
+}
+
+// 好友中心 已收取
+export async function receiver(params) {
+  const { sourceUserId, targetUserId } = params;
+  return request(`${baseurl}/file/exchage?sourceUserId=${sourceUserId}&targetUserId=${targetUserId}`);
+}
+

@@ -23,6 +23,7 @@ const FormItem = Form.Item;
 const { Option } = Select;
 const { TabPane } = Tabs;
 
+// 规则
 const columns = [
   {
     title: '发送方',
@@ -40,6 +41,25 @@ const columns = [
     title: '时间',
     dataIndex: 'updatedAt',
     key: 'updatedAt',
+  },
+];
+// 已发送 & 已收取
+const columns2 = [
+  {
+    title: '源文件名',
+    dataIndex: 'sourceFileName',
+  },
+  {
+    title: '保存文件名',
+    dataIndex: 'targerFileName',
+  },
+  {
+    title: '规文件描述',
+    dataIndex: 'ruleName',
+  },
+  {
+    title: '发送时间',
+    dataIndex: 'time',
   },
 ];
 
@@ -89,6 +109,7 @@ class FriendsCore extends PureComponent {
 
   //点击 好友列中某个好友  查询  对应的  列表数据
   userList = item => {
+    debugger;
     //存储 好友列表用户ID
     const userId = item.key;
     this.setState({
@@ -108,16 +129,17 @@ class FriendsCore extends PureComponent {
     this.tabs(key, user_Id);          //不同的用户和tab联动却换
   };
   //不同的用户和tab联动却换
-  tabs = (key, userId) => {
+  tabs = (key, user_Id) => {
+    const { userId } = this.state;    // 获取登录用户的用户ID
     switch(key){
       case "tab1": 
-        this.coreRuleRelation(userId);   //规则列表
+        this.coreRuleRelation(user_Id);   //规则列表
         break;
       case "tab2": 
-        this.coreRuleRelation(userId);   //已发送列表
+        this.coreSender(user_Id, userId);         //已发送列表
         break;
       case "tab3": 
-        this.coreRuleRelation(userId);   //已收取列表
+        this.coreReceiver(user_Id, userId);       //已收取列表
         break;
       default : 
         this.coreRuleRelation(userId);   //搜索列表
@@ -135,6 +157,27 @@ class FriendsCore extends PureComponent {
     });
   }
 
+  // 已发送
+  coreSender = (user_Id, userId) => {
+    const { dispatch } = this.props;
+    const sourceUserId = user_Id;
+    const targetUserId = userId;
+    dispatch({
+      type: 'friend/getSender',
+      payload: { sourceUserId, targetUserId },
+    });
+  }
+
+  //  已收取
+  coreReceiver = (user_Id, userId) => {
+    const { dispatch } = this.props;
+    const sourceUserId = user_Id;
+    const targetUserId = userId;
+    dispatch({
+      type: 'friend/getReceiver',
+      payload: { sourceUserId, targetUserId },
+    });
+  }
   
 
   // 收发时间段方法
@@ -281,8 +324,20 @@ class FriendsCore extends PureComponent {
           rowKey="id"
           pagination={false}
           loading={loading}
-          dataSource={dataValue}
-          columns={columns}
+          dataSource={ruleList}
+          columns={columns2}
+          size="middle"
+          // eslint-disable-next-line react/jsx-no-duplicate-props
+          pagination={paginationProps}
+        />
+      ),
+      tab3: (
+        <Table
+          rowKey="id"
+          pagination={false}
+          loading={loading}
+          dataSource={ruleList}
+          columns={columns2}
           size="middle"
           // eslint-disable-next-line react/jsx-no-duplicate-props
           pagination={paginationProps}

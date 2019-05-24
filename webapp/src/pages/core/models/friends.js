@@ -1,6 +1,8 @@
 import { 
   ruleFriends, 
   ruleRelation,
+  sender,
+  receiver,
 } from '@/services/friends';
 
 //规则中心
@@ -21,6 +23,24 @@ export default {
     // 好友中心 规则
     *getRuleRelation({ payload }, { call, put }) {
       const response = yield call(ruleRelation, payload);
+      yield put({
+        type: 'saveRuleList',
+        payload: response.data,
+      });
+    },
+
+    // 已发送
+    *getSender({ payload }, { call, put }) {
+      const response = yield call(sender, payload);
+      yield put({
+        type: 'saveRuleList',
+        payload: response.data,
+      });
+    },
+
+    // 已收取
+    *getReceiver({ payload }, { call, put }) {
+      const response = yield call(receiver, payload);
       yield put({
         type: 'saveRuleList',
         payload: response.data,
