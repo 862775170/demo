@@ -70,12 +70,8 @@ export default [
             path: '/exception/403',
             component: './Exception/403',
           }
-
         ]
-
       },
-
-
       {
         component: '404',
       },

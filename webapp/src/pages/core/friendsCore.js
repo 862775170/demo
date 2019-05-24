@@ -149,7 +149,7 @@ class FriendsCore extends PureComponent {
     const { 
       loading, 
       form: { getFieldDecorator }, 
-      friend: { ruleList },
+      friend: { ruleList },   // 规则列表返回数据
     } = this.props;
     const { operationkey, friendsArr } = this.state;
     
@@ -339,7 +339,7 @@ class FriendsCore extends PureComponent {
             {/* <TabPane tab="任务" key="tab4">
               任务
             </TabPane> */}
-            <TabPane tab="搜索" key="tab5">
+            <TabPane tab="搜索" key="tab4">
               <div>{renderAdvancedForm()}</div>
               {contentList[operationkey]}
             </TabPane>
