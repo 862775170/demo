@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -72,5 +73,12 @@ public interface RuleService {
 	 * @param userId
 	 */
 	void matchingRule(String fullPath, String userId);
+
+	/**
+	 * 
+	 * @param arrayList
+	 * @return
+	 */
+	Map<Integer, String> getRuleMap(List<Integer> arrayList);
 
 }

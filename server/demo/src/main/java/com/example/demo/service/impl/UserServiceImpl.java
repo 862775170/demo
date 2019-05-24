@@ -35,8 +35,10 @@ public class UserServiceImpl implements UserService {
 			log.debug("http: /user/multiGetUserInfo result => {}", json);
 			if (json.getBody().has("result")) {
 				json.getBody().get("result").getAsJsonArray().forEach(el -> {
-					JsonObject elobj = el.getAsJsonObject();
-					result.put(elobj.get("id").getAsString(), elobj.get("nick_name").getAsString());
+					if (!el.isJsonNull()) {
+						JsonObject elobj = el.getAsJsonObject();
+						result.put(elobj.get("id").getAsString(), elobj.get("nick_name").getAsString());
+					}
 				});
 			}
 			return result;
