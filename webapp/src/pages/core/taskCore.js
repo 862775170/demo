@@ -138,7 +138,7 @@ class TaskCore extends PureComponent {
         </Sider>
         <Content style={{ background: '#fff', padding: '12px 24px 24px 24px', margin: 0, minHeight: 280, }}>
           <Breadcrumb>
-            <Breadcrumb.Item>任务中心</Breadcrumb.Item>
+            <Breadcrumb.Item>文件中心</Breadcrumb.Item>
             <Breadcrumb.Item>{ crumbs }</Breadcrumb.Item>
           </Breadcrumb>
           <Divider style={{marginTop: '10px'}}/>

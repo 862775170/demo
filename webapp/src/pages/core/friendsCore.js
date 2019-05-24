@@ -226,21 +226,21 @@ class FriendsCore extends PureComponent {
         <Form onSubmit={this.handleSearch}>
           <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
             <Col md={8} sm={24}>
-              <FormItem {...this.formLayout} label="更新日期">
+              <FormItem {...this.formLayout} label="规则名">
                 {getFieldDecorator('date')(
                   <DatePicker style={{ width: '100%' }} placeholder="请输入更新日期" />
                 )}
               </FormItem>
             </Col>
             <Col md={8} sm={24}>
-              <FormItem {...this.formLayout} label="收发时间段">
+              <FormItem {...this.formLayout} label="接收方">
                 {getFieldDecorator('number')(
                   <TimePicker onChange={this.getTime} defaultOpenValue={moment('00:00:00', 'HH:mm:ss')} />
                 )}
               </FormItem>
             </Col>
             <Col md={8} sm={24}>
-              <FormItem {...this.formLayout} label="使用状态">
+              <FormItem {...this.formLayout} label="发送发">
                 {getFieldDecorator('status')(
                   <Select placeholder="请选择" style={{ width: '100%' }}>
                     <Option value="0">关闭</Option>
@@ -252,7 +252,7 @@ class FriendsCore extends PureComponent {
           </Row>
           <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
             <Col md={8} sm={24}>
-              <FormItem {...this.formLayout} label="更新日期">
+              <FormItem {...this.formLayout} label="发送时间">
                 {getFieldDecorator('date')(
                   <DatePicker style={{ width: '100%' }} placeholder="请输入更新日期" />
                 )}

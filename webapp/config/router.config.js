@@ -60,6 +60,13 @@ export default [
         component: './core/taskCore',
       },
       {
+        // 搜索
+        path: '/search',
+        name: 'search',
+        icon: 'crown',
+        component: './core/taskCore',
+      },
+      {
         path: '/exception',
         routes: [
           {

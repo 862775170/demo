@@ -67,5 +67,6 @@ export default {
   'menu.report.resUse':'资源使用率',
   'menu.friendsCore':'好友中心',
   'menu.ruleCore':'规则中心',
-  'menu.taskCore':'任务中心',
+  'menu.taskCore':'文件中心',
+  'menu.search':'搜索',
 };
