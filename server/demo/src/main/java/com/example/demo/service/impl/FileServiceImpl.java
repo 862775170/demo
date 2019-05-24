@@ -9,7 +9,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -57,6 +56,12 @@ public class FileServiceImpl implements FileService {
 			return sb.toString();
 		}
 
+		return null;
+	}
+
+	@Override
+	public String getFineInfo(String fileId) {
+		// TODO Auto-generated method stub
 		return null;
 	}
 }

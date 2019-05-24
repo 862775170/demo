@@ -290,4 +290,14 @@ public class RuleServiceImpl implements RuleService {
 		return split[split.length - 1];
 	}
 
+	@Override
+	public Map<Integer, String> getRuleMap(List<Integer> ruleIds) {
+		List<Rule> rules = ruleDao.findByRuleIdIn(ruleIds);
+		Map<Integer, String> map = new HashMap<>();
+		rules.forEach(r -> {
+			map.put(r.getRuleId(), r.getRuleName());
+		});
+		return map;
+	}
+
 }

@@ -34,14 +34,14 @@ public class DatrixReceiver {
 			DatrixMessage datrixMessage = objectMapper.readValue(message.getBody(), DatrixMessage.class);
 			if (StringUtils.isNotEmpty(datrixMessage.getEventType()) && "add".equals(datrixMessage.getEventType())) {
 				ruleService.matchingRule(datrixMessage.getFullPath(), datrixMessage.getUserId());
+				channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
 			}
 		} catch (IOException e) {
 			log.error(e.getMessage(), e);
-			try {
-				channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
-			} catch (IOException e1) {
-				log.error("ack error {},", message.getMessageProperties().getDeliveryTag(), e1);
-			}
+//			try {
+//				channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
+//			} catch (IOException e1) {
+			log.error("ack error {},", message.getMessageProperties().getDeliveryTag(), e);
 		}
 		System.out.println("接收到的字符串消息是 => " + messageRec);
 		// channel.basicNack(message.getMessageProperties().getDeliveryTag(), false,
