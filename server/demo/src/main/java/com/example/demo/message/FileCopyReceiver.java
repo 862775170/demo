@@ -24,7 +24,7 @@ public class FileCopyReceiver {
 	@Autowired
 	private FileExchangeLogDao fileExchangeLogDao;
 
-	@RabbitListener(queues = "file-copy-queue")
+	@RabbitListener(queues = "${mq.queue.fileOper}")
 	public void receiveMessage(Message message, Channel channel) {
 		String messageRec = new String(message.getBody());
 		try {

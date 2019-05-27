@@ -19,7 +19,7 @@ import org.springframework.web.client.RestTemplate;
 
 import com.example.demo.common.HttpClient;
 import com.example.demo.common.Result;
-import com.example.demo.message.DatrixMessage;
+import com.example.demo.message.DatrixActionMessage;
 import com.example.demo.service.FileService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -55,7 +55,7 @@ public class UserController {
 	}
 
 	@PostMapping("/send/message")
-	public Object sendMessage(@RequestBody() DatrixMessage datrixMessage) throws JsonProcessingException {
+	public Object sendMessage(@RequestBody() DatrixActionMessage datrixMessage) throws JsonProcessingException {
 		String writeValueAsString = objectMapper.writeValueAsString(datrixMessage);
 		rabbitTemplate.convertAndSend("datrix-queue", writeValueAsString);
 		return Result.ok(datrixMessage);
