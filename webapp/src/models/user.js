@@ -19,7 +19,7 @@ export default {
     *fetchCurrent(_, { call, put }) {
       const response = yield call(queryCurrent);
       const {result}=response;
-      result.avatar = '/icons/icon-128x128.png';
+      result.avatar = '/icon-title.png';
       // const roles = yield call(getUserRoles);
       // response.roles = roles.data;
       yield put({

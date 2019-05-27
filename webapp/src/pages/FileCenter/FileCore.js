@@ -120,7 +120,7 @@ class FileCore extends PureComponent {
     };
 
     return (
-      <Layout style={{width: '100%',height:'92%',position: 'absolute',marginTop: '2px'}}>
+      <Layout style={{width: '100%',height:'90%',position: 'absolute',marginTop: '0px'}}>
         <Sider width={200} style={{ background: '#fff' }}>
           <Menu
             mode="inline"
@@ -128,10 +128,10 @@ class FileCore extends PureComponent {
             defaultOpenKeys={['sub1']}
             style={{ height: '100%', borderRight: '1px solid #e8e8e8' }}
           >
-            <Menu.Item key="tab1" title="已发送" onClick={this.leftSidebarToggle}>
+            <Menu.Item key="tab1" title="已发送" onClick={this.leftSidebarToggle} style={{marginTop: '0px'}}>
               <Icon type="calendar" />已发送
             </Menu.Item>
-            <Menu.Item key="tab2" title="已收取" onClick={this.leftSidebarToggle}>
+            <Menu.Item key="tab2" title="已收取" onClick={this.leftSidebarToggle} style={{marginTop: '0px'}}>
               <Icon type="calendar" />已收取
             </Menu.Item>
           </Menu>

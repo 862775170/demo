@@ -235,7 +235,7 @@ class FriendsCore extends PureComponent {
     };
 
     return (
-      <Layout style={{width: '100%',height:'92%',position: 'absolute',marginTop: '2px'}}>
+      <Layout style={{width: '100%',height:'90%',position: 'absolute',marginTop: '0px'}}>
         <Sider width={200}>
           <Menu
             mode="inline"
@@ -245,7 +245,7 @@ class FriendsCore extends PureComponent {
           >
             {
               friendsArr.map((item) => {
-                return <Menu.Item key={item.userId} onClick={this.userList}>
+                return <Menu.Item key={item.userId} onClick={this.userList} style={{marginTop: '0px'}}>
                 <Icon type="user" />{item.userName}
               </Menu.Item>
               })

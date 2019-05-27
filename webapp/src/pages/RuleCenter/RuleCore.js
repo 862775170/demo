@@ -637,7 +637,7 @@ class RuleCore extends PureComponent {
     };
     const plainOptions = ['Apple', 'Pear', 'Orange'];
     return (
-      <Layout style={{width: '100%',height:'92%',position: 'absolute',marginTop: '2px'}}>
+      <Layout style={{width: '100%',height:'90%',position: 'absolute',marginTop: '0px'}}>
         <Sider width={200} style={{ background: '#fff' }}>
           <Menu
             mode="inline"
@@ -645,15 +645,15 @@ class RuleCore extends PureComponent {
             defaultOpenKeys={['1']}
             style={{ height: '100%', borderRight: '1px solid #e8e8e8' }}
           >
-            <Menu.Item key="tab1" title="待确认规则" onClick={this.leftSidebarToggle}>
+            <Menu.Item key="tab1" title="待确认规则" onClick={this.leftSidebarToggle} style={{marginTop: '0px'}}>
               <Icon type="home" />待确认规则
             </Menu.Item>
             <SubMenu
               key="1"
               title={<span><Icon type="appstore" /><span>我的规则</span></span>}
             >
-              <Menu.Item key="tab2" title="发送规则" onClick={this.leftSidebarToggle}>发送规则</Menu.Item>
-              <Menu.Item key="tab3" title="接收规则" onClick={this.leftSidebarToggle}>接收规则</Menu.Item>
+              <Menu.Item key="tab2" title="发送规则" onClick={this.leftSidebarToggle} style={{marginTop: '0px'}}>发送规则</Menu.Item>
+              <Menu.Item key="tab3" title="接收规则" onClick={this.leftSidebarToggle} style={{marginTop: '0px'}}>接收规则</Menu.Item>
             </SubMenu>
           </Menu>
         </Sider>
