@@ -4,13 +4,13 @@ import { Layout, Menu, Breadcrumb, Icon, Table, Form, Divider } from 'antd';
 
 const { Content, Sider } = Layout;
 
-@connect(({ task, loading }) => ({
-  task,
-  loading: loading.models.task,
+@connect(({ file, loading }) => ({
+  file,
+  loading: loading.models.file,
 }))
-// 任务中心
+// 文件中心
 @Form.create()
-class TaskCore extends PureComponent {
+class FileCore extends PureComponent {
 
   // 已发送
   columns1 = [
@@ -90,7 +90,7 @@ class TaskCore extends PureComponent {
   coreExchageSendOut = userId => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'task/getExchageSendOut',
+      type: 'file/getExchageSendOut',
       payload: {
         userId: userId,
       }
@@ -100,7 +100,7 @@ class TaskCore extends PureComponent {
   coreExchageSendIn = userId => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'task/getExchageSendIn',
+      type: 'file/getExchageSendIn',
       payload: {
         userId: userId,
       }
@@ -109,7 +109,7 @@ class TaskCore extends PureComponent {
 
 
   render() {
-    const { loading, task: { dataList } } = this.props;
+    const { loading, file: { dataList } } = this.props;
     const { crumbs, isTask } = this.state;
 
     // table组件属性
@@ -158,4 +158,4 @@ class TaskCore extends PureComponent {
   }
 }
 
-export default TaskCore;
+export default FileCore;

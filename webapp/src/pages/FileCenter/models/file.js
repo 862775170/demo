@@ -1,11 +1,11 @@
 import { 
     exchageSendOut, 
     exchageSendIn,
-  } from '@/services/task';
+  } from '@/services/file';
   
-  //任务中心
+  //文件中心
   export default {
-    namespace: 'task',
+    namespace: 'file',
   
     state: {
 

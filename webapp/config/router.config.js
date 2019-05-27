@@ -43,28 +43,28 @@ export default [
         path: '/friendsCore',
         name: 'friendsCore',
         icon: 'user',
-        component: './core/friendsCore',
+        component: './FriendCenter/FriendsCore',
       },
       {
         // 规则中心
         path: '/ruleCore',
         name: 'ruleCore',
         icon: 'environment',
-        component: './core/ruleCore',
+        component: './RuleCenter/RuleCore',
       },
       {
-        // 任务中心
-        path: '/taskCore',
-        name: 'taskCore',
+        // 文件中心
+        path: '/fileCore',
+        name: 'fileCore',
         icon: 'crown',
-        component: './core/taskCore',
+        component: './FileCenter/FileCore',
       },
       {
         // 搜索
         path: '/search',
         name: 'search',
         icon: 'crown',
-        component: './core/taskCore',
+        component: './FileCenter/FileCore',
       },
       {
         path: '/exception',
