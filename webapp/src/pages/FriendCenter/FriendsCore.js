@@ -74,6 +74,7 @@ class FriendsCore extends PureComponent {
   state = {
     userId: sessionStorage.getItem('userid'),       // 获取登录用户的用户ID
     user_Id: '',             //好友列表用户ID
+    user_Name: '',           //好友列表用户名
     friendsArr: [],          // 存储好友列表数据
     operationkey: 'tab1',    // 用于存储切换的是哪个tab
   };
@@ -93,8 +94,10 @@ class FriendsCore extends PureComponent {
       callback: (result) => {
         //存储 好友列表用户ID
         const userId = result.data[0].userId;
+        const userName = result.data[0].userName;
         this.setState({
           user_Id: userId,
+          user_Name: userName,
         });
         this.state.friendsArr = result.data;   // 存储好友列表数据
         this.coreRuleRelation(userId);      // 好友中心 规则
@@ -109,6 +112,7 @@ class FriendsCore extends PureComponent {
     const userId = item.key;
     this.setState({
       user_Id: userId,
+      user_Name: userId,
     });
     const { operationkey } = this.state;  //获取tab切换状态
     this.tabs(operationkey, userId);      //不同的用户和tab联动却换
@@ -182,7 +186,7 @@ class FriendsCore extends PureComponent {
       form: { getFieldDecorator }, 
       friend: { ruleList },   // 规则列表返回数据
     } = this.props;
-    const { operationkey, friendsArr } = this.state;
+    const { operationkey, friendsArr, user_Name } = this.state;
 
     // table组件属性
     const paginationProps = {
@@ -252,7 +256,7 @@ class FriendsCore extends PureComponent {
         <Content style={{ background: '#fff', padding: '12px 24px 24px 24px', margin: 0, minHeight: 280, }}>
           <Breadcrumb>
             <Breadcrumb.Item>好友中心</Breadcrumb.Item>
-            <Breadcrumb.Item>数据中心</Breadcrumb.Item>
+            <Breadcrumb.Item>{ user_Name }</Breadcrumb.Item>
           </Breadcrumb>
           <Divider style={{marginTop: '10px'}}/>
           <Tabs defaultActiveKey="tab1" onChange={this.clickTabs} style={{marginTop: '15px'}}>

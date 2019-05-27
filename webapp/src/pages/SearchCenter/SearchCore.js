@@ -11,12 +11,11 @@ import {
   Form,  
   Select,
   DatePicker,
-  TimePicker,
   Divider,
   Card,
-  PageHeader, 
+  PageHeader,
+  Input, 
 } from 'antd';
-import moment from 'moment';
 
 const { Content } = Layout;
 const FormItem = Form.Item;
@@ -61,16 +60,8 @@ class SearchCore extends PureComponent {
     //this.coreFriendsList();       // 好友中心 好友列
   }
 
-  // 收发时间段方法
-  getTime = (time, timeString) => {
-    console.log(time, timeString);
-  }
-
   render() {
-    const { 
-      loading, 
-      form: { getFieldDecorator }, 
-    } = this.props;
+    const { loading, form: { getFieldDecorator } } = this.props;
     
     //table 假数据
     const dataValue = [
@@ -104,21 +95,21 @@ class SearchCore extends PureComponent {
             <Col md={8} sm={24}>
               <FormItem label="规则名">
                 {getFieldDecorator('date')(
-                  <DatePicker style={{ width: '100%' }} placeholder="请输入更新日期" />
+                  <Input placeholder="输入规则名" />
                 )}
               </FormItem>
             </Col>
             <Col md={8} sm={24}>
               <FormItem label="接收方">
-                {getFieldDecorator('number')(
-                  <TimePicker onChange={this.getTime} defaultOpenValue={moment('00:00:00', 'HH:mm:ss')} />
+                {getFieldDecorator('date')(
+                  <Input placeholder="接收方" />
                 )}
               </FormItem>
             </Col>
             <Col md={8} sm={24}>
               <FormItem label="发送发">
                 {getFieldDecorator('status')(
-                  <Select placeholder="请选择" style={{ width: '100%' }}>
+                  <Select placeholder="请选择">
                     <Option value="0">关闭</Option>
                     <Option value="1">运行中</Option>
                   </Select>
@@ -134,37 +125,7 @@ class SearchCore extends PureComponent {
                 )}
               </FormItem>
             </Col>
-            <Col md={8} sm={24}>
-              <FormItem label="使用状态">
-                {getFieldDecorator('status3')(
-                  <Select placeholder="请选择" style={{ width: '100%' }}>
-                    <Option value="0">关闭</Option>
-                    <Option value="1">运行中</Option>
-                  </Select>
-                )}
-              </FormItem>
-            </Col>
-            <Col md={8} sm={24}>
-              <FormItem label="使用状态">
-                {getFieldDecorator('status4')(
-                  <Select placeholder="请选择" style={{ width: '100%' }}>
-                    <Option value="0">关闭</Option>
-                    <Option value="1">运行中</Option>
-                  </Select>
-                )}
-              </FormItem>
-            </Col>
-            <Col md={8} sm={24}>
-              <FormItem label="使用状态">
-                {getFieldDecorator('status4')(
-                  <Select placeholder="请选择" style={{ width: '100%' }}>
-                    <Option value="0">关闭</Option>
-                    <Option value="1">运行中</Option>
-                  </Select>
-                )}
-              </FormItem>
-            </Col>
-            <Col md={8} sm={24}>
+            <Col md={8} sm={24} style={{height: '79px',paddingTop: '45px'}}>
               <span>
                 <Button type="primary" htmlType="submit">查询</Button>
                 <Button style={{ marginLeft: 8 }} onClick={this.handleFormReset}>重置</Button>
@@ -181,20 +142,14 @@ class SearchCore extends PureComponent {
       showQuickJumper: false,
       showTotal: total => `总数 ${total} 条`,
     };
-    const routes = [
-      {
-        path: 'index',
-        breadcrumbName: '搜索',
-      }
-    ];
 
     return (
-      <PageHeader title="Title" breadcrumb={{ routes }}>
-        <Card bordered={false}>
-          {/* <Breadcrumb>
+      <PageHeader>
+        <Card bordered={false} style={{marginTop: '-28px'}}>
+          <Breadcrumb>
             <Breadcrumb.Item>搜索</Breadcrumb.Item>
           </Breadcrumb>
-          <Divider style={{marginTop: '10px'}}/> */}
+          <Divider style={{height:'1px',left: '-13px'}}/>
           <div>{renderAdvancedForm()}</div>
           <Table
             rowKey="id"

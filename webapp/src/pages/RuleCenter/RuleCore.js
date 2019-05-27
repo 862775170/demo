@@ -662,10 +662,10 @@ class RuleCore extends PureComponent {
             <Breadcrumb.Item>规则中心</Breadcrumb.Item>
             <Breadcrumb.Item>{ crumbs }</Breadcrumb.Item>
           </Breadcrumb>
-          <div style={{display: subEdit ? 'block' : 'none' }}>
+          <Divider style={{margin: subEdit ? '10px 0px' : '10px 0 25px 0px',}}/>
+          <div style={{display: subEdit ? 'block' : 'none', marginBottom: '10px' }}>
             <Button icon="plus" type="primary" onClick={this.showDrawer}>新建</Button>
           </div>
-          <Divider style={{marginTop: '10px'}}/>
           { contentList[operationkey] }
         </Content>
 
