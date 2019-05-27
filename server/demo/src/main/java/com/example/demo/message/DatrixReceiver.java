@@ -8,6 +8,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.Message;
+import org.springframework.amqp.rabbit.annotation.Exchange;
+import org.springframework.amqp.rabbit.annotation.QueueBinding;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,23 +29,21 @@ public class DatrixReceiver {
 	@Autowired
 	private RuleService ruleService;
 
-	@RabbitListener(queues = "datrix-queue")
+	@RabbitListener(queues = "${mq.queue.action}")
 	public void receiveMessage(Message message, Channel channel) {
 		String messageRec = new String(message.getBody());
 		try {
-			DatrixMessage datrixMessage = objectMapper.readValue(message.getBody(), DatrixMessage.class);
-			if (StringUtils.isNotEmpty(datrixMessage.getEventType()) && "add".equals(datrixMessage.getEventType())) {
-				ruleService.matchingRule(datrixMessage.getFullPath(), datrixMessage.getUserId());
+			DatrixActionMessage datrixMessage = objectMapper.readValue(message.getBody(), DatrixActionMessage.class);
+			if (datrixMessage.getAction() == null) {
+				log.warn("action is empty msg=>{}", messageRec);
+			} else {
+				ruleService.matchingRule(datrixMessage.getFileId(), datrixMessage.getUserId());
 				channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
 			}
 		} catch (IOException e) {
 			log.error(e.getMessage(), e);
-//			try {
-//				channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
-//			} catch (IOException e1) {
 			log.error("ack error {},", message.getMessageProperties().getDeliveryTag(), e);
 		}
-		System.out.println("接收到的字符串消息是 => " + messageRec);
 		// channel.basicNack(message.getMessageProperties().getDeliveryTag(), false,
 		// true);
 
