@@ -48,6 +48,7 @@ class RuleCore extends PureComponent {
     userId: sessionStorage.getItem('userid'),
     userInfo: sessionStorage.getItem("userInfo"),
     path: '',
+    fileId: '',
     subEdit: false,
     operationkey: 'tab1',
     
@@ -103,9 +104,11 @@ class RuleCore extends PureComponent {
     const rootIds = user.root_ids;
     const taskId = saveRuleoBject.id;
     const savePath = path;
+    const file_id = this.state
+    const saveFildId = file_id.fileId;
     dispatch({
       type: 'core/getRuleConfirmRule',
-      payload:{ savePath, rootIds, taskId },
+      payload:{ savePath, rootIds, taskId, saveFildId },
       callback: () => {
         this.saveRuleModalCancel();  //待确定规则  保存规则  取消模态框
         this.coreRuleTasks();        // 待确认规则 全部列表
@@ -175,10 +178,12 @@ class RuleCore extends PureComponent {
     const createBy = user.nick_name;
     const rootIds = user.root_ids;
     const path = this.state;
+    const file_id = this.state
+    const sourceFileId = file_id.fileId;
     const sourcePath = path.path;
     dispatch({
       type: 'core/getSubmitRule',
-      payload:{ ...fields, createBy, rootIds, sourcePath },
+      payload:{ ...fields, createBy, rootIds, sourcePath, sourceFileId },
       callback: () => {
         this.coreRuleMyRule();    // 我的规则   发送规则
       } 
@@ -237,9 +242,11 @@ class RuleCore extends PureComponent {
     const createBy = user.nick_name;
     const ruleId = drawerParameter.ruleId;
     const sourcePath = path;
+    const file_id = this.state
+    const sourceFileId = file_id.fileId;
     dispatch({
       type: 'core/getRuleUpdate',
-      payload:{ ...fields, createBy, sourcePath, ruleId },
+      payload:{ ...fields, createBy, sourcePath, ruleId, sourceFileId },
       callback: () => {
         this.coreRuleMyRule();    // 我的规则   发送规则
       } 
@@ -293,13 +300,17 @@ class RuleCore extends PureComponent {
     if(e.selectedNodes.length > 0){
       const titleValue = e.selectedNodes[0].props.title;
       let paths = "";
+      let file_id ="";
       if(titleValue === '/'){
         paths = e.selectedNodes[0].props.dataRef.filename_KeywordIkPinyin;
+        file_id = e.selectedNodes[0].props.dataRef.file_id;
       }else{
         paths = e.selectedNodes[0].props.dataRef.fullpath;
+        file_id = e.selectedNodes[0].props.dataRef.file_id;
       }
       this.setState({
         path: paths,  //源路径
+        fileId: file_id,
       });      
     }
   }

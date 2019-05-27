@@ -10,8 +10,9 @@ export async function ruleTasks(params) {
 
 // 待确认规则  保存
 export async function ruleConfirmRule(params) {
-  const { savePath, taskId, rootIds } = params;
-  return request(`${baseurl}/rule/confirmRule?savePath=${savePath}&taskId=${taskId}&rootIds=${rootIds}`, {
+  const { savePath, taskId, rootIds, saveFildId } = params;
+  debugger;
+  return request(`${baseurl}/rule/confirmRule?savePath=${savePath}&taskId=${taskId}&rootIds=${rootIds}&saveFildId=${saveFildId}`, {
     method: 'POST',
   });
 }
@@ -57,10 +58,6 @@ export async function submitRule(params){
     },
   });
 }
-
-
-
-
 
 // 我的规则 ----   发送规则
 export async function ruleMyRule(params) {

@@ -55,7 +55,6 @@ class HeaderView extends Component {
   };
 
   handleMenuClick = ({ key }) => {
-    debugger;
     const { dispatch } = this.props;
     // if (key === 'userCenter') {
     //   router.push('/account/center');

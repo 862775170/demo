@@ -107,7 +107,6 @@ class FriendsCore extends PureComponent {
 
   //点击 好友列中某个好友  查询  对应的  列表数据
   userList = item => {
-    debugger;
     //存储 好友列表用户ID
     const userId = item.key;
     this.setState({
