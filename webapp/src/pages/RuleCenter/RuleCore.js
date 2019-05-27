@@ -174,8 +174,9 @@ class RuleCore extends PureComponent {
   urleGetSubmitRule = fields => {
     const { dispatch } =  this.props;
     const { userInfo } = this.state;
+    debugger;
     const user = JSON.parse(userInfo);
-    const createBy = user.nick_name;
+    const createBy = sessionStorage.getItem("userid")
     const rootIds = user.root_ids;
     const path = this.state;
     const file_id = this.state
@@ -239,7 +240,7 @@ class RuleCore extends PureComponent {
     const { dispatch } = this.props;
     const { userInfo, path, drawerParameter } = this.state;
     const user = JSON.parse(userInfo);
-    const createBy = user.nick_name;
+    const createBy = sessionStorage.getItem("userid")
     const ruleId = drawerParameter.ruleId;
     const sourcePath = path;
     const file_id = this.state
