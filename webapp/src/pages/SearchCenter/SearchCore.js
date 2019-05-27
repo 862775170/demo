@@ -163,26 +163,6 @@ class SearchCore extends PureComponent {
           />
         </Card>
       </PageHeader>
-      // <Layout>
-        
-      //   <Content>
-      //     <Breadcrumb>
-      //       <Breadcrumb.Item>搜索</Breadcrumb.Item>
-      //     </Breadcrumb>
-      //     <Divider style={{marginTop: '10px'}}/>
-      //     <div>{renderAdvancedForm()}</div>
-      //     <Table
-      //       rowKey="id"
-      //       pagination={false}
-      //       loading={loading}
-      //       dataSource={dataValue}
-      //       columns={columns}
-      //       size="middle"
-      //       // eslint-disable-next-line react/jsx-no-duplicate-props
-      //       pagination={paginationProps}
-      //     />
-      //   </Content>
-      // </Layout>
     );
   }
 }
