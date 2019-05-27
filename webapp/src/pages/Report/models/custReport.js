@@ -90,7 +90,7 @@ export default {
 
       response.options = response.data.productTypeList;
       
-      const temp = ['总体', '开发测试云','行情云','数据存管','基础资源外包服务','灾备服务'];
+      const temp = ['总体', '1','22','23','33','44'];
       response.pAddGroupBarData=[]
       response.data.reportList.forEach(
         element => {

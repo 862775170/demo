@@ -21,11 +21,11 @@ class Analysis extends Component {
     selected: '0',
     options: [
       {id:'0',label:'总体'},
-      {id:'1',label:'开发测试云'},
-      {id:'2',label:'行情云'},
-      {id:'3',label:'数据存管'},
-      {id:'4',label:'基础资源外包服务'},
-      {id:'5',label:'灾备服务'},
+      {id:'1',label:'2'},
+      {id:'2',label:'3'},
+      {id:'3',label:'3'},
+      {id:'4',label:'3'},
+      {id:'5',label:'3'},
     ],
  
 
@@ -218,7 +218,7 @@ class Analysis extends Component {
               <Suspense fallback={null}>
                 <GroupBar 
                   fields={fields} // 展开字段集
-                  boxTitle="金融云客户分布" 
+                  boxTitle="---" 
                   // dropdownGroup={dropdownGroup}
                   loading={loading}
                   data={groupBarData} 

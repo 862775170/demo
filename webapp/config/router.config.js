@@ -61,10 +61,10 @@ export default [
       },
       {
         // 搜索
-        path: '/search',
-        name: 'search',
+        path: '/searchCore',
+        name: 'searchCore',
         icon: 'crown',
-        component: './FileCenter/FileCore',
+        component: './SearchCenter/SearchCore',
       },
       {
         path: '/exception',

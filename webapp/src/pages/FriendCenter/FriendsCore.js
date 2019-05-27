@@ -78,11 +78,6 @@ class FriendsCore extends PureComponent {
     operationkey: 'tab1',    // 用于存储切换的是哪个tab
   };
 
-  formLayout = {
-    labelCol: { span: 7 },
-    wrapperCol: { span: 13 },
-  };
-
   //初始化方法
   componentDidMount() {
     this.coreFriendsList();       // 好友中心 好友列
@@ -179,13 +174,6 @@ class FriendsCore extends PureComponent {
     });
   }
   
-
-  // 收发时间段方法
-  getTime = (time, timeString) => {
-    console.log(time, timeString);
-  }
-
-  
   
 
   render() {
@@ -195,109 +183,6 @@ class FriendsCore extends PureComponent {
       friend: { ruleList },   // 规则列表返回数据
     } = this.props;
     const { operationkey, friendsArr } = this.state;
-    
-    //table 假数据
-    const dataValue = [
-      {
-        id: 1,
-        name: '测试文件1',
-        size: 10,
-        status: "正常",
-        updatedAt: '2019-1-12',
-      },
-      {
-        id: 2,
-        name: '测试文件2',
-        size: 10,
-        status: "正常",
-        updatedAt: '2019-1-12',
-      },
-      {
-        id: 3,
-        name: '测试文件3',
-        size: 10,
-        status: "正常",
-        updatedAt: '2019-1-12',
-      }
-    ];
-
-    const renderAdvancedForm = () => {
-      return (
-        <Form onSubmit={this.handleSearch}>
-          <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-            <Col md={8} sm={24}>
-              <FormItem {...this.formLayout} label="规则名">
-                {getFieldDecorator('date')(
-                  <DatePicker style={{ width: '100%' }} placeholder="请输入更新日期" />
-                )}
-              </FormItem>
-            </Col>
-            <Col md={8} sm={24}>
-              <FormItem {...this.formLayout} label="接收方">
-                {getFieldDecorator('number')(
-                  <TimePicker onChange={this.getTime} defaultOpenValue={moment('00:00:00', 'HH:mm:ss')} />
-                )}
-              </FormItem>
-            </Col>
-            <Col md={8} sm={24}>
-              <FormItem {...this.formLayout} label="发送发">
-                {getFieldDecorator('status')(
-                  <Select placeholder="请选择" style={{ width: '100%' }}>
-                    <Option value="0">关闭</Option>
-                    <Option value="1">运行中</Option>
-                  </Select>
-                )}
-              </FormItem>
-            </Col>
-          </Row>
-          <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
-            <Col md={8} sm={24}>
-              <FormItem {...this.formLayout} label="发送时间">
-                {getFieldDecorator('date')(
-                  <DatePicker style={{ width: '100%' }} placeholder="请输入更新日期" />
-                )}
-              </FormItem>
-            </Col>
-            <Col md={8} sm={24}>
-              <FormItem {...this.formLayout} label="使用状态">
-                {getFieldDecorator('status3')(
-                  <Select placeholder="请选择" style={{ width: '100%' }}>
-                    <Option value="0">关闭</Option>
-                    <Option value="1">运行中</Option>
-                  </Select>
-                )}
-              </FormItem>
-            </Col>
-            <Col md={8} sm={24}>
-              <FormItem {...this.formLayout} label="使用状态">
-                {getFieldDecorator('status4')(
-                  <Select placeholder="请选择" style={{ width: '100%' }}>
-                    <Option value="0">关闭</Option>
-                    <Option value="1">运行中</Option>
-                  </Select>
-                )}
-              </FormItem>
-            </Col>
-            <Col md={8} sm={24}>
-              <FormItem {...this.formLayout} label="使用状态">
-                {getFieldDecorator('status4')(
-                  <Select placeholder="请选择" style={{ width: '100%' }}>
-                    <Option value="0">关闭</Option>
-                    <Option value="1">运行中</Option>
-                  </Select>
-                )}
-              </FormItem>
-            </Col>
-            <Col md={8} sm={24}>
-              <span>
-                <Button type="primary" htmlType="submit">查询</Button>
-                <Button style={{ marginLeft: 8 }} onClick={this.handleFormReset}>重置</Button>
-              </span>
-            </Col>
-          </Row>
-        </Form>
-      );
-    };
 
     // table组件属性
     const paginationProps = {
@@ -343,18 +228,6 @@ class FriendsCore extends PureComponent {
           pagination={paginationProps}
         />
       ),
-      tab5: (
-        <Table
-          rowKey="id"
-          pagination={false}
-          loading={loading}
-          dataSource={dataValue}
-          columns={columns}
-          size="middle"
-          // eslint-disable-next-line react/jsx-no-duplicate-props
-          pagination={paginationProps}
-        />
-      ),
     };
 
     return (
@@ -395,10 +268,6 @@ class FriendsCore extends PureComponent {
             {/* <TabPane tab="任务" key="tab4">
               任务
             </TabPane> */}
-            <TabPane tab="搜索" key="tab4">
-              <div>{renderAdvancedForm()}</div>
-              {contentList[operationkey]}
-            </TabPane>
           </Tabs>
         </Content>
       </Layout>

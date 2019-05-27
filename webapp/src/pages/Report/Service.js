@@ -113,7 +113,7 @@ class Service extends Component {
               <Suspense fallback={null}>
                 <GroupBar 
                   fields={fields} // 展开字段集
-                  boxTitle="金融云服务开通客户分布" 
+                  boxTitle="服务开通客户分布" 
                   // dropdownGroup={dropdownGroup}
                   loading={loading}
                   data={groupBarData} 
@@ -126,7 +126,7 @@ class Service extends Component {
             <Col xl={8} lg={24} md={24} sm={24} xs={24}>
               <Suspense fallback={null}>
                 <Annular
-                  boxTitle="金融云服务开通产品线分布" 
+                  boxTitle="---" 
                   // dropdownGroup={dropdownGroup}
                   loading={loading2}
                   data={serviceProduct} 
@@ -141,9 +141,9 @@ class Service extends Component {
           <Col xl={24} lg={24} md={24} sm={24} xs={24}>
             <Suspense fallback={null}>
               <Multiaxial 
-                boxTitle="金融云服务开通增长情况" 
-                title1="金融云各产品线服务开通增长情况"
-                title2="金融云各地区服务开通增长情况"
+                boxTitle="服务开通增长情况" 
+                title1="各产品线服务开通增长情况"
+                title2="各地区服务开通增长情况"
                 loading={loading3}
                 timetype={timetype}
                 selectTimetype={this.selectTimetype}

@@ -68,5 +68,5 @@ export default {
   'menu.friendsCore':'好友中心',
   'menu.ruleCore':'规则中心',
   'menu.fileCore':'文件中心',
-  'menu.search':'搜索',
+  'menu.searchCore':'搜索',
 };
