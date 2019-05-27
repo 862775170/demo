@@ -2,10 +2,6 @@ package com.example.demo.message;
 
 import java.util.Date;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-
 public class FileCopyMessage {
 
 	/**
@@ -22,6 +18,10 @@ public class FileCopyMessage {
 	 */
 	private String sourceFullPath;
 
+	/**
+	 * 源文件Id
+	 */
+	private String sourceFileId;
 	/**
 	 * 源文件名称
 	 */
@@ -45,8 +45,17 @@ public class FileCopyMessage {
 	/**
 	 * 拷贝后文件名
 	 */
-	private String targerFileName;
+	private String targetFileName;
 
+	/**
+	 * 拷贝后文件Id
+	 */
+	private String targerFileId;
+
+	/**
+	 * 拷贝文件的父级目录
+	 */
+	private String targerParentId;
 	/**
 	 * 拷贝时间
 	 */
@@ -100,12 +109,12 @@ public class FileCopyMessage {
 		this.targetUserId = targetUserId;
 	}
 
-	public String getTargerFileName() {
-		return targerFileName;
+	public String getTargetFileName() {
+		return targetFileName;
 	}
 
-	public void setTargerFileName(String targerFileName) {
-		this.targerFileName = targerFileName;
+	public void setTargetFileName(String targetFileName) {
+		this.targetFileName = targetFileName;
 	}
 
 	public Date getCreateTime() {
@@ -124,4 +133,29 @@ public class FileCopyMessage {
 		this.ruleConfirmId = ruleConfirmId;
 	}
 
+	public String getSourceFileId() {
+		return sourceFileId;
+	}
+
+	public void setSourceFileId(String sourceFileId) {
+		this.sourceFileId = sourceFileId;
+	}
+
+	public String getTargerFileId() {
+		return targerFileId;
+	}
+
+	public void setTargerFileId(String targerFileId) {
+		this.targerFileId = targerFileId;
+	}
+
+	public String getTargerParentId() {
+		return targerParentId;
+	}
+
+	public void setTargerParentId(String targerParentId) {
+		this.targerParentId = targerParentId;
+	}
+	
+	
 }

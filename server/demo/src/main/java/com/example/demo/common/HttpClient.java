@@ -48,7 +48,9 @@ public class HttpClient {
 	public <T> ResponseEntity<T> postByJson(String url, Object body, Class<T> t) {
 		String requestUrl = config.getHost() + config.getPrefix() + url;
 		log.debug("request url => {},reqeust body => {}", url, body);
-		return restTemplate.postForEntity(requestUrl, body, t);
+		ResponseEntity<T> postForEntity = restTemplate.postForEntity(requestUrl, body, t);
+		log.debug("request url => {},responese body => {}", url, postForEntity.getBody());
+		return postForEntity;
 
 	}
 }

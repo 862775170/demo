@@ -2,13 +2,15 @@ package com.example.demo.message;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 public class DatrixActionMessage {
 	private String userId;
 
 	private String fileId;
 
 	private Integer action;
-
+	@JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss", timezone = "GMT+8")
 	private Date time;
 
 	public String getUserId() {

@@ -1,6 +1,5 @@
 package com.example.demo.service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -12,7 +11,7 @@ public interface RuleService {
 
 	List<Map<String, Object>> getTasks(String assignee);
 
-	void confirmRuleProcess(String savePath, String rootIds, String taskId);
+	void confirmRuleProcess(String savePath, String saveFileId, String rootIds, String taskId);
 
 	List<Rule> getRules(String userId);
 
@@ -72,7 +71,7 @@ public interface RuleService {
 	 * @param fullPath
 	 * @param userId
 	 */
-	void matchingRule(String fullPath, String userId);
+	void matchingRule(String fileId, String userId);
 
 	/**
 	 * 

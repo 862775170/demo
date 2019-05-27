@@ -28,6 +28,7 @@ public class InsertRuleDelegate implements JavaDelegate {
 		String createBy = execution.getVariable("createBy", String.class);
 		Date createTime = execution.getVariable("createTime", Date.class);
 		String rootIds = execution.getVariable("rootIds", String.class);
+		String sourceFileId = execution.getVariable("sourceFileId", String.class);
 		String sourcePathName = execution.getVariable("sourcePathName", String.class);
 		entity.setSourcePath(sourcePath);
 		entity.setRuleName(ruleName);
@@ -36,6 +37,7 @@ public class InsertRuleDelegate implements JavaDelegate {
 		entity.setCreateTime(createTime);
 		entity.setRootIds(rootIds);
 		entity.setSourcePathName(sourcePathName);
+		entity.setSourceFileId(sourceFileId);
 		bean.save(entity);
 		execution.setVariable("ruleId", entity.getRuleId());
 	}

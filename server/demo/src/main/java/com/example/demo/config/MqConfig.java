@@ -1,45 +1,53 @@
 package com.example.demo.config;
 
-import org.springframework.amqp.core.Queue;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
 @Configuration
 public class MqConfig {
 
-	@Bean
-	public Queue datrixQueue(MqQueueConfig mqQueueConfig) {
-		return new Queue(mqQueueConfig.getDatrixQueue(), true, false, false);
-	}
-
-	@Bean
-	public Queue fileCopyQueue(MqQueueConfig mqQueueConfig) {
-		return new Queue(mqQueueConfig.getFileCopyQueue(), true, false, false);
-	}
+//	@Bean
+//	public Queue datrixQueue(MqQueueConfig mqQueueConfig) {
+//		return new Queue(mqQueueConfig.getDatrixQueue(), true, false, false);
+//	}
+//
+//	@Bean
+//	public Queue fileCopyQueue(MqQueueConfig mqQueueConfig) {
+//		return new Queue(mqQueueConfig.getFileCopyQueue(), true, false, false);
+//	}
 
 	@ConfigurationProperties(prefix = "mq")
 	@Component
-	class MqQueueConfig {
-		private String datrixQueue;
+	public class MqQueueConfig {
+		private String routingKey;
 
-		private String fileCopyQueue;
+		private String exchange;
 
-		public String getDatrixQueue() {
-			return datrixQueue;
+		private String queue;
+
+		public String getRoutingKey() {
+			return routingKey;
 		}
 
-		public void setDatrixQueue(String datrixQueue) {
-			this.datrixQueue = datrixQueue;
+		public void setRoutingKey(String routingKey) {
+			this.routingKey = routingKey;
 		}
 
-		public String getFileCopyQueue() {
-			return fileCopyQueue;
+		public String getExchange() {
+			return exchange;
 		}
 
-		public void setFileCopyQueue(String fileCopyQueue) {
-			this.fileCopyQueue = fileCopyQueue;
+		public void setExchange(String exchange) {
+			this.exchange = exchange;
+		}
+
+		public String getQueue() {
+			return queue;
+		}
+
+		public void setQueue(String queue) {
+			this.queue = queue;
 		}
 	}
 

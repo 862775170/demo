@@ -70,8 +70,8 @@ public class RuleController {
 
 	@PostMapping("/confirmRule")
 	@ApiOperation("接收人却认规则")
-	public Result confirmRule(String savePath, String rootIds, String taskId) {
-		ruleService.confirmRuleProcess(savePath, rootIds, taskId);
+	public Result confirmRule(String savePath, String saveFildId, String rootIds, String taskId) {
+		ruleService.confirmRuleProcess(savePath, saveFildId, rootIds, taskId);
 		return Result.ok();
 	}
 

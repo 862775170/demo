@@ -21,6 +21,8 @@ public class RuleConfirm {
 
 	private Integer ruleId;
 
+	private String saveFileId;
+
 	private String savePath;
 
 	private String savePathName;
@@ -105,5 +107,13 @@ public class RuleConfirm {
 
 	public void setRootIds(String rootIds) {
 		this.rootIds = rootIds;
+	}
+
+	public String getSaveFileId() {
+		return saveFileId;
+	}
+
+	public void setSaveFileId(String saveFileId) {
+		this.saveFileId = saveFileId;
 	}
 }

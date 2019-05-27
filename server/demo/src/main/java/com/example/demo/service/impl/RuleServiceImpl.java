@@ -1,5 +1,7 @@
 package com.example.demo.service.impl;
 
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -7,15 +9,14 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.client.utils.DateUtils;
 import org.flowable.engine.RuntimeService;
 import org.flowable.engine.TaskService;
 import org.flowable.task.api.Task;
-import org.hibernate.validator.constraints.UniqueElements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -24,11 +25,14 @@ import org.springframework.stereotype.Service;
 
 import com.example.demo.common.ObjectUtils;
 import com.example.demo.common.ParamException;
+import com.example.demo.common.UUIDUtils;
+import com.example.demo.config.MqConfig.MqQueueConfig;
 import com.example.demo.dao.RuleConfirmDao;
 import com.example.demo.dao.RuleDao;
 import com.example.demo.entity.Rule;
 import com.example.demo.entity.RuleConfirm;
 import com.example.demo.message.FileCopyMessage;
+import com.example.demo.model.FileInfo;
 import com.example.demo.service.FileService;
 import com.example.demo.service.RuleService;
 import com.example.demo.service.UserService;
@@ -57,6 +61,8 @@ public class RuleServiceImpl implements RuleService {
 	private UserService userService;
 	@Autowired
 	private RabbitTemplate rabbitTemplate;
+	@Autowired
+	private MqQueueConfig mqQueueConfig;
 
 	@Override
 	public void startCreateProcess(Rule rule, String[] userIds) {
@@ -67,6 +73,7 @@ public class RuleServiceImpl implements RuleService {
 		variables.put("ruleName", rule.getRuleName());
 		variables.put("userId", rule.getUserId());
 		variables.put("sourcePath", rule.getSourcePath());
+		variables.put("sourceFileId", rule.getSourceFileId());
 		variables.put("rootIds", rule.getRootIds());
 		variables.put("createTime", rule.getCreateTime());
 		variables.put("sourcePathName", fileService.getFileFullPath(rule.getSourcePath(), rule.getRootIds()));
@@ -91,10 +98,11 @@ public class RuleServiceImpl implements RuleService {
 	}
 
 	@Override
-	public void confirmRuleProcess(String savePath, String rootIds, String taskId) {
+	public void confirmRuleProcess(String savePath, String saveFileId, String rootIds, String taskId) {
 		Map<String, Object> variables = new HashMap<>();
 		variables.put("savePath", savePath);
 		variables.put("rootIds", rootIds);
+		variables.put("saveFileId", saveFileId);
 		variables.put("savePathName", fileService.getFileFullPath(savePath, rootIds));
 		taskService.complete(taskId, variables);
 	}
@@ -243,10 +251,12 @@ public class RuleServiceImpl implements RuleService {
 	}
 
 	@Override
-	public void matchingRule(String fullPath, String userId) {
+	public void matchingRule(String fileId, String userId) {
+		FileInfo fineInfo = fileService.getFineInfo(fileId);
+		String fullPath = fineInfo.getFullPath();
 		List<Rule> rules = ruleDao.findByUserIdAndDeleteTimeIsNull(userId);
 		log.info("matching rule sum=> {}", rules.size());
-		String fileName = getFileName(fullPath);
+		String fileName = fineInfo.getFileId();
 		String sourceFileName = fileName;
 		for (Rule rule : rules) {
 			Integer ruleId = rule.getRuleId();
@@ -258,18 +268,22 @@ public class RuleServiceImpl implements RuleService {
 					log.info("rule confirms is null ruleId=>{}", ruleId);
 				}
 				for (RuleConfirm ruleConfirm : ruleConfirms) {
-					String targetUserId = ruleConfirm.getUserId();
-					String targetFullPath = ruleConfirm.getSavePath() + "/" + fileName;
-					String targerFileName = fileName;
+
 					FileCopyMessage fileCopyMessage = new FileCopyMessage();
 					fileCopyMessage.setRuleConfirmId(ruleConfirm.getId());
 					fileCopyMessage.setRuleId(ruleId);
+					fileCopyMessage.setSourceFileId(fileId);
 					fileCopyMessage.setSourceFullPath(fullPath);
 					fileCopyMessage.setSourceFileName(sourceFileName);
 					fileCopyMessage.setSourceUserId(sourceUserId);
-					fileCopyMessage.setTargetFullPath(targetFullPath);
+
+					FileInfo saveFileInfo = fileService.getFineInfo(ruleConfirm.getSaveFileId());
+					String targetFileId = getNewFileId(fileId);
+					fileCopyMessage.setTargetFullPath(saveFileInfo.getFullPath() + "/" + targetFileId);
+					String targetUserId = ruleConfirm.getUserId();
 					fileCopyMessage.setTargetUserId(targetUserId);
-					fileCopyMessage.setTargerFileName(targerFileName);
+					fileCopyMessage.setTargetFileName(fileName);
+					fileCopyMessage.setTargerFileId(targetFileId);
 					String writeValueAsString;
 					try {
 						writeValueAsString = objectMapper.writeValueAsString(fileCopyMessage);
@@ -277,7 +291,8 @@ public class RuleServiceImpl implements RuleService {
 						log.error(e.getMessage(), e);
 						continue;
 					}
-					rabbitTemplate.convertAndSend("file-copy-queue", writeValueAsString);
+					rabbitTemplate.convertAndSend(mqQueueConfig.getExchange(), mqQueueConfig.getRoutingKey(),
+							writeValueAsString);
 				}
 			} else {
 				log.info("no matching ruleId=>{},fullPath=>{}", rule.getRuleId(), fullPath);
@@ -285,9 +300,14 @@ public class RuleServiceImpl implements RuleService {
 		}
 	}
 
-	private String getFileName(String fullPath) {
-		String[] split = fullPath.split("/");
-		return split[split.length - 1];
+	private String getNewFileId(String oldFileId) {
+		String suffix = "";
+		if (oldFileId.lastIndexOf(".") != -1) {
+			suffix = oldFileId.substring(oldFileId.lastIndexOf("."));
+		}
+		StringBuffer sb = new StringBuffer(DateUtils.formatDate(new Date(), "yyyyMMddHHmmss"));
+		sb.append("_").append(UUIDUtils.generateHexStr()).append("_").append("lv0").append(suffix);
+		return sb.toString();
 	}
 
 	@Override
