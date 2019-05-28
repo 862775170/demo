@@ -3,7 +3,7 @@ import {
     exchageSendIn,
   } from '@/services/file';
   
-  //文件中心
+  // 文件中心
   export default {
     namespace: 'file',
   

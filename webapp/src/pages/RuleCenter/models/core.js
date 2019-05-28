@@ -14,7 +14,7 @@ import {
   ruleConfirmDelete,
 } from '@/services/core';
 
-//规则中心
+// 规则中心
 export default {
   namespace: 'core',
 
@@ -50,17 +50,17 @@ export default {
         payload: response.data,
       });
     },
-    //发送规则  详情 修改
+    // 发送规则  详情 修改
     *getRuleUpdate({ payload, callback }, { call }) {
       const response = yield call(ruleUpdate, payload);
       if (callback) callback(response);  // 后端返回回调
     },
-    //接收人员列表  查询
+    // 接收人员列表  查询
     *getRuleDetails({ payload, callback }, { call }) {
       const response = yield call(ruleDetails, payload);
       if (callback) callback(response);  
     },
-    //接收人员列表  勾选人员删除
+    // 接收人员列表  勾选人员删除
     *getRuleConfirmDelete({ payload, callback }, { call }) {
       const response = yield call(ruleConfirmDelete, payload);
       if (callback) callback(response);  
@@ -79,7 +79,7 @@ export default {
         payload: response.data,
       });
     },
-    //接收规则 详情
+    // 接收规则 详情
     *getRuleConfirmUpdate({ payload, callback }, { call }) {
       const response = yield call(ruleConfirmUpdate, payload);
       if (callback) callback(response);  // 后端返回回调
@@ -92,7 +92,7 @@ export default {
       if (callback) callback(response);  // 后端返回回调
     },
 
-    //接收方 目录结构
+    // 接收方 目录结构
     *getUserGetRootGroup({ payload, callback }, { call }) {
       const response = yield call(userGetRootGroup, payload);
       if (callback) callback(response);  // 后端返回回调
@@ -127,7 +127,7 @@ export default {
       };
     },
 
-    //我的规则 全部列表接口
+    // 我的规则 全部列表接口
     saveMyList(state, action) {
       const result= action.payload.map(d => {
         return {...d,...d.variables,...d.rule}}

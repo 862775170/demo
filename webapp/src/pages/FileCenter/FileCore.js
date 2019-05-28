@@ -63,6 +63,7 @@ class FileCore extends PureComponent {
   };
 
   // 左边栏切换
+  // eslint-disable-next-line react/sort-comp
   leftSidebarToggle = (item) => {
     this.setState({
       crumbs: item.item.props.title,
@@ -70,39 +71,40 @@ class FileCore extends PureComponent {
     const { userId } = this.state;
     switch(item.key){
       case "tab1": 
-        this.coreExchageSendOut(userId);   //已发送1
+        this.coreExchageSendOut(userId);   // 已发送1
         this.setState({ isTask:false });
         break;
       default : 
-        this.coreExchageSendIn(userId);    //已收取2
+        this.coreExchageSendIn(userId);    // 已收取2
         this.setState({ isTask:true });
         break;
     }
-  }
+  };
 
-  //初始化方法
+  // 初始化方法
   componentDidMount() {
     const { userId } = this.state;
-    this.coreExchageSendOut(userId);       //当日发送
+    this.coreExchageSendOut(userId);       // 当日发送
   }
 
   // 已发送
-  coreExchageSendOut = userId => {
+  coreExchageSendOut = id => {
     const { dispatch } = this.props;
     dispatch({
       type: 'file/getExchageSendOut',
       payload: {
-        userId: userId,
+        userId: id,
       }
     });
   };
+
   // 已收取
-  coreExchageSendIn = userId => {
+  coreExchageSendIn = id => {
     const { dispatch } = this.props;
     dispatch({
       type: 'file/getExchageSendIn',
       payload: {
-        userId: userId,
+        userId: id,
       }
     });
   };
@@ -141,13 +143,13 @@ class FileCore extends PureComponent {
             <Breadcrumb.Item>文件中心</Breadcrumb.Item>
             <Breadcrumb.Item>{ crumbs }</Breadcrumb.Item>
           </Breadcrumb>
-          <Divider style={{marginTop: '10px'}}/>
+          <Divider style={{marginTop: '10px'}} />
           <Table
             rowKey="id"
             pagination={false}
             loading={loading}
             dataSource={dataList}
-            columns={ isTask ? this.columns2 : this.columns1 }
+            columns={isTask ? this.columns2 : this.columns1}
             size="middle"
             // eslint-disable-next-line react/jsx-no-duplicate-props
             pagination={paginationProps}

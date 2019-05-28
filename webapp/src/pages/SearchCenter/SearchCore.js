@@ -1,9 +1,7 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
 import {
-  Layout, 
-  Breadcrumb, 
-  Icon, 
+  Breadcrumb,
   Table,
   Button, 
   Col, 
@@ -17,7 +15,6 @@ import {
   Input, 
 } from 'antd';
 
-const { Content } = Layout;
 const FormItem = Form.Item;
 const { Option } = Select;
 
@@ -51,19 +48,18 @@ const columns = [
 class SearchCore extends PureComponent {
 
   state = {
-    userId: sessionStorage.getItem('userid'),       // 获取登录用户的用户ID
-    
+    // userId: sessionStorage.getItem('userid'),       // 获取登录用户的用户ID
   };
 
-  //初始化方法
+  // 初始化方法
   componentDidMount() {
-    //this.coreFriendsList();       // 好友中心 好友列
+    // this.coreFriendsList();       // 好友中心 好友列
   }
 
   render() {
     const { loading, form: { getFieldDecorator } } = this.props;
     
-    //table 假数据
+    // table 假数据
     const dataValue = [
       {
         id: 1,
@@ -149,7 +145,7 @@ class SearchCore extends PureComponent {
           <Breadcrumb>
             <Breadcrumb.Item>搜索</Breadcrumb.Item>
           </Breadcrumb>
-          <Divider style={{height:'1px',left: '-13px'}}/>
+          <Divider style={{height:'1px',left: '-13px'}} />
           <div>{renderAdvancedForm()}</div>
           <Table
             rowKey="id"

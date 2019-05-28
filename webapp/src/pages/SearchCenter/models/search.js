@@ -3,12 +3,12 @@ import {
   ruleRelation,
 } from '@/services/search';
 
-//搜索
+// 搜索
 export default {
   namespace: 'search',
 
   state: {
-    ruleList: [],   //存储好友中心  好友列数据 
+    ruleList: [],   // 存储好友中心  好友列数据 
   },
 
   effects: {

@@ -5,12 +5,12 @@ import {
   receiver,
 } from '@/services/friends';
 
-//规则中心
+// 规则中心
 export default {
   namespace: 'friend',
 
   state: {
-    ruleList: [],   //存储好友中心  好友列数据 
+    ruleList: [],   // 存储好友中心  好友列数据 
   },
 
   effects: {
