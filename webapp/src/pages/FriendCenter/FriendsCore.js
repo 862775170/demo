@@ -109,9 +109,10 @@ class FriendsCore extends PureComponent {
   userList = item => {
     //存储 好友列表用户ID
     const userId = item.key;
+    const value = item.item.props.value;
     this.setState({
       user_Id: userId,
-      user_Name: userId,
+      user_Name: value,
     });
     const { operationkey } = this.state;  //获取tab切换状态
     this.tabs(operationkey, userId);      //不同的用户和tab联动却换
@@ -244,7 +245,7 @@ class FriendsCore extends PureComponent {
           >
             {
               friendsArr.map((item) => {
-                return <Menu.Item key={item.userId} onClick={this.userList} style={{marginTop: '0px'}}>
+                return <Menu.Item key={item.userId} value={item.userName} onClick={this.userList} style={{marginTop: '0px'}}>
                 <Icon type="user" />{item.userName}
               </Menu.Item>
               })

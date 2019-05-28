@@ -17,7 +17,7 @@ export async function ruleRelation(params) {
 // 好友中心 已发送
 export async function sender(params) {
   const { sourceUserId, targetUserId } = params;
-  return request(`${baseurl}/file/exchage?sourceUserId=${sourceUserId}&targetUserId=${targetUserId}`);
+  return request(`${baseurl}/file/exchage?sourceUserId=${targetUserId}&targetUserId=${sourceUserId}`);
 }
 
 // 好友中心 已收取

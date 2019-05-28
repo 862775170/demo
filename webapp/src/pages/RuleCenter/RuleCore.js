@@ -4,6 +4,7 @@ import { Layout, Menu,Alert,Card, Checkbox, Breadcrumb, Icon, Table, Form, Divid
 import DescriptionList from '@/components/DescriptionList';
 import moment from 'moment';
 import { log } from 'util';
+import styles from './models/style.less';
 
 const { TreeNode } = Tree;
 const { Description } = DescriptionList;
@@ -647,7 +648,14 @@ class RuleCore extends PureComponent {
         />
       )
     };
-    const plainOptions = ['Apple', 'Pear', 'Orange'];
+    const formItemLayout = {
+      labelCol: {
+        span: 5,
+      },
+      wrapperCol: {
+        span: 19,
+      },
+    };
     return (
       <Layout style={{width: '100%',height:'90%',position: 'absolute',marginTop: '0px'}}>
         <Sider width={200} style={{ background: '#fff' }}>
@@ -692,13 +700,20 @@ class RuleCore extends PureComponent {
           onCancel={this.saveRuleModalCancel}
         >
           <Card bordered={false} style={{ marginBottom:'20px' }}>
-            <p style={{margin: '0 auto'}}>发送方: {saveRuleoBject.createBy}</p>
-            <p style={{margin: '0 auto'}}>规则描述: {saveRuleoBject.ruleName}</p>
-            <Divider style={{marginTop: '10px'}}/>
-            <p style={{margin: '0 auto'}}>选择路径</p>
-            <Tree loadData={this.onLoadData} onSelect={ this.getOnSelect }>{this.renderTreeNodes(this.state.treeData)}</Tree>
+            <Form layout="horizontal">
+              <Form.Item {...formItemLayout} className={styles.stepFormText} label="发送方">
+                {saveRuleoBject.createBy}
+              </Form.Item>
+              <Form.Item {...formItemLayout} className={styles.stepFormText} label="规则描述">
+                {saveRuleoBject.ruleName}
+              </Form.Item>
+              <Divider style={{ margin: '24px 0' }} />
+              <Form.Item {...formItemLayout} label="选择路径" required={false}>
+                <Tree loadData={this.onLoadData} onSelect={ this.getOnSelect }>{this.renderTreeNodes(this.state.treeData)}</Tree>
+              </Form.Item>
+            </Form>
           </Card>
-        </Modal>    
+        </Modal>     
 
         {/* 发送规则  接收人员列表 */}
         <Modal
@@ -710,12 +725,10 @@ class RuleCore extends PureComponent {
           onOk={this.receiveOk}
           onCancel={this.receiveCancel}
         >
-          <Alert message="勾选删除" type="info" showIcon style={{marginBottom: '10px'}}/>
-          
+          <Alert message="勾选删除" type="info" closable showIcon style={{marginBottom: '10px'}}/>
           <Checkbox.Group style={{ width: '100%' }} onChange={this.onChangEalon}>
             <Row>
-              {
-                ruleDetailsList.map(item => (
+              {ruleDetailsList.map(item => (
                   <Col span={8}>
                     <Checkbox key={item.id} value={item.id}>{ item.userName }</Checkbox>
                   </Col>
@@ -762,11 +775,18 @@ class RuleCore extends PureComponent {
           onCancel={this.ruleModalCancel}
         >
           <Card bordered={false} style={{ marginBottom:'20px' }}>
-            <p style={{margin: '0 auto'}}>发送方: {receiveCurrent.createBy}</p>
-            <p style={{margin: '0 auto'}}>规则描述: {receiveCurrent.ruleName}</p>
-            <Divider style={{marginTop: '10px'}}/>
-            <p style={{margin: '0 auto'}}>选择路径</p>
-            <Tree loadData={this.onLoadData} onSelect={ this.getOnSelect }>{this.renderTreeNodes(this.state.treeData)}</Tree>
+            <Form layout="horizontal">
+              <Form.Item {...formItemLayout} className={styles.stepFormText} label="发送方">
+                {receiveCurrent.createBy}
+              </Form.Item>
+              <Form.Item {...formItemLayout} className={styles.stepFormText} label="规则描述">
+                {receiveCurrent.ruleName}
+              </Form.Item>
+              <Divider style={{ margin: '24px 0' }} />
+              <Form.Item {...formItemLayout} label="选择路径" required={false}>
+                <Tree loadData={this.onLoadData} onSelect={ this.getOnSelect }>{this.renderTreeNodes(this.state.treeData)}</Tree>
+              </Form.Item>
+            </Form>
           </Card>
         </Modal>
 
