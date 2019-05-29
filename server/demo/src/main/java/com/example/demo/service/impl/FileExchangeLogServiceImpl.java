@@ -41,6 +41,9 @@ public class FileExchangeLogServiceImpl implements FileExchangeLogService {
 			if (a.getTargetUserId() != null) {
 				userIds.add(a.getTargetUserId());
 			}
+			if (a.getSourceUserId() != null) {
+				userIds.add(a.getSourceUserId());
+			}
 		});
 
 		if (!ruleIds.isEmpty()) {
@@ -57,7 +60,7 @@ public class FileExchangeLogServiceImpl implements FileExchangeLogService {
 			map.put("sourceFileName", m.getSourceFileName());
 			map.put("sourceUserName", userNames.get(m.getSourceUserId()));
 			map.put("targetUserName", userNames.get(m.getTargetUserId()));
-			map.put("targetFileName", m.getTargerFileName());
+			map.put("targetFileName", m.getTargetFileName());
 			return map;
 		}).collect(Collectors.toList());
 		return collect;
@@ -78,7 +81,9 @@ public class FileExchangeLogServiceImpl implements FileExchangeLogService {
 			if (a.getTargetUserId() != null) {
 				userIds.add(a.getTargetUserId());
 			}
-
+			if (a.getSourceUserId() != null) {
+				userIds.add(a.getSourceUserId());
+			}
 		});
 
 		if (!ruleIds.isEmpty()) {
@@ -133,7 +138,7 @@ public class FileExchangeLogServiceImpl implements FileExchangeLogService {
 			map.put("sourceFileName", m.getSourceFileName());
 			map.put("sourceUserName", userNames.get(m.getSourceUserId()));
 			map.put("targetUserName", userNames.get(m.getTargetUserId()));
-			map.put("targerFileName", m.getTargerFileName());
+			map.put("targerFileName", m.getTargetFileName());
 			return map;
 		}).collect(Collectors.toList());
 		return collect;

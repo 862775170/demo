@@ -52,8 +52,9 @@ public class FileExchangeLog extends FileCopyMessage {
 	/**
 	 * 拷贝后文件名
 	 */
-	private String targerFileName;
+	private String targetFileName;
 
+	private Date sendTime;
 	/**
 	 * 拷贝时间
 	 */
@@ -123,14 +124,6 @@ public class FileExchangeLog extends FileCopyMessage {
 		this.targetUserId = targetUserId;
 	}
 
-	public String getTargerFileName() {
-		return targerFileName;
-	}
-
-	public void setTargerFileName(String targerFileName) {
-		this.targerFileName = targerFileName;
-	}
-
 	public Date getCreateTime() {
 		return createTime;
 	}
@@ -139,4 +132,19 @@ public class FileExchangeLog extends FileCopyMessage {
 		this.createTime = createTime;
 	}
 
+	public String getTargetFileName() {
+		return targetFileName;
+	}
+
+	public void setTargetFileName(String targetFileName) {
+		this.targetFileName = targetFileName;
+	}
+
+	public Date getSendTime() {
+		return sendTime;
+	}
+
+	public void setSendTime(Date sendTime) {
+		this.sendTime = sendTime;
+	}
 }

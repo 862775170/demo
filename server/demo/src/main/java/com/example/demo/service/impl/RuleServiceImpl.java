@@ -170,13 +170,30 @@ public class RuleServiceImpl implements RuleService {
 
 	@Override
 	public List<Map<Object, Object>> getRuleRelation(String userId) {
+		List<Integer> rids = ruleDao.findByUserId(userId).stream().map(m -> m.getRuleId()).collect(Collectors.toList());
 		List<RuleConfirm> ruleConfirm = ruleConfirmDao.findByUserId(userId);
+		ruleConfirm.addAll(ruleConfirmDao.findByRuleIdIn(rids));
+		Set<String> userIds = new HashSet<>();
+		Set<Integer> ruleIds = new HashSet<>();
+		userIds.add(userId);
+		ruleConfirm.stream().forEach(a -> {
+			userIds.add(a.getUserId());
+			ruleIds.add(a.getRuleId());
+		});
+		List<Rule> rules = ruleDao.findByRuleIdIn(new ArrayList<>(ruleIds));
+		Map<Integer, Rule> ruleMap = new HashMap<>();
+		rules.stream().forEach(a -> {
+			userIds.add(a.getUserId());
+			ruleMap.put(a.getRuleId(), a);
+		});
+		Map<String, String> userNames = userService.getUserNames(new ArrayList<>(userIds));
+
 		List<Map<Object, Object>> collect = ruleConfirm.stream().map(m -> {
-			Rule rule = ruleDao.findByRuleId(m.getRuleId());
+			Rule rule = ruleMap.get(m.getRuleId());
 			Map<Object, Object> map = new HashMap<>();
 			map.put("id", m.getId());
-			map.put("sendUserName", rule.getUserId());
-			map.put("receiveUserName", m.getUserId());
+			map.put("sendUserName", userNames.get(rule.getUserId()));
+			map.put("receiveUserName", userNames.get(m.getUserId()));
 			map.put("ruleName", rule.getRuleName());
 			map.put("deleteTime", rule.getDeleteTime());
 			return map;
@@ -251,7 +268,7 @@ public class RuleServiceImpl implements RuleService {
 	}
 
 	@Override
-	public void matchingRule(String fileId, String userId) {
+	public void matchingRule(String fileId, String userId, Date sendTime) {
 		FileInfo fineInfo = fileService.getFineInfo(fileId);
 		String fullPath = fineInfo.getFullPath();
 		List<Rule> rules = ruleDao.findByUserIdAndDeleteTimeIsNull(userId);
@@ -285,6 +302,7 @@ public class RuleServiceImpl implements RuleService {
 					fileCopyMessage.setTargetUserId(targetUserId);
 					fileCopyMessage.setTargetFileName(fileName);
 					fileCopyMessage.setTargerFileId(targetFileId);
+					fileCopyMessage.setSendTime(sendTime);
 					String writeValueAsString;
 					try {
 						writeValueAsString = objectMapper.writeValueAsString(fileCopyMessage);

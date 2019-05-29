@@ -22,17 +22,17 @@ const columns = [
   },
   {
     title: '接收方',
-    dataIndex: 'size',
+    dataIndex: 'receiveUserName',
   },
   {
     title: '规则描述',
     dataIndex: 'ruleName',
   },
-  {
-    title: '时间',
-    dataIndex: 'updatedAt',
-    key: 'updatedAt',
-  },
+  // {
+  //   title: '时间',
+  //   dataIndex: 'updatedAt',
+  //   key: 'updatedAt',
+  // },
 ];
 // 已发送 & 已收取
 const columns2 = [

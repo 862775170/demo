@@ -1,6 +1,7 @@
 package com.example.demo.message.receiver;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,6 +54,7 @@ public class FileCopyReceiver extends BaseReceiver {
 			message.getMessageProperties().getHeaders();
 			FileCopyMessage fileCopyMessage = objectMapper.readValue(message.getBody(), FileCopyMessage.class);
 			FileExchangeLog entity = new FileExchangeLog();
+			entity.setCreateTime(new Date());
 			BeanUtils.copyProperties(fileCopyMessage, entity);
 			// 源文件Id,目标文件名,目标目录
 			String sourceFileId = fileCopyMessage.getSourceFileId();
@@ -61,7 +63,6 @@ public class FileCopyReceiver extends BaseReceiver {
 			String targetUserId = fileCopyMessage.getTargetUserId();
 			fileService.copyObject(sourceFileId, parentId, displayName, targetUserId);
 			fileExchangeLogDao.save(entity);
-			channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
 		} catch (IOException e) {
 			log.error(e.getMessage(), e);
 			MessageProperties messageProperties = message.getMessageProperties();

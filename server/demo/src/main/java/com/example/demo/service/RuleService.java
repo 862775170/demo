@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -70,8 +71,9 @@ public interface RuleService {
 	 * 
 	 * @param fullPath
 	 * @param userId
+	 * @param sendTime 
 	 */
-	void matchingRule(String fileId, String userId);
+	void matchingRule(String fileId, String userId, Date sendTime);
 
 	/**
 	 * 

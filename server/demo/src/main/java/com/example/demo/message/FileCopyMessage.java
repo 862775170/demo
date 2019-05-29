@@ -59,7 +59,7 @@ public class FileCopyMessage {
 	/**
 	 * 拷贝时间
 	 */
-	private Date createTime;
+	private Date sendTime;
 
 	public Integer getRuleId() {
 		return ruleId;
@@ -117,14 +117,6 @@ public class FileCopyMessage {
 		this.targetFileName = targetFileName;
 	}
 
-	public Date getCreateTime() {
-		return createTime;
-	}
-
-	public void setCreateTime(Date createTime) {
-		this.createTime = createTime;
-	}
-
 	public Integer getRuleConfirmId() {
 		return ruleConfirmId;
 	}
@@ -156,6 +148,12 @@ public class FileCopyMessage {
 	public void setTargerParentId(String targerParentId) {
 		this.targerParentId = targerParentId;
 	}
-	
-	
+
+	public Date getSendTime() {
+		return sendTime;
+	}
+
+	public void setSendTime(Date sendTime) {
+		this.sendTime = sendTime;
+	}
 }

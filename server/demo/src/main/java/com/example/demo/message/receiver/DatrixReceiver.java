@@ -1,6 +1,7 @@
 package com.example.demo.message.receiver;
 
 import java.io.IOException;
+import java.util.Date;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,12 +45,13 @@ public class DatrixReceiver extends BaseReceiver {
 		BasicProperties props = getBasicProperties(messageProperties);
 		try {
 			DatrixActionMessage datrixMessage = objectMapper.readValue(message.getBody(), DatrixActionMessage.class);
+			Date sendTime = datrixMessage.getTime();
 			if (datrixMessage.getAction() == null) {
 				log.warn("action is empty msg=>{}", messageRec);
 				this.basicPublish(channel, datrixQueueConfig.getExchange(),
 						datrixQueueConfig.getQueueFailedRoutingKey(), props, body);
 			} else {
-				ruleService.matchingRule(datrixMessage.getFileId(), datrixMessage.getUserId());
+				ruleService.matchingRule(datrixMessage.getFileId(), datrixMessage.getUserId(), sendTime);
 			}
 		} catch (IOException e) {
 			log.error(e.getMessage() + "{}", messageRec, e);
