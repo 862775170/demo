@@ -109,13 +109,24 @@ public class FileServiceImpl implements FileService {
 	}
 
 	@Override
-	public void copyObject(String resourceId, String copySourceId, String displayName, Map<String, Object> meta) {
+	public void copyObject(String sourceFileId, String parentId, String displayName, String targetUserId) {
 		Map<String, Object> body = new HashMap<>();
-		body.put("resourceId", resourceId);
-		body.put("copySourceId", copySourceId);
+		body.put("copySourceId", sourceFileId);
 		body.put("displayName", displayName);
-		body.put("meta", meta);
-		httpClient.postByJson(ApiConstants.api_copy_object, body, JsonObject.class);
+		body.put("userId", targetUserId);
+		body.put("parentId", parentId);
+		ResponseEntity<JsonObject> postByJson = httpClient.postByJson(ApiConstants.api_copy_object, body,
+				JsonObject.class);
+		boolean flag = false;
+		if (postByJson.getBody().has("result")) {
+			JsonObject body2 = postByJson.getBody();
+			if (body2.get("result").isJsonPrimitive()) {
+				flag = body2.get("result").getAsBoolean();
+			}
+		}
+		if (!flag) {
+			throw new RuntimeException("复制文件失败" + postByJson.getBody().toString());
+		}
 	}
 
 }

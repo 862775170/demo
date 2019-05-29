@@ -10,11 +10,10 @@ public interface FileService {
 	FileInfo getFineInfo(String fileId);
 
 	/**
-	 * @param sourceFileId
-	 * @param targetfileName
-	 * @param targetParentId
-	 * @param meta
-	 * @return fileId
+	 * @param sourceFileId 源文件Id
+	 * @param parentId     保存目录
+	 * @param displayName  文件名
+	 * @param targetUserId 用户Id
 	 */
-	void copyObject(String sourceFileId, String targetFileId, String displayName, Map<String, Object> meta);
+	void copyObject(String sourceFileId, String parentId, String displayName, String targetUserId);
 }

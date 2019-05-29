@@ -256,7 +256,7 @@ public class RuleServiceImpl implements RuleService {
 		String fullPath = fineInfo.getFullPath();
 		List<Rule> rules = ruleDao.findByUserIdAndDeleteTimeIsNull(userId);
 		log.info("matching rule sum=> {}", rules.size());
-		String fileName = fineInfo.getFileId();
+		String fileName = fineInfo.getFilename();
 		String sourceFileName = fileName;
 		for (Rule rule : rules) {
 			Integer ruleId = rule.getRuleId();
@@ -281,6 +281,7 @@ public class RuleServiceImpl implements RuleService {
 					String targetFileId = getNewFileId(fileId);
 					fileCopyMessage.setTargetFullPath(saveFileInfo.getFullPath() + "/" + targetFileId);
 					String targetUserId = ruleConfirm.getUserId();
+					fileCopyMessage.setTargerParentId(ruleConfirm.getSaveFileId());
 					fileCopyMessage.setTargetUserId(targetUserId);
 					fileCopyMessage.setTargetFileName(fileName);
 					fileCopyMessage.setTargerFileId(targetFileId);
