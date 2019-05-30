@@ -33,8 +33,6 @@ export default {
   reducers: {
     // 搜索
     saveSearchList(state, action) {
-      console.log(state);
-      console.log(action);
       return {
         ...state,
         searchData: action.payload,
