@@ -18,11 +18,11 @@ import {
 const FormItem = Form.Item;
 const { Option } = Select;
 
-// 规则
+// 搜索
 const columns = [
   {
     title: '发送方',
-    dataIndex: 'sendUserName',
+    dataIndex: 'createTime',
   },
   {
     title: '接收方',
@@ -43,46 +43,41 @@ const columns = [
   search,
   loading: loading.models.search,
 }))
-// 好友中心
+// 搜索
 @Form.create()
 class SearchCore extends PureComponent {
 
   state = {
     // userId: sessionStorage.getItem('userid'),       // 获取登录用户的用户ID
+    sourceFileName: '',
+    sourceUserId: '', 
+    targetUserId: '', 
+    targetFileName: '', 
+    startTime: '', 
+    endTime: '',
   };
 
   // 初始化方法
   componentDidMount() {
-    // this.coreFriendsList();       // 好友中心 好友列
+    this.getSearchList();
+  }
+
+  // 列表方法
+  getSearchList = () => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'search/getFileExchageSearch',
+      payload: {
+        ...this.state,
+        page: 1, 
+        size: 10, 
+      }
+    });
   }
 
   render() {
-    const { loading, form: { getFieldDecorator } } = this.props;
-    
-    // table 假数据
-    const dataValue = [
-      {
-        id: 1,
-        name: '测试文件1',
-        size: 10,
-        status: "正常",
-        updatedAt: '2019-1-12',
-      },
-      {
-        id: 2,
-        name: '测试文件2',
-        size: 10,
-        status: "正常",
-        updatedAt: '2019-1-12',
-      },
-      {
-        id: 3,
-        name: '测试文件3',
-        size: 10,
-        status: "正常",
-        updatedAt: '2019-1-12',
-      }
-    ];
+    const { loading, form: { getFieldDecorator }, search: { searchData } } = this.props;
+    const { list = [], pagination } = searchData;
 
     const renderAdvancedForm = () => {
       return (
@@ -137,6 +132,7 @@ class SearchCore extends PureComponent {
       showSizeChanger: true,
       showQuickJumper: false,
       showTotal: total => `总数 ${total} 条`,
+      ...pagination,
     };
 
     return (
@@ -151,7 +147,7 @@ class SearchCore extends PureComponent {
             rowKey="id"
             pagination={false}
             loading={loading}
-            dataSource={dataValue}
+            dataSource={list}
             columns={columns}
             size="middle"
             // eslint-disable-next-line react/jsx-no-duplicate-props

@@ -1,6 +1,5 @@
 import { 
-  ruleFriends, 
-  ruleRelation,
+  fileExchageSearch, 
 } from '@/services/search';
 
 // 搜索
@@ -8,34 +7,37 @@ export default {
   namespace: 'search',
 
   state: {
-    ruleList: [],   // 存储好友中心  好友列数据 
+ 
   },
 
   effects: {
-    // 好友中心 好友列
-    *getFriends({ payload, callback }, { call }) {
-      const response = yield call(ruleFriends, payload);
-      if (callback) callback(response);  // 后端返回回调
-    },
-
-    // 好友中心 规则
-    *getRuleRelation({ payload }, { call, put }) {
-      const response = yield call(ruleRelation, payload);
+    // 搜索
+    *getFileExchageSearch({ payload }, { call, put }) {
+      const response = yield call(fileExchageSearch, payload);
+      const result = {
+        list: response.data.content,
+        pagination: {
+          total: response.data.totalElements,
+          pageSize: response.data.size,
+          current: response.data.number,
+        },
+      };
       yield put({
-        type: 'saveRuleList',
-        payload: response.data,
-      });
+        type: 'saveSearchList',
+        payload: result,
+      })
     },
 
-    
   },
 
   reducers: {
-    // 好友中心 规则
-    saveRuleList(state, action) {
+    // 搜索
+    saveSearchList(state, action) {
+      console.log(state);
+      console.log(action);
       return {
         ...state,
-        ruleList: action.payload,
+        searchData: action.payload,
       };
     },
 
