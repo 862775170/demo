@@ -148,12 +148,12 @@ public class RuleServiceImpl implements RuleService {
 	}
 
 	@Override
-	public List<Map<Object, Object>> getMyRuleConfirm(String userId) {
+	public List<Map<String, Object>> getMyRuleConfirm(String userId) {
 		List<RuleConfirm> findByUserId = ruleConfirmDao.findByUserId(userId);
-		List<Map<Object, Object>> collect = findByUserId.stream().map(m -> {
+		List<Map<String, Object>> collect = findByUserId.stream().map(m -> {
 			Integer ruleId = m.getRuleId();
 			Rule one = ruleDao.findByRuleId(ruleId);
-			Map<Object, Object> objectToMap = ObjectUtils.objectToMap(m);
+			Map<String, Object> objectToMap = ObjectUtils.objectToMap(m);
 			objectToMap.put("rule", ObjectUtils.objectToMap(one));
 			return objectToMap;
 		}).collect(Collectors.toList());

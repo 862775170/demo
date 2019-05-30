@@ -94,7 +94,7 @@ public class RuleController {
 	@ApiOperation("获得确认的规则")
 	public Result getMyRuleConfirm(String userId) {
 //		Integer userId = TokenUtils.getUserId();
-		List<Map<Object, Object>> rules = ruleService.getMyRuleConfirm(userId);
+		List<Map<String, Object>> rules = ruleService.getMyRuleConfirm(userId);
 		return Result.ok(rules);
 	}
 
@@ -123,4 +123,5 @@ public class RuleController {
 		List<Map<String, Object>> friends = ruleService.getFriendsDetails(ruleId);
 		return Result.ok(friends);
 	}
+	
 }

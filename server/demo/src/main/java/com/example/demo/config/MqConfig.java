@@ -74,13 +74,13 @@ public class MqConfig {
 
 	@Bean
 	public Binding bindingDatrixQueueFailed() {
-		return BindingBuilder.bind(datrixQueueRetry()).to(datrixExchange())
+		return BindingBuilder.bind(datrixQueueFailed()).to(datrixExchange())
 				.with(datrixQueueConfig.getQueueFailedRoutingKey()).noargs();// *表示一个词,#表示零个或多个词
 	}
 
 	@Bean
 	public Binding bindingDatrixQueueRetry() {
-		return BindingBuilder.bind(fileCopyQueueRetry()).to(fileExchange())
+		return BindingBuilder.bind(datrixQueueRetry()).to(datrixExchange())
 				.with(datrixQueueConfig.getQueueRetryRoutingKey()).noargs();// *表示一个词,#表示零个或多个词
 	}
 //

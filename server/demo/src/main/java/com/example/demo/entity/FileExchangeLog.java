@@ -10,7 +10,7 @@ import javax.persistence.Id;
 import com.example.demo.message.FileCopyMessage;
 
 @Entity
-public class FileExchangeLog extends FileCopyMessage {
+public class FileExchangeLog {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Integer id;

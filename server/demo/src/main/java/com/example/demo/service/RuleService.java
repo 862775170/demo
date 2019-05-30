@@ -26,7 +26,7 @@ public interface RuleService {
 	 * @param userId
 	 * @return
 	 */
-	List<Map<Object, Object>> getMyRuleConfirm(String userId);
+	List<Map<String, Object>> getMyRuleConfirm(String userId);
 
 	/**
 	 * 规则关系
@@ -71,7 +71,7 @@ public interface RuleService {
 	 * 
 	 * @param fullPath
 	 * @param userId
-	 * @param sendTime 
+	 * @param sendTime
 	 */
 	void matchingRule(String fileId, String userId, Date sendTime);
 
