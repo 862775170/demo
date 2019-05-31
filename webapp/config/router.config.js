@@ -60,13 +60,6 @@ export default [
         component: './FileCenter/FileCore',
       },
       {
-        // 搜索
-        path: '/searchCore',
-        name: 'searchCore',
-        icon: 'crown',
-        component: './SearchCenter/SearchCore',
-      },
-      {
         path: '/exception',
         routes: [
           {

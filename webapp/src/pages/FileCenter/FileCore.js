@@ -1,8 +1,25 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'dva';
-import { Layout, Menu, Breadcrumb, Icon, Table, Form, Divider } from 'antd';
+import {
+  Layout,
+  Menu, 
+  Breadcrumb, 
+  Icon, 
+  Table, 
+  Form, 
+  Divider,
+  Button, 
+  Col, 
+  Row,   
+  Select,
+  Input, 
+  DatePicker, 
+} from 'antd';
 
+const { RangePicker } = DatePicker;
 const { Content, Sider } = Layout;
+const FormItem = Form.Item;
+const { Option } = Select;
 
 @connect(({ file, loading }) => ({
   file,
@@ -59,66 +76,207 @@ class FileCore extends PureComponent {
   state = {
     userId: sessionStorage.getItem('userid'),       // 获取登录用户的用户ID
     crumbs: '当日发送',
+    startKey: 'tab1',
     isTask: false,
+    parameter:[],    // 查询条件参数
+    friendsArr: [],  // 存储接收人数据
+  };
+
+  // 初始化方法
+  componentDidMount() {
+    this.coreExchageSendOut();       // 当日发送
+    this.coreFriendsList();          // 接收人
+  }
+
+  // 接收人
+  coreFriendsList = () => {
+    const { dispatch } = this.props;
+    const { userId } = this.state;
+    dispatch({
+      type: 'file/getFriends',
+      payload: { userId },
+      callback: (result) => {
+        this.state.friendsArr = result.data;   // 存储接收人数据
+      } 
+    });
   };
 
   // 左边栏切换
-  // eslint-disable-next-line react/sort-comp
   leftSidebarToggle = (item) => {
     this.setState({
       crumbs: item.item.props.title,
+      startKey: item.key,   // 状态  区分是 已发送  还是  已收取
     })
-    const { userId } = this.state;
     switch(item.key){
       case "tab1": 
-        this.coreExchageSendOut(userId);   // 已发送1
+        this.coreExchageSendOut();   // 已发送1
         this.setState({ isTask:false });
         break;
       default : 
-        this.coreExchageSendIn(userId);    // 已收取2
+        this.coreExchageSendIn();    // 已收取2
         this.setState({ isTask:true });
         break;
     }
   };
 
-  // 初始化方法
-  componentDidMount() {
-    const { userId } = this.state;
-    this.coreExchageSendOut(userId);       // 当日发送
-  }
+  // 查询方法
+  handleSearch = e => {
+    e.preventDefault();
+    const { form } = this.props;
+    const { startKey } = this.state;
+    form.validateFields((err, fieldsValue) => {
+      if (err) return;
+      this.state.parameter = fieldsValue;
+      switch(startKey){
+        case "tab1": 
+          this.coreExchageSendOut();   // 已发送1
+          this.setState({ isTask:false });
+          break;
+        default : 
+          this.coreExchageSendIn();    // 已收取2
+          this.setState({ isTask:true });
+          break;
+      }
+    })
+  };
 
   // 已发送
-  coreExchageSendOut = id => {
+  coreExchageSendOut = () => {
     const { dispatch } = this.props;
+    const { parameter } = this.state;   // 查询条件参数
     dispatch({
       type: 'file/getExchageSendOut',
       payload: {
-        userId: id,
+        ...this.state,
+        ...parameter,
+        page: 1, 
+        size: 10, 
+      }
+    });
+  };
+
+  handleTableChange1 = (pagination) => {
+    const { dispatch } = this.props;
+    const { parameter } = this.state;   // 查询条件参数
+    const params = {
+      page: pagination.current,
+      size: pagination.pageSize,
+    };
+    dispatch({
+      type: 'file/getExchageSendOut',
+      payload: {
+        ...this.state,
+        ...parameter,
+        ...params,
       }
     });
   };
 
   // 已收取
-  coreExchageSendIn = id => {
+  coreExchageSendIn = () => {
     const { dispatch } = this.props;
+    const { parameter } = this.state;   // 查询条件参数
     dispatch({
       type: 'file/getExchageSendIn',
       payload: {
-        userId: id,
+        ...this.state,
+        ...parameter,
+        page: 1, 
+        size: 10, 
       }
     });
   };
 
+  handleTableChange2 = (pagination) => {
+    const { dispatch } = this.props;
+    const { parameter } = this.state;   // 查询条件参数
+    const params = {
+      page: pagination.current,
+      size: pagination.pageSize,
+    };
+    dispatch({
+      type: 'file/getExchageSendIn',
+      payload: {
+        ...this.state,
+        ...parameter,
+        ...params,
+      }
+    });
+  };
+
+  // 开始时间   ~     结束时间
+  onChangeTime = (dates) => {
+    this.setState({
+      // eslint-disable-next-line no-underscore-dangle
+      startTime: dates[0]._d.toGMTString(),      // 开始时间
+      // eslint-disable-next-line no-underscore-dangle
+      endTime: dates[1]._d.toGMTString(),        // 结束时间
+    })
+  }
+
 
   render() {
-    const { loading, file: { dataList } } = this.props;
-    const { crumbs, isTask } = this.state;
+    const { loading, form: { getFieldDecorator }, file: { dataList = {} } } = this.props;
+    const { crumbs, isTask, friendsArr } = this.state;
+    const { list = [], pagination } = dataList;
 
     // table组件属性
     const paginationProps = {
       showSizeChanger: true,
       showQuickJumper: false,
       showTotal: total => `总数 ${total} 条`,
+      ...pagination,
+    };
+
+    const renderAdvancedForm = () => {
+      return (
+        <Form onSubmit={this.handleSearch}>
+          <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
+            <Col md={8} sm={24}>
+              <FormItem label="源文件名">
+                {getFieldDecorator('sourceFileName')(
+                  <Input placeholder="输入源文件名" />
+                )}
+              </FormItem>
+            </Col>
+            <Col md={8} sm={24}>
+              <FormItem label="目标文件名">
+                {getFieldDecorator('targetFileName')(
+                  <Input placeholder="输入目标文件名" />
+                )}
+              </FormItem>
+            </Col>
+            <Col md={8} sm={24}>
+              <FormItem label="接收人">
+                {getFieldDecorator('receiver')(
+                  <Select placeholder="请选择">
+                    {
+                      friendsArr.map((item) => {
+                        return <Option value={item.userId}>{item.userName}</Option>
+                      })
+                    }
+                  </Select>
+                )}
+              </FormItem>
+            </Col>
+          </Row>
+          <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
+            <Col md={8} sm={24}>
+              <FormItem label="开始时间 ~ 结束时间">
+                {getFieldDecorator('date')(
+                  <RangePicker size="default" onChange={this.onChangeTime} />
+                )}
+              </FormItem>
+            </Col>
+            <Col md={8} sm={24} style={{height: '79px',paddingTop: '45px'}}>
+              <span>
+                <Button type="primary" htmlType="submit">查询</Button>
+                <Button style={{ marginLeft: 8 }} onClick={this.handleFormReset}>重置</Button>
+              </span>
+            </Col>
+          </Row>
+        </Form>
+      );
     };
 
     return (
@@ -144,15 +302,17 @@ class FileCore extends PureComponent {
             <Breadcrumb.Item>{ crumbs }</Breadcrumb.Item>
           </Breadcrumb>
           <Divider style={{marginTop: '10px'}} />
+          <div>{renderAdvancedForm()}</div>
           <Table
             rowKey="id"
             pagination={false}
             loading={loading}
-            dataSource={dataList}
+            dataSource={list}
             columns={isTask ? this.columns2 : this.columns1}
             size="middle"
             // eslint-disable-next-line react/jsx-no-duplicate-props
             pagination={paginationProps}
+            onChange={isTask ? this.handleTableChange2 : this.handleTableChange1}
           />
         </Content>
       </Layout>
