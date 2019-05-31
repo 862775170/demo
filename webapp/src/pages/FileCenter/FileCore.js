@@ -271,7 +271,6 @@ class FileCore extends PureComponent {
             <Col md={8} sm={24} style={{height: '79px',paddingTop: '45px'}}>
               <span>
                 <Button type="primary" htmlType="submit">查询</Button>
-                <Button style={{ marginLeft: 8 }} onClick={this.handleFormReset}>重置</Button>
               </span>
             </Col>
           </Row>
