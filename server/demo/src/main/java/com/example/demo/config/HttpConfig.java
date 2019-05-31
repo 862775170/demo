@@ -42,7 +42,6 @@ public class HttpConfig {
 		log.info("uri=>{},secretKey=>{}", uri, secretKey);
 		@SuppressWarnings("deprecation")
 		String hmacSha1Hex = HmacUtils.hmacSha1Hex(secretKey, uri);
-		System.out.println(hmacSha1Hex);
 		String sing = Base64.encodeBase64String(hmacSha1Hex.getBytes());
 		buffer.append(":").append(sing);
 

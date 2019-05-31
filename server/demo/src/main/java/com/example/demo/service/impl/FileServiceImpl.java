@@ -19,6 +19,7 @@ import com.example.demo.common.ApiConstants;
 import com.example.demo.common.HttpClient;
 import com.example.demo.common.ParamException;
 import com.example.demo.model.FileInfo;
+import com.example.demo.model.UserInfo;
 import com.example.demo.service.FileService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonArray;
@@ -109,7 +110,7 @@ public class FileServiceImpl implements FileService {
 	}
 
 	@Override
-	public void copyObject(String sourceFileId, String parentId, String displayName, String targetUserId) {
+	public FileInfo copyObject(String sourceFileId, String parentId, String displayName, String targetUserId) {
 		Map<String, Object> body = new HashMap<>();
 		body.put("copySourceId", sourceFileId);
 		body.put("displayName", displayName);
@@ -127,6 +128,10 @@ public class FileServiceImpl implements FileService {
 		if (!flag) {
 			throw new RuntimeException("复制文件失败" + postByJson.getBody().toString());
 		}
+		FileInfo fileInfo = new FileInfo();
+		fileInfo.setUserId(targetUserId);
+		fileInfo.setFilename(displayName);
+		return fileInfo;
 	}
 
 }

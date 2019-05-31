@@ -2,6 +2,7 @@ package com.example.demo.entity;
 
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -27,8 +28,10 @@ public class FileExchangeLog {
 	/**
 	 * 源文件全路径
 	 */
+	@Column(length = 1024)
 	private String sourceFullPath;
 
+	private String sourceFileId;
 	/**
 	 * 源文件名称
 	 */
@@ -42,6 +45,7 @@ public class FileExchangeLog {
 	/**
 	 * 拷贝目标全路径
 	 */
+	@Column(length = 1024)
 	private String targetFullPath;
 
 	/**
@@ -49,6 +53,7 @@ public class FileExchangeLog {
 	 */
 	private String targetUserId;
 
+	private String targetFileId;
 	/**
 	 * 拷贝后文件名
 	 */
@@ -146,5 +151,21 @@ public class FileExchangeLog {
 
 	public void setSendTime(Date sendTime) {
 		this.sendTime = sendTime;
+	}
+
+	public String getSourceFileId() {
+		return sourceFileId;
+	}
+
+	public void setSourceFileId(String sourceFileId) {
+		this.sourceFileId = sourceFileId;
+	}
+
+	public String getTargetFileId() {
+		return targetFileId;
+	}
+
+	public void setTargetFileId(String targetFileId) {
+		this.targetFileId = targetFileId;
 	}
 }

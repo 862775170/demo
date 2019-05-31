@@ -33,6 +33,7 @@ import com.example.demo.entity.Rule;
 import com.example.demo.entity.RuleConfirm;
 import com.example.demo.message.FileCopyMessage;
 import com.example.demo.model.FileInfo;
+import com.example.demo.model.UserInfo;
 import com.example.demo.service.FileService;
 import com.example.demo.service.RuleService;
 import com.example.demo.service.UserService;
@@ -271,6 +272,8 @@ public class RuleServiceImpl implements RuleService {
 	public void matchingRule(String fileId, String userId, Date sendTime) {
 		FileInfo fineInfo = fileService.getFineInfo(fileId);
 		String fullPath = fineInfo.getFullPath();
+		UserInfo userInfo = userService.getUserInfo(userId);
+		String fullPathName = fileService.getFileFullPath(fullPath, userInfo.getRootIds());
 		List<Rule> rules = ruleDao.findByUserIdAndDeleteTimeIsNull(userId);
 		log.info("matching rule sum=> {}", rules.size());
 		String fileName = fineInfo.getFilename();
@@ -278,8 +281,10 @@ public class RuleServiceImpl implements RuleService {
 		for (Rule rule : rules) {
 			Integer ruleId = rule.getRuleId();
 			String sourceUserId = rule.getUserId();
-			String sourcePath = rule.getSourcePath();
-			if (fullPath.indexOf(sourcePath) != -1) {
+			String sourceFileId = rule.getSourceFileId();
+//			FileInfo ruleFileInfo = fileService.getFineInfo(sourceFileId);
+//			String sourcePath = ruleFileInfo.getFullPath();
+			if (fullPath.indexOf(sourceFileId) != -1) {
 				List<RuleConfirm> ruleConfirms = ruleConfirmDao.findByRuleIdAndDeleteTimeIsNull(ruleId);
 				if (ruleConfirms.isEmpty()) {
 					log.info("rule confirms is null ruleId=>{}", ruleId);
@@ -290,18 +295,14 @@ public class RuleServiceImpl implements RuleService {
 					fileCopyMessage.setRuleConfirmId(ruleConfirm.getId());
 					fileCopyMessage.setRuleId(ruleId);
 					fileCopyMessage.setSourceFileId(fileId);
-					fileCopyMessage.setSourceFullPath(fullPath);
+					fileCopyMessage.setSourceFullPath(fullPathName);
 					fileCopyMessage.setSourceFileName(sourceFileName);
 					fileCopyMessage.setSourceUserId(sourceUserId);
 
-					FileInfo saveFileInfo = fileService.getFineInfo(ruleConfirm.getSaveFileId());
-					String targetFileId = getNewFileId(fileId);
-					fileCopyMessage.setTargetFullPath(saveFileInfo.getFullPath() + "/" + targetFileId);
 					String targetUserId = ruleConfirm.getUserId();
 					fileCopyMessage.setTargerParentId(ruleConfirm.getSaveFileId());
 					fileCopyMessage.setTargetUserId(targetUserId);
 					fileCopyMessage.setTargetFileName(fileName);
-					fileCopyMessage.setTargerFileId(targetFileId);
 					fileCopyMessage.setSendTime(sendTime);
 					String writeValueAsString;
 					try {

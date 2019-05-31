@@ -28,6 +28,15 @@ public interface FileExchangeLogService {
 
 	List<Map<String, Object>> getFileLog(String sourceUserId, String targetUserId);
 
+	/**
+	 * 文件发送日志 多条件查询日志
+	 * 
+	 * @param fileExchangeLog 条件
+	 * @param startTime       开始时间
+	 * @param endTime         结束时间
+	 * @param pageable        分页
+	 * @return
+	 */
 	Page<Map<String, Object>> searchFile(FileExchangeLog fileExchangeLog, Date startTime, Date endTime,
 			Pageable pageable);
 

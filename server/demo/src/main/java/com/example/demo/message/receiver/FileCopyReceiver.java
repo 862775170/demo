@@ -24,7 +24,10 @@ import com.example.demo.config.MqConfig.MqQueueConfig;
 import com.example.demo.dao.FileExchangeLogDao;
 import com.example.demo.entity.FileExchangeLog;
 import com.example.demo.message.FileCopyMessage;
+import com.example.demo.model.FileInfo;
+import com.example.demo.model.UserInfo;
 import com.example.demo.service.FileService;
+import com.example.demo.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.AMQP.BasicProperties;
@@ -42,6 +45,8 @@ public class FileCopyReceiver extends BaseReceiver {
 	private FileExchangeLogDao fileExchangeLogDao;
 	@Autowired
 	private FileService fileService;
+	@Autowired
+	private UserService userService;
 	@Autowired
 	private MqQueueConfig mqQueueConfig;
 
@@ -61,7 +66,15 @@ public class FileCopyReceiver extends BaseReceiver {
 			String displayName = fileCopyMessage.getTargetFileName();
 			String parentId = fileCopyMessage.getTargerParentId();
 			String targetUserId = fileCopyMessage.getTargetUserId();
-			fileService.copyObject(sourceFileId, parentId, displayName, targetUserId);
+			FileInfo fileInfo = fileService.copyObject(sourceFileId, parentId, displayName, targetUserId);
+			String targetFileName = fileInfo.getFilename();
+			UserInfo userInfo = userService.getUserInfo(targetUserId);
+			String targetFullPath = fileService.getFileFullPath(fileInfo.getFullPath(), userInfo.getRootIds());
+			String targetFileId = fileInfo.getFileId();
+			entity.setTargetFileName(targetFileName);
+			entity.setTargetFullPath(targetFullPath);
+			entity.setTargetUserId(targetUserId);
+			entity.setTargetFileId(targetFileId);
 			fileExchangeLogDao.save(entity);
 		} catch (IOException e) {
 			log.error(e.getMessage(), e);

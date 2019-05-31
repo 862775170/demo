@@ -33,11 +33,6 @@ public class FileCopyMessage {
 	private String sourceUserId;
 
 	/**
-	 * 拷贝目标全路径
-	 */
-	private String targetFullPath;
-
-	/**
 	 * 拷贝目标人
 	 */
 	private String targetUserId;
@@ -46,11 +41,6 @@ public class FileCopyMessage {
 	 * 拷贝后文件名
 	 */
 	private String targetFileName;
-
-	/**
-	 * 拷贝后文件Id
-	 */
-	private String targerFileId;
 
 	/**
 	 * 拷贝文件的父级目录
@@ -93,14 +83,6 @@ public class FileCopyMessage {
 		this.sourceUserId = sourceUserId;
 	}
 
-	public String getTargetFullPath() {
-		return targetFullPath;
-	}
-
-	public void setTargetFullPath(String targetFullPath) {
-		this.targetFullPath = targetFullPath;
-	}
-
 	public String getTargetUserId() {
 		return targetUserId;
 	}
@@ -131,14 +113,6 @@ public class FileCopyMessage {
 
 	public void setSourceFileId(String sourceFileId) {
 		this.sourceFileId = sourceFileId;
-	}
-
-	public String getTargerFileId() {
-		return targerFileId;
-	}
-
-	public void setTargerFileId(String targerFileId) {
-		this.targerFileId = targerFileId;
 	}
 
 	public String getTargerParentId() {

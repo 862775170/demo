@@ -8,7 +8,7 @@ public class Pages {
 	private String direction; // 排序方式
 
 	public int getPage() {
-		return page;
+		return page > 0 ? page - 1 : 0;
 	}
 
 	public void setPage(int page) {
