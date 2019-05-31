@@ -6,7 +6,7 @@ const baseurl = '/server/api'
 export async function exchageSendOut(params) {
   const sourceUserId = sessionStorage.getItem('userid');       // 获取登录用户的用户ID
   const { 
-    ruleId, 
+    sendout,
     sourceFileName,
     targetFileName,
     receiver,
@@ -16,6 +16,7 @@ export async function exchageSendOut(params) {
     size 
   } = params;
   const targetUserId = receiver;
+  const ruleId = sendout
 
   let json = `page=${page}&size=${size}&sourceUserId=${sourceUserId}`;
   if(ruleId){
@@ -43,7 +44,7 @@ export async function exchageSendOut(params) {
 export async function exchageSendIn(params) {
   const targetUserId = sessionStorage.getItem('userid');       // 获取登录用户的用户ID
   const { 
-    ruleId, 
+    collect, 
     receiver,
     sourceFileName, 
     targetFileName, 
@@ -53,6 +54,7 @@ export async function exchageSendIn(params) {
     size 
   } = params;
   const sourceUserId = receiver;
+  const ruleId = collect;
 
   let json = `page=${page}&size=${size}&targetUserId=${targetUserId}`;
   if(ruleId){
@@ -80,5 +82,17 @@ export async function exchageSendIn(params) {
 export async function ruleFriends(params) {
   const { userId } = params;
   return request(`${baseurl}/rule/getFriends?userId=${userId}`);
+}
+
+// 已发送 规则
+export async function ruleMyRule(params) {
+  const { userId } = params;
+  return request(`${baseurl}/rule/myRule?userId=${userId}`);
+}
+
+// 已收取 规则
+export async function confirmRule(params) {
+  const { userId } = params;
+  return request(`${baseurl}/rule/my/confirm/rule?userId=${userId}`);
 }
 

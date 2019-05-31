@@ -63,7 +63,7 @@ export async function ruleMyRule(params) {
   const { userId } = params;
   return request(`${baseurl}/rule/myRule?userId=${userId}`);
 }
-//发送规则  详情 修改
+// 发送规则  详情 修改
 export async function ruleUpdate(params) {
   return request(`${baseurl}/rule/update`, {
     method: 'POST',
@@ -89,7 +89,7 @@ export async function ruleConfirmDelete(params) {
   });
 }
 
-//发送规则  删除
+// 发送规则  删除
 export async function ruleDelete(params) {
   const { userId, ruleId } = params;
   return request(`${baseurl}/rule/delete?userId=${userId}&ruleId=${ruleId}`, {
@@ -108,7 +108,7 @@ export async function confirmRule(params) {
   return request(`${baseurl}/rule/my/confirm/rule?userId=${userId}`);
 }
 
-//接收规则 修改
+// 接收规则 修改
 export async function ruleConfirmUpdate(params) {
   return request(`${baseurl}/rule/ruleConfirm/update`, {
     method: 'POST',

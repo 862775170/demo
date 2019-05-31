@@ -15,6 +15,7 @@ import {
   Input, 
   DatePicker, 
 } from 'antd';
+import moment from 'moment';
 
 const { RangePicker } = DatePicker;
 const { Content, Sider } = Layout;
@@ -45,7 +46,8 @@ class FileCore extends PureComponent {
     },
     {
       title: '接收时间',
-      dataIndex: 'time',
+      dataIndex: 'createTime',
+      render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>, 
     },
   ]; 
 
@@ -64,8 +66,9 @@ class FileCore extends PureComponent {
       dataIndex: 'targetFileName',
     },
     {
-      title: '发送时间',
-      dataIndex: 'time',
+      title: '接收时间',
+      dataIndex: 'createTime',
+      render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>, 
     },
     {
       title: '文件描述',
@@ -80,12 +83,15 @@ class FileCore extends PureComponent {
     isTask: false,
     parameter:[],    // 查询条件参数
     friendsArr: [],  // 存储接收人数据
+    sendoutArr: [],  // 存储已发送数据
+    collectArr: [],  // 存储已收取数据
   };
 
   // 初始化方法
   componentDidMount() {
     this.coreExchageSendOut();       // 当日发送
     this.coreFriendsList();          // 接收人
+    this.coreSendOutList();          //  已发送 规则
   }
 
   // 接收人
@@ -101,18 +107,47 @@ class FileCore extends PureComponent {
     });
   };
 
+  //  已发送 规则
+  coreSendOutList = () => {
+    const { dispatch } = this.props;
+    const { userId } = this.state;
+    dispatch({
+      type: 'file/getRuleMyRule',
+      payload: { userId },
+      callback: (result) => {
+        this.state.sendoutArr = result.data;   // 存储已发送数据
+      } 
+    });
+  };
+
+  // 已收取 规则
+  coreCollectList = () => {
+    const { dispatch } = this.props;
+    const { userId } = this.state;
+    dispatch({
+      type: 'file/getConfirmRule',
+      payload: { userId },
+      callback: (result) => {
+        this.state.collectArr = result.data;   // 存储已收取数据
+      } 
+    });
+  };
+
   // 左边栏切换
   leftSidebarToggle = (item) => {
     this.setState({
       crumbs: item.item.props.title,
       startKey: item.key,   // 状态  区分是 已发送  还是  已收取
     })
+    this.handleFormReset();  // 重置
     switch(item.key){
       case "tab1": 
+        this.coreSendOutList();          //  已发送 规则
         this.coreExchageSendOut();   // 已发送1
         this.setState({ isTask:false });
         break;
       default : 
+        this.coreCollectList();          //  已收取 规则
         this.coreExchageSendIn();    // 已收取2
         this.setState({ isTask:true });
         break;
@@ -129,11 +164,13 @@ class FileCore extends PureComponent {
       this.state.parameter = fieldsValue;
       switch(startKey){
         case "tab1": 
-          this.coreExchageSendOut();   // 已发送1
+          this.coreSendOutList();          //  已发送 规则
+          this.coreExchageSendOut();       // 已发送1
           this.setState({ isTask:false });
           break;
         default : 
-          this.coreExchageSendIn();    // 已收取2
+          this.coreCollectList();          //  已收取 规则
+          this.coreExchageSendIn();        // 已收取2
           this.setState({ isTask:true });
           break;
       }
@@ -214,10 +251,16 @@ class FileCore extends PureComponent {
     })
   }
 
+  // 重置
+  handleFormReset = () => {
+    const { form } = this.props;
+    form.resetFields();
+  };
+
 
   render() {
     const { loading, form: { getFieldDecorator }, file: { dataList = {} } } = this.props;
-    const { crumbs, isTask, friendsArr } = this.state;
+    const { crumbs, isTask, friendsArr, sendoutArr, collectArr } = this.state;
     const { list = [], pagination } = dataList;
 
     // table组件属性
@@ -252,7 +295,7 @@ class FileCore extends PureComponent {
                   <Select placeholder="请选择">
                     {
                       friendsArr.map((item) => {
-                        return <Option value={item.userId}>{item.userName}</Option>
+                        return <Option key={item.userId} value={item.userId}>{item.userName}</Option>
                       })
                     }
                   </Select>
@@ -261,6 +304,33 @@ class FileCore extends PureComponent {
             </Col>
           </Row>
           <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
+            
+            <Col md={8} sm={24}>
+              {/* 发送规则 */}
+              <FormItem label="规则" style={{display: isTask ? 'none' : 'block'}}>
+                {getFieldDecorator('sendout')(
+                  <Select placeholder="请选择规则.">
+                    {
+                      sendoutArr.map((item) => {
+                        return <Option key={item.ruleId} value={item.ruleId}>{item.ruleName}</Option>
+                      })
+                    }
+                  </Select>
+                )}
+              </FormItem>
+              {/* 收取规则 */}
+              <FormItem label="规则" style={{display: isTask ? 'block' : 'none'}}>
+                {getFieldDecorator('collect')(
+                  <Select placeholder="请选择规则..">
+                    {
+                      collectArr.map((item) => {
+                        return <Option key={item.rule.ruleId} value={item.rule.ruleId}>{item.rule.ruleName}</Option>
+                      })
+                    }
+                  </Select>
+                )}
+              </FormItem>
+            </Col>
             <Col md={8} sm={24}>
               <FormItem label="开始时间 ~ 结束时间">
                 {getFieldDecorator('date')(
@@ -271,6 +341,7 @@ class FileCore extends PureComponent {
             <Col md={8} sm={24} style={{height: '79px',paddingTop: '45px'}}>
               <span>
                 <Button type="primary" htmlType="submit">查询</Button>
+                <Button style={{ marginLeft: 8 }} onClick={this.handleFormReset}>重置</Button>
               </span>
             </Col>
           </Row>

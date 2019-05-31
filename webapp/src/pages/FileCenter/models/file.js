@@ -1,4 +1,10 @@
-import { ruleFriends, exchageSendOut, exchageSendIn } from '@/services/file';
+import { 
+  ruleFriends, 
+  exchageSendOut, 
+  exchageSendIn,
+  ruleMyRule, 
+  confirmRule,
+} from '@/services/file';
   
   // 文件中心
   export default {
@@ -48,6 +54,19 @@ import { ruleFriends, exchageSendOut, exchageSendIn } from '@/services/file';
           payload: result,
         })
       },
+
+      // 已发送 规则
+      *getRuleMyRule({ payload, callback }, { call }) {
+        const response = yield call(ruleMyRule, payload);
+        if (callback) callback(response);  // 后端返回回调
+      },
+
+      // 已收取 规则
+      *getConfirmRule({ payload, callback }, { call }) {
+        const response = yield call(confirmRule, payload);
+        if (callback) callback(response);  // 后端返回回调
+      },
+
     },
   
     reducers: {
