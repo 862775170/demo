@@ -8,19 +8,16 @@ import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.Exchange;
 import org.springframework.amqp.core.ExchangeBuilder;
 import org.springframework.amqp.core.Queue;
-import org.springframework.amqp.core.QueueBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.stereotype.Component;
 
 @Configuration
 public class MqConfig {
 	@Autowired
-	private MqQueueConfig mqQueueConfig;
+	private MqProperties mqQueueConfig;
 	@Autowired
-	private DatrixQueueConfig datrixQueueConfig;
+	private DatrixMqProperties datrixQueueConfig;
 
 	@Bean
 	public Queue fileCopyQueueRetry() {
@@ -89,143 +86,4 @@ public class MqConfig {
 //		return new Queue(mqQueueConfig.getFileCopyQueue(), true, false, false);
 //	}
 
-	@ConfigurationProperties(prefix = "mq")
-	@Component
-	public class MqQueueConfig {
-		private String routingKey;
-
-		private String exchange;
-
-		private String queue;
-
-		private Integer retryTime = 30000;
-
-		private Integer retryCount = 3;
-
-		public String getRoutingKey() {
-			return routingKey;
-		}
-
-		public void setRoutingKey(String routingKey) {
-			this.routingKey = routingKey;
-		}
-
-		public String getExchange() {
-			return exchange;
-		}
-
-		public void setExchange(String exchange) {
-			this.exchange = exchange;
-		}
-
-		public String getQueue() {
-			return queue;
-		}
-
-		public String getQueueRetry() {
-			return queue + ".retry";
-		}
-
-		public String getQueueRetryRoutingKey() {
-			return queue + ".retry.key";
-		}
-
-		public String getQueueFailed() {
-			return queue + ".failed";
-		}
-
-		public String getQueueFailedRoutingKey() {
-			return queue + ".failed.key";
-		}
-
-		public void setQueue(String queue) {
-			this.queue = queue;
-		}
-
-		public Integer getRetryTime() {
-			return retryTime;
-		}
-
-		public void setRetryTime(Integer retryTime) {
-			this.retryTime = retryTime;
-		}
-
-		public Integer getRetryCount() {
-			return retryCount;
-		}
-
-		public void setRetryCount(Integer retryCount) {
-			this.retryCount = retryCount;
-		}
-	}
-
-	@ConfigurationProperties(prefix = "datrix.mq")
-	@Component
-	public class DatrixQueueConfig {
-		private String routingKey;
-
-		private String exchange;
-
-		private String queue;
-
-		private Integer retryTime = 30000;
-
-		private Integer retryCount = 3;
-
-		public String getRoutingKey() {
-			return routingKey;
-		}
-
-		public void setRoutingKey(String routingKey) {
-			this.routingKey = routingKey;
-		}
-
-		public String getExchange() {
-			return exchange;
-		}
-
-		public void setExchange(String exchange) {
-			this.exchange = exchange;
-		}
-
-		public String getQueue() {
-			return queue;
-		}
-
-		public String getQueueRetry() {
-			return queue + ".retry";
-		}
-
-		public String getQueueRetryRoutingKey() {
-			return queue + ".retry.key";
-		}
-
-		public String getQueueFailed() {
-			return queue + ".failed";
-		}
-
-		public String getQueueFailedRoutingKey() {
-			return queue + ".failed.key";
-		}
-
-		public void setQueue(String queue) {
-			this.queue = queue;
-		}
-
-		public Integer getRetryTime() {
-			return retryTime;
-		}
-
-		public void setRetryTime(Integer retryTime) {
-			this.retryTime = retryTime;
-		}
-
-		public Integer getRetryCount() {
-			return retryCount;
-		}
-
-		public void setRetryCount(Integer retryCount) {
-			this.retryCount = retryCount;
-		}
-	}
 }

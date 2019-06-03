@@ -1,7 +1,5 @@
 package com.example.demo.service.impl;
 
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -26,7 +24,7 @@ import org.springframework.stereotype.Service;
 import com.example.demo.common.ObjectUtils;
 import com.example.demo.common.ParamException;
 import com.example.demo.common.UUIDUtils;
-import com.example.demo.config.MqConfig.MqQueueConfig;
+import com.example.demo.config.MqProperties;
 import com.example.demo.dao.RuleConfirmDao;
 import com.example.demo.dao.RuleDao;
 import com.example.demo.entity.Rule;
@@ -63,7 +61,7 @@ public class RuleServiceImpl implements RuleService {
 	@Autowired
 	private RabbitTemplate rabbitTemplate;
 	@Autowired
-	private MqQueueConfig mqQueueConfig;
+	private MqProperties mqQueueConfig;
 
 	@Override
 	public void startCreateProcess(Rule rule, String[] userIds) {

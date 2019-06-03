@@ -2,9 +2,6 @@ package com.example.demo.message.receiver;
 
 import java.io.IOException;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,10 +14,9 @@ import org.springframework.amqp.rabbit.annotation.QueueBinding;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
-import com.example.demo.config.MqConfig.MqQueueConfig;
+import com.example.demo.config.MqProperties;
 import com.example.demo.dao.FileExchangeLogDao;
 import com.example.demo.entity.FileExchangeLog;
 import com.example.demo.message.FileCopyMessage;
@@ -29,7 +25,6 @@ import com.example.demo.model.UserInfo;
 import com.example.demo.service.FileService;
 import com.example.demo.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.AMQP.BasicProperties;
 import com.rabbitmq.client.Channel;
 
@@ -37,8 +32,6 @@ import com.rabbitmq.client.Channel;
 public class FileCopyReceiver extends BaseReceiver {
 
 	private static final Logger log = LoggerFactory.getLogger(FileCopyReceiver.class);
-	@Autowired
-	private Environment env;
 	@Autowired
 	private ObjectMapper objectMapper;
 	@Autowired
@@ -48,7 +41,7 @@ public class FileCopyReceiver extends BaseReceiver {
 	@Autowired
 	private UserService userService;
 	@Autowired
-	private MqQueueConfig mqQueueConfig;
+	private MqProperties mqQueueConfig;
 
 	@RabbitListener(bindings = {
 			@QueueBinding(value = @Queue(value = "${mq.queue}"), exchange = @Exchange(value = "${mq.exchange}", type = ExchangeTypes.DIRECT), key = "${mq.routingKey}") })

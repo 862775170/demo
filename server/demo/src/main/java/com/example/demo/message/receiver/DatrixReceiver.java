@@ -15,9 +15,8 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.example.demo.config.MqConfig.DatrixQueueConfig;
+import com.example.demo.config.DatrixMqProperties;
 import com.example.demo.message.DatrixActionMessage;
-import com.example.demo.service.FileService;
 import com.example.demo.service.RuleService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rabbitmq.client.AMQP.BasicProperties;
@@ -32,9 +31,7 @@ public class DatrixReceiver extends BaseReceiver {
 	@Autowired
 	private RuleService ruleService;
 	@Autowired
-	private FileService fileService;
-	@Autowired
-	private DatrixQueueConfig datrixQueueConfig;
+	private DatrixMqProperties datrixQueueConfig;
 
 	@RabbitListener(bindings = {
 			@QueueBinding(exchange = @Exchange(value = "${datrix.mq.exchange}", type = ExchangeTypes.DIRECT), key = "${datrix.mq.routingKey}", value = @Queue(value = "${datrix.mq.queue}")) })
