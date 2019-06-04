@@ -350,7 +350,7 @@ class FileCore extends PureComponent {
     };
 
     return (
-      <Layout style={{width: '100%',height:'90%',position: 'absolute',marginTop: '0px'}}>
+      <Layout style={{width: '100%',height:'91%',position: 'absolute',marginTop: '0px'}}>
         <Sider width={200} style={{ background: '#fff' }}>
           <Menu
             mode="inline"

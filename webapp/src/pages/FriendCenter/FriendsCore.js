@@ -39,16 +39,16 @@ const columns = [
 // 已发送 
 const columns2 = [
   {
+    title: '规则名',
+    dataIndex: 'ruleName',
+  },
+  {
     title: '源文件名',
     dataIndex: 'sourceFileName',
   },
   {
     title: '保存文件名',
     dataIndex: 'targerFileName',
-  },
-  {
-    title: '规则名',
-    dataIndex: 'ruleName',
   },
   {
     title: '发送时间',
@@ -60,16 +60,16 @@ const columns2 = [
 // 已收取
 const columns3 = [
   {
+    title: '规则名',
+    dataIndex: 'ruleName',
+  },
+  {
     title: '源文件名',
     dataIndex: 'sourceFileName',
   },
   {
     title: '保存文件名',
     dataIndex: 'targerFileName',
-  },
-  {
-    title: '规则名',
-    dataIndex: 'ruleName',
   },
   {
     title: '接收时间',
@@ -260,7 +260,7 @@ class FriendsCore extends PureComponent {
     };
 
     return (
-      <Layout style={{width: '100%',height:'90%',position: 'absolute',marginTop: '0px'}}>
+      <Layout style={{width: '100%',height:'91%',position: 'absolute',marginTop: '0px'}}>
         <Sider width={200}>
           <Menu
             mode="inline"
