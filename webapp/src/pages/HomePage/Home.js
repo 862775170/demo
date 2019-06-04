@@ -70,7 +70,12 @@ class Home extends PureComponent {
   state = {
     userName: sessionStorage.getItem('userInfo'),       // 获取登录用户的用户名称
     userId: sessionStorage.getItem('userid'),       // 获取登录用户的用户ID
-    sizeArray: {},    // 存储 本日 (发送、接收)  和  历史(发送、接收)  次数
+    sizeArray: {          // 存储 本日 (发送、接收)  和  历史(发送、接收)  次数      
+      "toDayReceive": 0,  
+      "toDaySend": 0,  
+      "receive":0,
+      "send": 0,
+    },    
     friendsArr: 0,    // 好友个数
     tasksArr: 0,      // 待确认规则 个数
   };
@@ -211,7 +216,7 @@ class Home extends PureComponent {
     const extraContent = (
       <div className={styles.extraContent}>
         <div className={styles.statItem}>
-          <p>好友人数</p>
+          <p>好友</p>
           <p>{friendsArr}</p>
         </div>
         <div className={styles.statItem}>
@@ -219,17 +224,17 @@ class Home extends PureComponent {
           <p>{tasksArr}</p>
         </div>
         <div className={styles.statItem}>
-          <p>发送/接收 规则</p>
-          <p>1 <span> / 12</span></p>
-        </div>
-        <div className={styles.statItem}>
-          <p>本日 发送/接收</p>
-          <p>{sizeArray.toDaySend} <span> / {sizeArray.toDayReceive}</span></p>
+          <p>发送规则</p>
+          <p>{sizeArray.send}</p>
         </div>
         {/* <div className={styles.statItem}>
-          <p>历史 发送/接收</p>
-          <p>{sizeArray.send} <span> / {sizeArray.receive}</span></p>
+          <p>本日 发送/接收</p>
+          <p>{sizeArray.toDaySend} <span> / {sizeArray.toDayReceive}</span></p>
         </div> */}
+        <div className={styles.statItem}>
+          <p>接收规则</p>
+          <p>{sizeArray.receive}</p>
+        </div>
       </div>
     );
 
@@ -284,7 +289,7 @@ class Home extends PureComponent {
                 dataSource={list}
                 style={{padding: '0 40px'}}
                 renderItem={item => (
-                  <List.Item actions={[ <a>编辑</a> ]}>
+                  <List.Item>
                     <List.Item.Meta
                       avatar={<Avatar src={headportrait} shape="square" size="large" />}
                       title={<a href={item.href}>{item.title}</a>}
@@ -315,7 +320,7 @@ class Home extends PureComponent {
                 dataSource={list}
                 style={{padding: '0 40px'}}
                 renderItem={item => (
-                  <List.Item actions={[ <a>编辑</a> ]}>
+                  <List.Item>
                     <List.Item.Meta
                       avatar={<Avatar src={headportrait} shape="square" size="large" />}
                       title={<a href={item.href}>{item.title}</a>}

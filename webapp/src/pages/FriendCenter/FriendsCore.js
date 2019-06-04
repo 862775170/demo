@@ -9,6 +9,7 @@ import {
   Table,
   Form,  
   Divider,
+  Alert,
 } from 'antd';
 import moment from 'moment';
 
@@ -91,6 +92,7 @@ class FriendsCore extends PureComponent {
     friendsName: '',           // 好友列表用户名
     friendsArr: [],          // 存储好友列表数据
     operationkey: 'tab1',    // 用于存储切换的是哪个tab
+    isTips: true,           // 左边栏没数据提示
   };
 
   // 初始化方法
@@ -107,14 +109,21 @@ class FriendsCore extends PureComponent {
       payload: { userId },
       callback: (result) => {
         // 存储 好友列表用户ID
-        const userIds = result.data[0].userId;
-        const {userName} = result.data[0];
-        this.setState({
-          friendsId: userIds,
-          friendsName: userName,
-        });
-        this.state.friendsArr = result.data;   // 存储好友列表数据
-        this.coreRuleRelation(userId);      // 好友中心 规则
+        if(result.data.length > 0){
+          const userIds = result.data[0].userId;
+          const {userName} = result.data[0];
+          this.setState({
+            friendsId: userIds,
+            friendsName: userName,
+            isTips: true,
+          });
+          this.state.friendsArr = result.data;   // 存储好友列表数据
+          this.coreRuleRelation(userId);      // 好友中心 规则
+        }else{
+          this.setState({
+            isTips: false,
+          });
+        }
       } 
     });
   }
@@ -202,7 +211,7 @@ class FriendsCore extends PureComponent {
       form: {getFieldDecorator}, 
       friend: { ruleList },   // 规则列表返回数据
     } = this.props;
-    const { operationkey, friendsArr, friendsName } = this.state;
+    const { operationkey, friendsArr, friendsName, isTips } = this.state;
 
     // table组件属性
     const paginationProps = {
@@ -255,14 +264,15 @@ class FriendsCore extends PureComponent {
         <Sider width={200}>
           <Menu
             mode="inline"
-            defaultSelectedKeys={['admin']}
+            // defaultSelectedKeys={friendsName}
             defaultOpenKeys={['sub1']}
             style={{ height: '100%', borderRight: '1px solid #e8e8e8' }}
           >
             {
-              friendsArr.map((item) => {
-                return <Menu.Item key={item.userId} value={item.userName} onClick={this.userList} style={{marginTop: '0px'}}><Icon type="user" />{item.userName}</Menu.Item>
-              })
+              isTips ?
+                friendsArr.map((item) => { 
+                  return <Menu.Item key={item.userId} value={item.userName} onClick={this.userList} style={{marginTop: '0px'}}><Icon type="user" />{item.userName}</Menu.Item>
+                }) : <Alert message="暂无数据" type="info" style={{padding:'10px'}} />
             }
           </Menu>
         </Sider>
