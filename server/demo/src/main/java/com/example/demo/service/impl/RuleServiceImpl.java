@@ -2,6 +2,7 @@ package com.example.demo.service.impl;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -9,6 +10,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import javax.persistence.Tuple;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Selection;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.utils.DateUtils;
@@ -19,12 +26,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.common.ObjectUtils;
 import com.example.demo.common.ParamException;
 import com.example.demo.common.UUIDUtils;
 import com.example.demo.config.MqProperties;
+import com.example.demo.dao.FileExchangeLogDao;
 import com.example.demo.dao.RuleConfirmDao;
 import com.example.demo.dao.RuleDao;
 import com.example.demo.entity.Rule;
@@ -32,6 +43,7 @@ import com.example.demo.entity.RuleConfirm;
 import com.example.demo.message.FileCopyMessage;
 import com.example.demo.model.FileInfo;
 import com.example.demo.model.UserInfo;
+import com.example.demo.service.FileExchangeLogService;
 import com.example.demo.service.FileService;
 import com.example.demo.service.RuleService;
 import com.example.demo.service.UserService;
@@ -62,6 +74,8 @@ public class RuleServiceImpl implements RuleService {
 	private RabbitTemplate rabbitTemplate;
 	@Autowired
 	private MqProperties mqQueueConfig;
+	@Autowired
+	private FileExchangeLogDao fileExchangeLogDao;
 
 	@Override
 	public void startCreateProcess(Rule rule, String[] userIds) {
@@ -107,9 +121,13 @@ public class RuleServiceImpl implements RuleService {
 	}
 
 	@Override
-	public List<Rule> getRules(String userId) {
+	public List<Map<String, Object>> getRules(String userId) {
 		List<Rule> findByUserId = ruleDao.findByUserIdAndDeleteTimeIsNull(userId);
-		return findByUserId;
+		List<Map<String, Object>> collect = findByUserId.stream().map(r -> {
+			Map<String, Object> objectToMap = ObjectUtils.objectToMap(r);
+			return objectToMap;
+		}).collect(Collectors.toList());
+		return collect;
 	}
 
 	@Override
@@ -149,11 +167,27 @@ public class RuleServiceImpl implements RuleService {
 	@Override
 	public List<Map<String, Object>> getMyRuleConfirm(String userId) {
 		List<RuleConfirm> findByUserId = ruleConfirmDao.findByUserId(userId);
+		Set<Integer> ruleIds = new HashSet<>();
+		Set<String> userIds = new HashSet<>();
+		findByUserId.forEach(r -> {
+			ruleIds.add(r.getRuleId());
+			userIds.add(r.getUserId());
+		});
+		Map<Integer, Rule> ruleMap = new HashMap<>();
+		List<Rule> rules = ruleDao.findByRuleIdIn(ruleIds);
+		rules.forEach(r -> {
+			ruleMap.put(r.getRuleId(), r);
+			userIds.add(r.getUserId());
+		});
+		Map<String, String> userNames = userService.getUserNames(userIds);
 		List<Map<String, Object>> collect = findByUserId.stream().map(m -> {
 			Integer ruleId = m.getRuleId();
-			Rule one = ruleDao.findByRuleId(ruleId);
+			Rule one = ruleMap.get(ruleId);
 			Map<String, Object> objectToMap = ObjectUtils.objectToMap(m);
-			objectToMap.put("rule", ObjectUtils.objectToMap(one));
+			Map<String, Object> ruleMo = ObjectUtils.objectToMap(one);
+			objectToMap.put("receiverUserName", userNames.get(one.getUserId()));
+			objectToMap.put("sendUserName", userNames.get(m.getUserId()));
+			objectToMap.put("rule", ruleMo);
 			return objectToMap;
 		}).collect(Collectors.toList());
 		return collect;
@@ -318,24 +352,56 @@ public class RuleServiceImpl implements RuleService {
 		}
 	}
 
-	private String getNewFileId(String oldFileId) {
-		String suffix = "";
-		if (oldFileId.lastIndexOf(".") != -1) {
-			suffix = oldFileId.substring(oldFileId.lastIndexOf("."));
-		}
-		StringBuffer sb = new StringBuffer(DateUtils.formatDate(new Date(), "yyyyMMddHHmmss"));
-		sb.append("_").append(UUIDUtils.generateHexStr()).append("_").append("lv0").append(suffix);
-		return sb.toString();
-	}
-
 	@Override
-	public Map<Integer, String> getRuleMap(List<Integer> ruleIds) {
+	public Map<Integer, String> getRuleMap(Collection<Integer> ruleIds) {
 		List<Rule> rules = ruleDao.findByRuleIdIn(ruleIds);
 		Map<Integer, String> map = new HashMap<>();
 		rules.forEach(r -> {
 			map.put(r.getRuleId(), r.getRuleName());
 		});
 		return map;
+	}
+
+	@Override
+	public Page<Map<String, Object>> getRuleCount(String userId, Pageable pageable) {
+		Rule rule = new Rule();
+		rule.setUserId(userId);
+
+		Page<Rule> findAll = ruleDao.findAll(Example.of(rule), pageable);
+		Page<Map<String, Object>> map = findAll.map(s -> {
+			Map<String, Object> obj = ObjectUtils.objectToMap(s);
+			obj.put("countSendFile", fileExchangeLogDao.countByRuleId(s.getRuleId()));
+//			obj.put("countSendUser", fileExchangeLogDao.findByRuleIdGroupByTargetUserId(s.getRuleId()).size());
+			return obj;
+		});
+		return map;
+	}
+
+	@Override
+	public Page<Map<String, Object>> getRuleReceiveCount(String userId, Pageable pageable) {
+		RuleConfirm ruleConfirm = new RuleConfirm();
+		ruleConfirm.setUserId(userId);
+		Page<RuleConfirm> findAll = ruleConfirmDao.findAll(Example.of(ruleConfirm), pageable);
+		Set<Integer> ruleIds = new HashSet<>();
+
+		findAll.forEach(a -> {
+			ruleIds.add(a.getRuleId());
+		});
+		Map<Integer, String> ruleMap = getRuleMap(ruleIds);
+		Page<Map<String, Object>> results = findAll.map(m -> {
+			Map<String, Object> map = new HashMap<>();
+			map.put("ruleName", ruleMap.get(m.getRuleId()));
+			map.put("count", fileExchangeLogDao.countByRuleId(m.getRuleId()));
+			return map;
+		});
+		return results;
+	}
+
+	@Override
+	public Long countByUserId(String userId) {
+		Rule rule = new Rule();
+		rule.setUserId(userId);
+		return ruleDao.count(Example.of(rule));
 	}
 
 }

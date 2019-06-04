@@ -1,6 +1,7 @@
 package com.example.demo.service.impl;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -17,19 +18,18 @@ import javax.persistence.criteria.Root;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
-import org.springframework.data.domain.ExampleMatcher;
-import org.springframework.data.domain.ExampleMatcher.GenericPropertyMatcher;
-import org.springframework.data.domain.ExampleMatcher.GenericPropertyMatchers;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.common.ObjectUtils;
+import com.example.demo.common.PageUtils;
+import com.example.demo.common.Pages;
 import com.example.demo.dao.FileExchangeLogDao;
 import com.example.demo.entity.FileExchangeLog;
 import com.example.demo.service.FileExchangeLogService;
+import com.example.demo.service.RuleConfirmService;
 import com.example.demo.service.RuleService;
 import com.example.demo.service.UserService;
 
@@ -41,6 +41,8 @@ public class FileExchangeLogServiceImpl implements FileExchangeLogService {
 	private UserService userService;
 	@Autowired
 	private RuleService ruleService;
+	@Autowired
+	private RuleConfirmService ruleConfirmService;
 
 	@Override
 	public List<Map<String, Object>> getSendInLog(String userId) {
@@ -235,5 +237,88 @@ public class FileExchangeLogServiceImpl implements FileExchangeLogService {
 //		Example<FileExchangeLog> example = Example.of(fileExchangeLog, matcher);
 //		Page<FileExchangeLog> page = fileExchangeLogDao.findAll(example, pageable);
 		return map;
+	}
+
+	@Override
+	public Map<String, Object> getFileCount(String userId) {
+		FileExchangeLog fileExchangeLog = new FileExchangeLog();
+		fileExchangeLog.setSourceUserId(userId);
+		Map<String, Object> map = new HashMap<>();
+		map.put("send", fileExchangeLogDao.count(Example.of(fileExchangeLog)));
+		FileExchangeLog targetFilelog = new FileExchangeLog();
+		targetFilelog.setTargetUserId(userId);
+		map.put("receive", fileExchangeLogDao.count(Example.of(targetFilelog)));
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(new Date());
+		calendar.set(Calendar.HOUR_OF_DAY, 0);
+		calendar.set(Calendar.MINUTE, 0);
+		calendar.set(Calendar.SECOND, 0);
+		Date zero = calendar.getTime();
+		calendar.set(Calendar.HOUR_OF_DAY, 23);
+		calendar.set(Calendar.MINUTE, 59);
+		calendar.set(Calendar.SECOND, 59);
+		Date twelve = calendar.getTime();
+		// to day
+		map.put("toDaySend", fileExchangeLogDao.count((root, query, criteriaBuilder) -> {
+
+			Predicate equal = criteriaBuilder.equal(root.get("sourceUserId").as(String.class), userId);
+			Predicate greaterThanOrEqualTo = criteriaBuilder.greaterThanOrEqualTo(root.get("createTime").as(Date.class),
+					zero);
+			Predicate lessThanOrEqualTo = criteriaBuilder.lessThanOrEqualTo(root.get("createTime").as(Date.class),
+					twelve);
+			return criteriaBuilder.and(equal, greaterThanOrEqualTo, lessThanOrEqualTo);
+		}));
+		map.put("toDayReceive", fileExchangeLogDao.count((root, query, criteriaBuilder) -> {
+
+			Predicate equal = criteriaBuilder.equal(root.get("targetUserId").as(String.class), userId);
+			Predicate greaterThanOrEqualTo = criteriaBuilder.greaterThanOrEqualTo(root.get("createTime").as(Date.class),
+					zero);
+			Predicate lessThanOrEqualTo = criteriaBuilder.lessThanOrEqualTo(root.get("createTime").as(Date.class),
+					twelve);
+			return criteriaBuilder.and(equal, greaterThanOrEqualTo, lessThanOrEqualTo);
+		}));
+
+		map.put("rule", ruleService.countByUserId(userId));
+		map.put("confirm", ruleConfirmService.countByUserId(userId));
+		map.put("unConfirm", ruleService.getTasks(userId).size());
+		return map;
+	}
+
+	@Override
+	public List<Map<String, Object>> getToDaySendLately100(String userId) {
+		Pages pages = new Pages();
+		pages.setSize(100);
+		pages.setSortColumn("createTime");
+		pages.setDirection("desc");
+		Pageable pageable = PageUtils.createPageRequest(pages);
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(new Date());
+		calendar.set(Calendar.HOUR_OF_DAY, 0);
+		calendar.set(Calendar.MINUTE, 0);
+		calendar.set(Calendar.SECOND, 0);
+		Date zero = calendar.getTime();
+		calendar.set(Calendar.HOUR_OF_DAY, 23);
+		calendar.set(Calendar.MINUTE, 59);
+		calendar.set(Calendar.SECOND, 59);
+		Date twelve = calendar.getTime();
+		Page<FileExchangeLog> findAll = fileExchangeLogDao.findAll((root, query, criteriaBuilder) -> {
+
+			Predicate equal = criteriaBuilder.equal(root.get("sourceUserId").as(String.class), userId);
+			Predicate greaterThanOrEqualTo = criteriaBuilder.greaterThanOrEqualTo(root.get("createTime").as(Date.class),
+					zero);
+			Predicate lessThanOrEqualTo = criteriaBuilder.lessThanOrEqualTo(root.get("createTime").as(Date.class),
+					twelve);
+			return criteriaBuilder.and(equal, greaterThanOrEqualTo, lessThanOrEqualTo);
+		}, pageable);
+		Set<String> userIds = new HashSet<>();
+		Set<Integer> ruleIds = new HashSet<>();
+		findAll.forEach(f -> {
+			userIds.add(f.getSourceUserId());
+			userIds.add(f.getTargetUserId());
+			ruleIds.add(f.getRuleId());
+		});
+		ruleService.getRuleMap(ruleIds);
+		userService.getUserNames(userIds);
+		return null;
 	}
 }

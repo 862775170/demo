@@ -1,6 +1,6 @@
 package com.example.demo.service;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
 
 import com.example.demo.model.UserInfo;
@@ -12,7 +12,7 @@ public interface UserService {
 	 * @param userIds
 	 * @return
 	 */
-	Map<String, String> getUserNames(List<String> userIds);
+	Map<String, String> getUserNames(Collection<String> userIds);
 
 	/**
 	 * 获得用户详情

@@ -1,8 +1,12 @@
 package com.example.demo.service;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import com.example.demo.entity.Rule;
 import com.example.demo.entity.RuleConfirm;
@@ -40,7 +44,7 @@ public interface RuleService {
 	 * @param userId
 	 * @return
 	 */
-	List<Rule> getRules(String userId);
+	List<Map<String, Object>> getRules(String userId);
 
 	/**
 	 * 获得我的好友
@@ -129,6 +133,19 @@ public interface RuleService {
 	 * @param arrayList
 	 * @return
 	 */
-	Map<Integer, String> getRuleMap(List<Integer> arrayList);
+	Map<Integer, String> getRuleMap(Collection<Integer> arrayList);
+
+	/**
+	 * 获得规则发送了多少文件和接收多少人
+	 * 
+	 * @param userId
+	 * @param pageable
+	 * @return
+	 */
+	Page<Map<String, Object>> getRuleCount(String userId, Pageable pageable);
+
+	Page<Map<String, Object>> getRuleReceiveCount(String userId, Pageable pageable);
+
+	Long countByUserId(String userId);
 
 }

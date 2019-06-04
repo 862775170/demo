@@ -40,4 +40,20 @@ public interface FileExchangeLogService {
 	Page<Map<String, Object>> searchFile(FileExchangeLog fileExchangeLog, Date startTime, Date endTime,
 			Pageable pageable);
 
+	/**
+	 * 获得用户收发文件个数
+	 * 
+	 * @param userId
+	 * @return
+	 */
+	Map<String, Object> getFileCount(String userId);
+
+	/**
+	 * 获得当天最近100 条记录
+	 * 
+	 * @param userId
+	 * @return
+	 */
+	List<Map<String, Object>> getToDaySendLately100(String userId);
+
 }

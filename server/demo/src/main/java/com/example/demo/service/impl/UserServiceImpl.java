@@ -1,8 +1,8 @@
 package com.example.demo.service.impl;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -31,7 +31,7 @@ public class UserServiceImpl implements UserService {
 	private ObjectMapper objectMapper;
 
 	@Override
-	public Map<String, String> getUserNames(List<String> userIds) {
+	public Map<String, String> getUserNames(Collection<String> userIds) {
 		Map<String, String> result = new HashMap<>();
 		if (userIds.isEmpty()) {
 			return result;

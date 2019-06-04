@@ -1,5 +1,6 @@
 package com.example.demo.dao;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,7 +13,7 @@ public interface RuleDao extends JpaRepository<Rule, Integer> {
 
 	Rule findByRuleId(Integer ruleId);
 
-	List<Rule> findByRuleIdIn(List<Integer> ruleIds);
+	List<Rule> findByRuleIdIn(Collection<Integer> ruleIds);
 
 	List<Rule> findByUserIdAndDeleteTimeIsNull(String userId);
 }

@@ -118,19 +118,17 @@ public class FileServiceImpl implements FileService {
 		body.put("parentId", parentId);
 		ResponseEntity<JsonObject> postByJson = httpClient.postByJson(ApiConstants.api_copy_object, body,
 				JsonObject.class);
-		boolean flag = false;
+		String fileId = null;
 		if (postByJson.getBody().has("result")) {
 			JsonObject body2 = postByJson.getBody();
 			if (body2.get("result").isJsonPrimitive()) {
-				flag = body2.get("result").getAsBoolean();
+				fileId = body2.get("result").getAsString();
 			}
 		}
-		if (!flag) {
+		if (fileId == null) {
 			throw new RuntimeException("复制文件失败" + postByJson.getBody().toString());
 		}
-		FileInfo fileInfo = new FileInfo();
-		fileInfo.setUserId(targetUserId);
-		fileInfo.setFilename(displayName);
+		FileInfo fileInfo = getFineInfo(fileId);
 		return fileInfo;
 	}
 

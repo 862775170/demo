@@ -6,12 +6,16 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.common.PageUtils;
+import com.example.demo.common.Pages;
 import com.example.demo.common.ParamException;
 import com.example.demo.common.Result;
 import com.example.demo.entity.Rule;
@@ -86,7 +90,7 @@ public class RuleController {
 	@ApiOperation("获得我发起规则")
 	public Result getMyRule(String userId) {
 
-		List<Rule> rules = ruleService.getRules(userId);
+		List<Map<String, Object>> rules = ruleService.getRules(userId);
 		return Result.ok(rules);
 	}
 
@@ -123,5 +127,20 @@ public class RuleController {
 		List<Map<String, Object>> friends = ruleService.getFriendsDetails(ruleId);
 		return Result.ok(friends);
 	}
-	
+
+	@GetMapping("/getRuleCount")
+	@ApiOperation("获得规则发送了多少文件和接收人数")
+	public Result getRuleSendCount(String userId, Pages pages) {
+		Pageable pageable = PageUtils.createPageRequest(pages);
+		Page<Map<String, Object>> page = ruleService.getRuleCount(userId, pageable);
+		return Result.ok(page);
+	}
+
+	@GetMapping("/getRuleReceiveCount")
+	@ApiOperation("获得对于规则接收了多少文件")
+	public Result getRuleReceiveCount(String userId, Pages pages) {
+		Pageable pageable = PageUtils.createPageRequest(pages);
+		Page<Map<String, Object>> page = ruleService.getRuleReceiveCount(userId, pageable);
+		return Result.ok(page);
+	}
 }

@@ -33,12 +33,18 @@ public class PageUtils {
 
 	@SuppressWarnings("deprecation")
 	public static Pageable createPageRequest(Pages pages) {
-		return new PageRequest(pages.getPage() <= 0 ? PAGE : pages.getPage(),
-				pages.getSize() <= 0 ? SIZE : pages.getSize(),
-				new Sort(
-						null != pages.getDirection() && !"".equals(pages.getDirection())
-								&& pages.getDirection().equals("desc") ? Direction.DESC : Direction.ASC,
-						StringUtils.isEmpty(pages.getSortColumn()) ? ID : pages.getSortColumn()));
+		if (StringUtils.isEmpty(pages.getSortColumn())) {
+			return new PageRequest(pages.getPage() <= 0 ? PAGE : pages.getPage(),
+					pages.getSize() <= 0 ? SIZE : pages.getSize());
+		} else {
+			return new PageRequest(pages.getPage() <= 0 ? PAGE : pages.getPage(),
+					pages.getSize() <= 0 ? SIZE : pages.getSize(),
+					new Sort(
+							null != pages.getDirection() && !"".equals(pages.getDirection())
+									&& pages.getDirection().equals("desc") ? Direction.DESC : Direction.ASC,
+							StringUtils.isEmpty(pages.getSortColumn()) ? ID : pages.getSortColumn()));
+		}
+
 	}
 
 }
