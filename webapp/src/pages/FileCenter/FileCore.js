@@ -332,7 +332,7 @@ class FileCore extends PureComponent {
               </FormItem>
             </Col>
             <Col md={8} sm={24}>
-              <FormItem label="开始时间 ~ 结束时间">
+              <FormItem label="时间">
                 {getFieldDecorator('date')(
                   <RangePicker size="default" onChange={this.onChangeTime} />
                 )}

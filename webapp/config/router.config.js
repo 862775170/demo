@@ -36,7 +36,14 @@ export default [
     routes: [
       {
         path: '/',
-        redirect: '/friendsCore'
+        redirect: '/home'
+      },
+      {
+        // 首页
+        path: '/home',
+        name: 'home',
+        icon: 'user',
+        component: './HomePage/Home',
       },
       {
         // 好友中心

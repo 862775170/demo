@@ -10,6 +10,7 @@ import {
   Form,  
   Divider,
 } from 'antd';
+import moment from 'moment';
 
 const { Content, Sider } = Layout;
 const { TabPane } = Tabs;
@@ -25,16 +26,16 @@ const columns = [
     dataIndex: 'receiveUserName',
   },
   {
-    title: '规则描述',
+    title: '规则名',
     dataIndex: 'ruleName',
   },
-  // {
-  //   title: '时间',
-  //   dataIndex: 'updatedAt',
-  //   key: 'updatedAt',
-  // },
+  {
+    title: '生效时间',
+    dataIndex: 'updatedAt',
+    key: 'updatedAt',
+  },
 ];
-// 已发送 & 已收取
+// 已发送 
 const columns2 = [
   {
     title: '源文件名',
@@ -45,12 +46,34 @@ const columns2 = [
     dataIndex: 'targerFileName',
   },
   {
-    title: '规文件描述',
+    title: '规则名',
     dataIndex: 'ruleName',
   },
   {
     title: '发送时间',
     dataIndex: 'time',
+    render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>, 
+  },
+];
+
+// 已收取
+const columns3 = [
+  {
+    title: '源文件名',
+    dataIndex: 'sourceFileName',
+  },
+  {
+    title: '保存文件名',
+    dataIndex: 'targerFileName',
+  },
+  {
+    title: '规则名',
+    dataIndex: 'ruleName',
+  },
+  {
+    title: '接收时间',
+    dataIndex: 'time',
+    render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>, 
   },
 ];
 
@@ -219,7 +242,7 @@ class FriendsCore extends PureComponent {
           pagination={false}
           loading={loading}
           dataSource={ruleList}
-          columns={columns2}
+          columns={columns3}
           size="middle"
           // eslint-disable-next-line react/jsx-no-duplicate-props
           pagination={paginationProps}
@@ -251,7 +274,7 @@ class FriendsCore extends PureComponent {
           </Breadcrumb>
           <Divider style={{marginTop: '10px'}} />
           <Tabs defaultActiveKey="tab1" onChange={this.clickTabs} style={{marginTop: '15px'}}>
-            <TabPane tab="规则" key="tab1">
+            <TabPane tab="相关规则" key="tab1">
               {contentList[operationkey]}
             </TabPane>
             <TabPane tab="已发送" key="tab2">

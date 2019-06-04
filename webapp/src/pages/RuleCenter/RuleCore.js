@@ -546,7 +546,7 @@ class RuleCore extends PureComponent {
       },
       {
         title: '发送人',
-        dataIndex: 'createBy',
+        dataIndex: 'receiverUserName',
       },
       {
         title: '生效时间',
