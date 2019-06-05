@@ -24,7 +24,6 @@ const codeMessage = {
 };
 
 const checkStatus = response => {
-  console.log(response);
   
   if (response.status) {
     if (response.status >= 200 && response.status < 300) {

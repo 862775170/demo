@@ -28,3 +28,9 @@ export async function newestSendIn(params) {
   const json = `page=${page}&size=${size}&targetUserId=${userId}&startTime=${startTime}&endTime=${endTime}`;
   return request(`${baseurl}/file/exchage/search?${json}`);
 }
+
+// 最新动态
+export async function trends(params) {
+  const { userId } = params;
+  return request(`${baseurl}/trends?userId=${userId}&page=0&size=10&sortColumn=createTime&direction=desc`);
+}

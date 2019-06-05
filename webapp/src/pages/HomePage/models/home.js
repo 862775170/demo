@@ -3,6 +3,7 @@ import {
   ruleFriends,
   newestSendOut,
   newestSendIn,
+  trends,
 } from '@/services/home';
 
 // 首页
@@ -54,6 +55,19 @@ export default {
       if (callback) callback(result);
     },
 
+    // 最新动态
+    *getTrends({ payload, callback }, { call }) {
+      const response = yield call(trends, payload);
+      const result = {
+        lists: response.data.content,
+        pagination: {
+          total: response.data.totalElements,
+          pageSize: response.data.size,
+          current: response.data.number,
+        },
+      };
+      if (callback) callback(result);  
+    },
     
   },
 
