@@ -14,10 +14,17 @@ export async function ruleFriends(params) {
   return request(`${baseurl}/rule/getFriends?userId=${userId}`);
 }
 
-// 待确认规则 个数
-export async function ruleTasks(params) {
-  const { userId } = params;
-  return request(`${baseurl}/rule/tasks?userId=${userId}`);
+// 最新发送文件
+export async function newestSendOut(params) {
+  const {userId, startTime, endTime, page, size } = params;
+  const json = `page=${page}&size=${size}&sourceUserId=${userId}&startTime=${startTime}&endTime=${endTime}`;
+  return request(`${baseurl}/file/exchage/search?${json}`);
 }
 
 
+// 最新接收文件
+export async function newestSendIn(params) {
+  const { userId, startTime, endTime, page, size } = params;
+  const json = `page=${page}&size=${size}&targetUserId=${userId}&startTime=${startTime}&endTime=${endTime}`;
+  return request(`${baseurl}/file/exchage/search?${json}`);
+}

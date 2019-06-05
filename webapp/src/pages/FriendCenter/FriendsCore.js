@@ -283,7 +283,7 @@ class FriendsCore extends PureComponent {
             <Breadcrumb.Item>{ friendsName }</Breadcrumb.Item>
           </Breadcrumb>
           <Divider style={{marginTop: '10px'}} />
-          <Tabs defaultActiveKey="tab1" onChange={this.clickTabs} style={{marginTop: '15px'}}>
+          <Tabs defaultActiveKey="tab1" onChange={this.clickTabs} size="default" style={{marginTop: '15px'}}>
             <TabPane tab="相关规则" key="tab1">
               {contentList[operationkey]}
             </TabPane>

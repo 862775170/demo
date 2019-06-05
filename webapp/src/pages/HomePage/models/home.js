@@ -1,7 +1,8 @@
 import { 
   fileCount, 
   ruleFriends,
-  ruleTasks,
+  newestSendOut,
+  newestSendIn,
 } from '@/services/home';
 
 // 首页
@@ -25,20 +26,43 @@ export default {
       if (callback) callback(response);  
     },
 
-    // 待确认规则 个数
-    *getRuleTasks({ payload, callback }, { call }) {
-      const response = yield call(ruleTasks, payload);
-      if (callback) callback(response);  
+    // 最新发送文件
+    *getNewestSendOut({ payload, callback }, { call }) {
+      const response = yield call(newestSendOut, payload);
+      const result = {
+        list: response.data.content,
+        pagination: {
+          total: response.data.totalElements,
+          pageSize: response.data.size,
+          current: response.data.number,
+        },
+      };
+      if (callback) callback(result);  
     },
+
+    // 最新接收文件
+    *getNewestSendIn({ payload, callback }, { call }) {
+      const response = yield call(newestSendIn, payload);
+      const result = {
+        list: response.data.content,
+        pagination: {
+          total: response.data.totalElements,
+          pageSize: response.data.size,
+          current: response.data.number,
+        },
+      };
+      if (callback) callback(result);
+    },
+
     
   },
 
   reducers: {
-    // ------
-    saveRuleList(state, action) {
+    // --------
+    saveSendOut(state, action) {
       return {
         ...state,
-        ruleList: action.payload,
+        dataList: action.payload,
       };
     },
 
