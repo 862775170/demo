@@ -3,6 +3,7 @@ import { connect } from 'dva';
 import { Layout, Menu,Alert,Card, Checkbox, Breadcrumb, Icon, Table, Form, Divider, Modal, Button, Select, Input, Drawer, Row, Col, Tree } from 'antd';
 import moment from 'moment';
 import styles from './models/style.less';
+import {getUserId,getUserInfo,getRootIds} from '@/utils/authority'
 
 const { TreeNode } = Tree;
 const { Content, Sider } = Layout;
@@ -29,7 +30,7 @@ class RuleCore extends PureComponent {
     visibleList: false,        // 发送规则 接收人员列表   模态框属性
     drawerParameter: {},       // 发送规则  存储某行对象参数
     treeData: [                // 发送规则  新建和修改共用  源路径
-      { filename_KeywordIkPinyin:'/' ,file_id:sessionStorage.getItem('rootIds') }
+      { filename_KeywordIkPinyin:'/' ,file_id:getRootIds() }
     ], 
     fileArr: [],               // 发送规则  新建和修改共用  源路径 数组存储获取的路径
     allGroupUser: [],          // 发送规则  新建规则  存储接收方数组值
@@ -40,8 +41,8 @@ class RuleCore extends PureComponent {
     receiveCurrent: {},      // 接收规则 存储某行对象参数
 
     // 公用
-    userId: sessionStorage.getItem('userid'),
-    userInfo: sessionStorage.getItem("userInfo"),
+    userId: getUserId(),
+    userInfo: getUserInfo(),
     path: '',
     fileId: '',
     subEdit: false,
@@ -98,7 +99,7 @@ class RuleCore extends PureComponent {
   saveRuleModalOk = () => {
     const { dispatch } =  this.props;
     const { path, saveRuleoBject, userInfo } = this.state;  // 获取所有用户 userInfo
-    const user = JSON.parse(userInfo);
+    const user = userInfo;
     const rootIds = user.root_ids;
     const taskId = saveRuleoBject.id;
     const savePath = path;
@@ -174,8 +175,8 @@ class RuleCore extends PureComponent {
   urleGetSubmitRule = fields => {
     const { dispatch } =  this.props;
     const { userInfo } = this.state;
-    const user = JSON.parse(userInfo);
-    const createBy = sessionStorage.getItem("userid")
+    const user = userInfo;
+    const createBy = getUserId()
     const rootIds = user.root_ids;
     const path = this.state;
     const fileid = this.state
@@ -240,8 +241,8 @@ class RuleCore extends PureComponent {
     const { dispatch } = this.props;
     const { userInfo, path, drawerParameter } = this.state;
     // eslint-disable-next-line no-unused-vars
-    const user = JSON.parse(userInfo);
-    const createBy = sessionStorage.getItem("userid");
+    const user = userInfo;
+    const createBy = getUserId();
     const {ruleId} = drawerParameter;
     const sourcePath = path;
     const fileid = this.state
@@ -258,7 +259,7 @@ class RuleCore extends PureComponent {
   // 发送规则  新建和修改共用  源路径
   ruleGetFileList = () => {
     const { dispatch } = this.props;
-    const fileId = sessionStorage.getItem('rootIds');
+    const fileId = getRootIds();
     dispatch({
       type: 'core/getFileList',
       payload:{ fileId },

@@ -16,6 +16,7 @@ import {
   DatePicker, 
 } from 'antd';
 import moment from 'moment';
+import {getUserId} from '@/utils/authority'
 
 const { RangePicker } = DatePicker;
 const { Content, Sider } = Layout;
@@ -77,7 +78,7 @@ class FileCore extends PureComponent {
   ]; 
 
   state = {
-    userId: sessionStorage.getItem('userid'),       // 获取登录用户的用户ID
+    userId: getUserId(),       // 获取登录用户的用户ID
     crumbs: '当日发送',
     startKey: 'tab1',
     isTask: false,

@@ -12,6 +12,7 @@ import {
   Alert,
 } from 'antd';
 import moment from 'moment';
+import {getUserId} from '@/utils/authority'
 
 const { Content, Sider } = Layout;
 const { TabPane } = Tabs;
@@ -87,7 +88,7 @@ const columns3 = [
 class FriendsCore extends PureComponent {
 
   state = {
-    userId: sessionStorage.getItem('userid'),       // 获取登录用户的用户ID
+    userId: getUserId(),       // 获取登录用户的用户ID
     friendsId: '',             // 好友列表用户ID
     friendsName: '',           // 好友列表用户名
     friendsArr: [],          // 存储好友列表数据

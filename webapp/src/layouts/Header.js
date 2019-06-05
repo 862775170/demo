@@ -69,6 +69,7 @@ class HeaderView extends Component {
     //   return;
     // }
     if (key === 'logout') {
+      localStorage.clear();
       sessionStorage.clear();    // 退出登录  销毁 所以用户信息
       dispatch({
         type: 'login/logout',

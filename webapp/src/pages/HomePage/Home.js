@@ -6,6 +6,7 @@ import { Row, Col, Card, Avatar, List, Pagination, Divider, Tabs } from 'antd';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import headportrait from '../../../public/icon-title.png';
 import styles from './Home.less';
+import {getUserId,getUserInfo} from '@/utils/authority'
 
 const { TabPane } = Tabs;
 
@@ -16,8 +17,8 @@ const { TabPane } = Tabs;
 class Home extends PureComponent {
 
   state = {
-    userName: sessionStorage.getItem('userInfo'),       // 获取登录用户的用户名称
-    userId: sessionStorage.getItem('userid'),           // 获取登录用户的用户ID
+    userName: getUserInfo(),       // 获取登录用户的用户名称
+    userId: getUserId(),           // 获取登录用户的用户ID
     sizeArray: {        // 存储 本日 (发送、接收)  和  历史(发送、接收)  次数      
       "unConfirm": 0,   // 待确认规则
       "rule": 0,        // 发送规则  

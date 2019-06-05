@@ -3,6 +3,7 @@ import { notification } from 'antd';
 import router from 'umi/router';
 import hash from 'hash.js';
 import { isAntdPro } from './utils';
+import {getToken} from '@/utils/authority'
 
 const codeMessage = {
   200: '服务器成功返回请求的数据。',
@@ -23,6 +24,8 @@ const codeMessage = {
 };
 
 const checkStatus = response => {
+  console.log(response);
+  
   if (response.status) {
     if (response.status >= 200 && response.status < 300) {
 
@@ -69,10 +72,6 @@ const cachedSave = (response, hashcode) => {
       });
   }
 
-  const token = response.headers.get('Refresh-Authorization');
-  if (token) {
-    sessionStorage.setItem('Authorization', token);
-  }
   return response;
 };
 
@@ -126,7 +125,7 @@ export default function request(url, option) {
   //   // Authorization: sessionStorage.getItem('Authorization'),
   //   ...newOptions.headers
   // };
-  const Authorization = sessionStorage.getItem('token');
+  const Authorization = getToken()
   if(Authorization){
     if(!newOptions.headers){
       newOptions.headers={}

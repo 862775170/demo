@@ -2,7 +2,7 @@ import { routerRedux } from 'dva/router';
 // import { stringify } from 'qs';
 import { accountLogin, getFakeCaptcha } from '@/services/api';
 import { switchRole } from '@/services/user';
-import { setAuthority } from '@/utils/authority';
+import { setAuth,setChageRole,setRootIds,setToken,setUserId,setUserInfo } from '@/utils/authority';
 import { getPageQuery } from '@/utils/utils';
 import { reloadAuthorized } from '@/utils/Authorized';
 
@@ -26,16 +26,23 @@ export default {
       // Login successfully
       const {result} = response;
       if (result) {
-        sessionStorage.setItem('auth', result.info.auth.join(','));
-        sessionStorage.setItem('token', result.token);
-        sessionStorage.setItem('userInfo',JSON.stringify(result.info));
-        sessionStorage.setItem('userid', result.info.id);
-        sessionStorage.setItem('rootIds', result.info.root_ids);
-        sessionStorage.setItem('ChageRole', true);
+        console.log(111);
+        
+        setAuth(result.info.auth);
+        
+        setToken(result.token);
+        console.log(11);
+        setUserInfo(result.info);
+        setUserId(result.info.id);
+        setRootIds(result.info.root_ids);
+        setChageRole(true);
+        
         reloadAuthorized();
+        
         const urlParams = new URL(window.location.href);
         const params = getPageQuery();
         let { redirect } = params;
+        
         if (redirect) {
           const redirectUrlParams = new URL(redirect);
           if (redirectUrlParams.origin === urlParams.origin) {
@@ -67,10 +74,10 @@ export default {
       reloadAuthorized();
       yield put(
         routerRedux.replace({
-          pathname: '/user/login',
-          // search: stringify({
-          //   redirect: window.location.href,
-          // }),
+          pathname: '/platform/',
+          search: stringify({
+            redirect: window.location.href,
+          }),
         })
       );
       sessionStorage.removeItem('Authorization');

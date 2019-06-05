@@ -1,10 +1,10 @@
 import request from '@/utils/request';
-
+import {getUserId} from '@/utils/authority'
 const baseurl = '/server/api'
 
 // 已发送
 export async function exchageSendOut(params) {
-  const sourceUserId = sessionStorage.getItem('userid');       // 获取登录用户的用户ID
+  const sourceUserId = getUserId();       // 获取登录用户的用户ID
   const { 
     sendout,
     sourceFileName,
@@ -42,7 +42,7 @@ export async function exchageSendOut(params) {
 
 // 已收取
 export async function exchageSendIn(params) {
-  const targetUserId = sessionStorage.getItem('userid');       // 获取登录用户的用户ID
+  const targetUserId = getUserId();       // 获取登录用户的用户ID
   const { 
     collect, 
     receiver,

@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,6 +16,7 @@ import com.example.demo.service.TrendsService;
 @RestController
 @RequestMapping("/trends")
 public class TrendsController {
+	@Autowired
 	private TrendsService trendsService;
 
 	@GetMapping
