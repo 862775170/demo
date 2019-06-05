@@ -371,7 +371,7 @@ public class RuleServiceImpl implements RuleService {
 		Page<Map<String, Object>> map = findAll.map(s -> {
 			Map<String, Object> obj = ObjectUtils.objectToMap(s);
 			obj.put("countSendFile", fileExchangeLogDao.countByRuleId(s.getRuleId()));
-//			obj.put("countSendUser", fileExchangeLogDao.findByRuleIdGroupByTargetUserId(s.getRuleId()).size());
+			obj.put("countSendUser", ruleConfirmDao.countByRuleId(s.getRuleId()));
 			return obj;
 		});
 		return map;
@@ -399,9 +399,6 @@ public class RuleServiceImpl implements RuleService {
 
 	@Override
 	public Long countByUserId(String userId) {
-		Rule rule = new Rule();
-		rule.setUserId(userId);
-		return ruleDao.count(Example.of(rule));
+		return ruleDao.countByUserIdAndDeleteTimeIsNull(userId);
 	}
-
 }

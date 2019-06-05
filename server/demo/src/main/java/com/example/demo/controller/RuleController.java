@@ -136,8 +136,8 @@ public class RuleController {
 		return Result.ok(page);
 	}
 
-	@GetMapping("/getRuleReceiveCount")
-	@ApiOperation("获得对于规则接收了多少文件")
+	@GetMapping("/getMyRuleReceiveCount")
+	@ApiOperation("获得我确认的规则分别接收了多少文件")
 	public Result getRuleReceiveCount(String userId, Pages pages) {
 		Pageable pageable = PageUtils.createPageRequest(pages);
 		Page<Map<String, Object>> page = ruleService.getRuleReceiveCount(userId, pageable);

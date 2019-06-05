@@ -16,4 +16,8 @@ public interface RuleConfirmDao extends JpaRepository<RuleConfirm, Integer> {
 
 	List<RuleConfirm> findByRuleIdAndDeleteTimeIsNull(Integer ruleId);
 
+	Long countByUserIdAndDeleteTimeIsNull(String userId);
+
+	Long countByRuleId(Integer ruleId);
+
 }

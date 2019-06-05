@@ -15,9 +15,7 @@ public class RuleConfirmServiceImpl implements RuleConfirmService {
 
 	@Override
 	public Long countByUserId(String userId) {
-		RuleConfirm ruleConfirm = new RuleConfirm();
-		ruleConfirm.setUserId(userId);
-		return ruleConfirmDao.count(Example.of(ruleConfirm));
+		return ruleConfirmDao.countByUserIdAndDeleteTimeIsNull(userId);
 	}
 
 }
