@@ -40,12 +40,14 @@ import com.example.demo.dao.RuleConfirmDao;
 import com.example.demo.dao.RuleDao;
 import com.example.demo.entity.Rule;
 import com.example.demo.entity.RuleConfirm;
+import com.example.demo.entity.Trends;
 import com.example.demo.message.FileCopyMessage;
 import com.example.demo.model.FileInfo;
 import com.example.demo.model.UserInfo;
 import com.example.demo.service.FileExchangeLogService;
 import com.example.demo.service.FileService;
 import com.example.demo.service.RuleService;
+import com.example.demo.service.TrendsService;
 import com.example.demo.service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -76,6 +78,11 @@ public class RuleServiceImpl implements RuleService {
 	private MqProperties mqQueueConfig;
 	@Autowired
 	private FileExchangeLogDao fileExchangeLogDao;
+	/**
+	 * 热点
+	 */
+	@Autowired
+	private TrendsService trendsService;
 
 	@Override
 	public void startCreateProcess(Rule rule, String[] userIds) {
@@ -91,6 +98,17 @@ public class RuleServiceImpl implements RuleService {
 		variables.put("createTime", rule.getCreateTime());
 		variables.put("sourcePathName", fileService.getFileFullPath(rule.getSourcePath(), rule.getRootIds()));
 		runtimeService.startProcessInstanceByKey("CreateRuleProcess", variables);
+		List<Trends> trendList = new ArrayList<>();
+		Date createTime = new Date();
+		for (String userId : userIds) {
+			Trends trends = new Trends();
+			trends.setUserId(userId);
+			trends.setEvent("确认规则");
+			trends.setDesc(rule.getRuleName());
+			trends.setCreateTime(createTime);
+			trendList.add(trends);
+		}
+		trendsService.saveBatch(trendList);
 	}
 
 	@Override
