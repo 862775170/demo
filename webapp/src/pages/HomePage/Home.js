@@ -13,6 +13,8 @@ const { TabPane } = Tabs;
 @connect(({ homePage, loading }) => ({
   homePage,
   loading: loading.models.homePage,
+  getFleCountLoading: loading.effects['homePage/getFleCount'],
+  getTrendsLoading: loading.effects['homePage/getTrends'],
 }))
 class Home extends PureComponent {
 
@@ -36,6 +38,8 @@ class Home extends PureComponent {
 
     sendList: [],      //  存储最新接收文件 数组
     sendTotals: 1,      //  存储最新接收文件 数组总数
+
+    trendsList:[],      //  动态
   };
 
   componentDidMount() {
@@ -50,18 +54,15 @@ class Home extends PureComponent {
     this.state.endTime = endDate;
 
     const { userName } = this.state;
-    if(userName != null){
-      const user = JSON.parse(userName);
-      const username = user.user_name;
-      this.setState({
-        name: username,
-      })
-    }
+    this.setState({
+      name: userName.nick_name,
+    })
 
     this.fleCountSize();  // 统计本日 (发送、接收)  和  历史(发送、接收)  次数
     this.friendsSize();   // 好友人数
     this.homeNewestSendOut();    // 最新发送文件
     this.homeNewestSendIn();     // 最新接收文件
+    this.homeTrends();           // 最新动态
   }
 
   // 统计 本日 (发送、接收)  和  历史(发送、接收)  次数
@@ -161,9 +162,36 @@ class Home extends PureComponent {
     });
   };
 
+  // 最新动态
+  homeTrends = () => {
+    const { dispatch } = this.props;
+    const { userId } = this.state;   // 查询条件参数
+    dispatch({
+      type: 'homePage/getTrends',
+      payload: { userId },
+      callback: (result) => {
+        this.state.trendsList = result.lists;
+      } 
+    });
+  }
+
   render() {
-    const { loading } = this.props;
-    const { name, sizeArray, friendsArr, sendOutList, sendOutTotal, sendList, sendTotals } = this.state;
+    const { 
+      loading, 
+      getFleCountLoading, 
+      getTrendsLoading,
+    } = this.props;
+
+    const { 
+      name, 
+      sizeArray, 
+      friendsArr, 
+      sendOutList, 
+      sendOutTotal, 
+      sendList, 
+      sendTotals, 
+      trendsList 
+    } = this.state;
 
     const pageHeaderContent = (
       <div className={styles.pageHeaderContent}>
@@ -209,6 +237,7 @@ class Home extends PureComponent {
 
     return (
       <PageHeaderWrapper
+        loading={getFleCountLoading}
         content={pageHeaderContent}
         extraContent={extraContent}
       >
@@ -251,7 +280,7 @@ class Home extends PureComponent {
                   <div style={{margin: '0px 40px'}}>
                     <Divider style={{marginTop: '3px'}} />
                   </div>
-                  <Pagination size="small" onChange={this.sendOutTableChange} total={sendOutTotal} style={{float: 'right',padding: '0px 40px 30px 40px'}} />
+                  <Pagination size="small" onChange={this.sendOutTableChange} pageSize={10} total={sendOutTotal} style={{float: 'right',padding: '0px 40px 30px 40px'}} />
                 </TabPane>
                 <TabPane tab="最新接收文件" style={{ marginBottom: 24 }} key="2">
                   <List
@@ -284,7 +313,7 @@ class Home extends PureComponent {
                   <div style={{margin: '0px 40px'}}>
                     <Divider style={{marginTop: '3px'}} />
                   </div>
-                  <Pagination size="small" onChange={this.sendTableChange} total={sendTotals} style={{float: 'right',padding: '0px 40px 30px 40px'}} />
+                  <Pagination size="small" onChange={this.sendTableChange} pageSize={10} total={sendTotals} style={{float: 'right',padding: '0px 40px 30px 40px'}} />
                 </TabPane>
               </Tabs>
             </Card>
@@ -295,29 +324,20 @@ class Home extends PureComponent {
               bodyStyle={{ paddingTop: 12, paddingBottom: 12 }}
               bordered={false}
               title="最新动态"
+              loading={getTrendsLoading}
             >
               <div className={styles.members}>
                 <Row gutter={48}>
-                  {/* {notice.map(item => (
-                    <Col span={12} key={`members-item-${item.id}`}>
-                      <Link to={item.href}>
-                        <Avatar src={item.logo} size="small" />
-                        <span className={styles.member}>{item.member}</span>
+                  {trendsList.map(item => (
+                    <Col span={24} key={item.id}>
+                      <Link to="/ruleCore">
+                        <span className={styles.member}>
+                          {moment(item.createTime).format('YYYY-MM-DD HH:mm:ss')} 
+                        </span>
+                        <span style={{float:'right'}}>{item.event}[{item.desc}]</span>
                       </Link>
                     </Col>
-                  ))} */}
-                  <Col span={24} key='0'>
-                    <Link to='sfdfd'>
-                      <Avatar src={headportrait} size="small" />
-                      <span className={styles.member}>12345567899</span>
-                    </Link>
-                  </Col>
-                  <Col span={24} key='1'>
-                    <Link to='sfdfd'>
-                      <Avatar src={headportrait} size="small" />
-                      <span className={styles.member}>12345567899</span>
-                    </Link>
-                  </Col>
+                  ))}
                   
                 </Row>
               </div>
