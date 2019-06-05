@@ -50,7 +50,7 @@ public class DatrixReceiver extends BaseReceiver {
 			} else {
 				ruleService.matchingRule(datrixMessage.getFileId(), datrixMessage.getUserId(), sendTime);
 			}
-		} catch (IOException e) {
+		} catch (Exception e) {
 			log.error(e.getMessage() + "{}", messageRec, e);
 
 			if (getRetryCount(props) < datrixQueueConfig.getRetryCount()) {

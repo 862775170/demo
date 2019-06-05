@@ -69,7 +69,7 @@ public class FileCopyReceiver extends BaseReceiver {
 			entity.setTargetUserId(targetUserId);
 			entity.setTargetFileId(targetFileId);
 			fileExchangeLogDao.save(entity);
-		} catch (IOException e) {
+		} catch (Exception e) {
 			log.error(e.getMessage(), e);
 			MessageProperties messageProperties = message.getMessageProperties();
 			BasicProperties props = getBasicProperties(messageProperties);
