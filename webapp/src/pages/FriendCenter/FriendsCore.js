@@ -33,8 +33,8 @@ const columns = [
   },
   {
     title: '生效时间',
-    dataIndex: 'updatedAt',
-    key: 'updatedAt',
+    dataIndex: 'startTime',
+    render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>, 
   },
 ];
 // 已发送 
@@ -119,7 +119,7 @@ class FriendsCore extends PureComponent {
             isTips: true,
           });
           this.state.friendsArr = result.data;   // 存储好友列表数据
-          this.coreRuleRelation(userId);      // 好友中心 规则
+          this.coreRuleRelation(userId, userIds);      // 好友中心 规则
         }else{
           this.setState({
             isTips: false,
@@ -157,7 +157,7 @@ class FriendsCore extends PureComponent {
     const { userId } = this.state;           // 获取登录用户的用户ID
     switch(key){
       case "tab1": 
-        this.coreRuleRelation(id);              // 规则列表
+        this.coreRuleRelation(userId, id);              // 规则列表
         break;
       case "tab2": 
         this.coreSender(id, userId);         // 已发送列表
@@ -172,12 +172,13 @@ class FriendsCore extends PureComponent {
   }
 
   // 规则列表
-  coreRuleRelation = item => {
+  coreRuleRelation = (userid, id) => {
     const { dispatch } = this.props;
-    const userId = item;
+    const userId = userid;
+    const targetUserId = id;
     dispatch({
       type: 'friend/getRuleRelation',
-      payload: { userId },
+      payload: { userId, targetUserId },
     });
   }
 

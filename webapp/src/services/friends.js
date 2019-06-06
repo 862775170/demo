@@ -10,8 +10,8 @@ export async function ruleFriends(params) {
 
 // 好友中心 规则
 export async function ruleRelation(params) {
-  const { userId } = params;
-  return request(`${baseurl}/rule/rule/relation?userId=${userId}`);
+  const { userId, targetUserId } = params;
+  return request(`${baseurl}/rule/rule/relation?userId=${userId}&targetUserId=${targetUserId}`);
 }
 
 // 好友中心 已发送
