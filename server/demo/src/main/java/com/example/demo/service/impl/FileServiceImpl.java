@@ -44,6 +44,9 @@ public class FileServiceImpl implements FileService {
 		if (StringUtils.isEmpty(rootIds)) {
 			throw new ParamException("400", "[`rootIds`] 为空");
 		}
+		if (fullPath.indexOf(rootIds) == -1) {
+			throw new ParamException("400", "参数错误");
+		}
 		fullPath = fullPath.substring(fullPath.indexOf(rootIds), fullPath.length());
 		String[] fileIds = fullPath.split("/");
 		Map<String, Object> map = new HashMap<>();

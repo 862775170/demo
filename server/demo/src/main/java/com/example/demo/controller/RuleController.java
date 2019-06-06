@@ -115,8 +115,8 @@ public class RuleController {
 	 */
 	@GetMapping("rule/relation")
 	@ApiOperation("获得与我相关的规则")
-	public Result getRuleRelation(String userId) {
-		List<Map<Object, Object>> rules = ruleService.getRuleRelation(userId);
+	public Result getRuleRelation(String userId, String targetUserId) {
+		List<Map<Object, Object>> rules = ruleService.getRuleRelation(userId, targetUserId);
 
 		return Result.ok(rules);
 	}
@@ -141,6 +141,20 @@ public class RuleController {
 	public Result getRuleReceiveCount(String userId, Pages pages) {
 		Pageable pageable = PageUtils.createPageRequest(pages);
 		Page<Map<String, Object>> page = ruleService.getRuleReceiveCount(userId, pageable);
+		return Result.ok(page);
+	}
+
+	@GetMapping("/getMyRuleReceiveCount/chart")
+	@ApiOperation("获得我确认的规则分别接收了多少文件")
+	public Result getRuleReceiveCountByChart(String userId) {
+		List<Map<String, Object>> page = ruleService.getRuleReceiveCountByChart(userId);
+		return Result.ok(page);
+	}
+
+	@GetMapping("/getRuleCount/chart")
+	@ApiOperation("获得规则发送了多少文件和接收人数")
+	public Result getRuleSendCountBychart(String userId) {
+		List<Map<String, Object>> page = ruleService.getRuleCountByChart(userId);
 		return Result.ok(page);
 	}
 }

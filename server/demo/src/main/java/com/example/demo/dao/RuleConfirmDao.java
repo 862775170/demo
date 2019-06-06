@@ -1,5 +1,6 @@
 package com.example.demo.dao;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -19,5 +20,7 @@ public interface RuleConfirmDao extends JpaRepository<RuleConfirm, Integer> {
 	Long countByUserIdAndDeleteTimeIsNull(String userId);
 
 	Long countByRuleId(Integer ruleId);
+
+	List<RuleConfirm> findByRuleIdInAndUserId(List<Integer> ruleIds, String userId);
 
 }
