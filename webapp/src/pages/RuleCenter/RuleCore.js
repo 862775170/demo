@@ -479,7 +479,7 @@ class RuleCore extends PureComponent {
         title: '发送方',
         dataIndex: 'createBy',
         render:(text, record)=>{
-          return <div>{record.createBy}</div>;
+          return <div>{record.createByName}</div>;
         }
       },   
       {
@@ -710,7 +710,7 @@ class RuleCore extends PureComponent {
           <Card bordered={false} style={{ marginBottom:'20px' }}>
             <Form layout="horizontal">
               <Form.Item {...formItemLayout} className={styles.stepFormText} label="发送方">
-                {saveRuleoBject.createBy}
+                {saveRuleoBject.createByName}
               </Form.Item>
               <Form.Item {...formItemLayout} className={styles.stepFormText} label="规则描述">
                 {saveRuleoBject.ruleName}

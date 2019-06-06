@@ -72,14 +72,15 @@ export default {
         },
       });
       reloadAuthorized();
-      yield put(
-        routerRedux.replace({
-          pathname: '/platform/',
-          search: stringify({
-            redirect: window.location.href,
-          }),
-        })
-      );
+      // yield put(
+      //   routerRedux.replace({
+      //     pathname: '/platform/',
+      //     // search: stringify({
+      //     //   redirect: window.location.href,
+      //     // }),
+      //   })
+      // );
+      window.location.href = "/";
       sessionStorage.removeItem('Authorization');
     },
     // 切换角色
