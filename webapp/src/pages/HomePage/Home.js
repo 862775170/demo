@@ -1,28 +1,28 @@
-import React, { PureComponent } from 'react';
+import React, { PureComponent, Suspense } from 'react';
 import { connect } from 'dva';
-import Link from 'umi/link';
 import moment from 'moment';
-import { Row, Col, Card, Avatar, List, Pagination, Divider, Button, Icon } from 'antd';
+import { Row, Col, Avatar } from 'antd';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
 import headportrait from '../../../public/icon-title.png';
 import styles from './Home.less';
 import {getUserId,getUserInfo} from '@/utils/authority';
 
-@connect(({ homePage, loading, chart }) => ({
-  chart,
+const UpdatedTrends = React.lazy(() => import('./UpdatedTrends'));  // 最新动态
+const UpdatedFile = React.lazy(() => import('./UpdatedFile'));      // 最新发送文件     最新接收文件
+
+@connect(({ homePage, loading }) => ({
   homePage,
-  loading: loading.models.homePage,
-  getFleCountLoading: loading.effects['homePage/getFleCount'],
-  getNewestSendOutLoading: loading.effects['homePage/getNewestSendOut'],
-  getNewestSendInLoading: loading.effects['homePage/getNewestSendIn'],
-  getTrendsLoading: loading.effects['homePage/getTrends'],
+  loading: loading.effects['homePage/getFleCount'],
+  getFleCountLoading: loading.effects['homePage/getFleCount'],    // 统计 本日 (发送、接收)  和  历史(发送、接收)  次数
+  getNewestSendOutLoading: loading.effects['homePage/getNewestSendOut'],  // 最新发送文件
+  getNewestSendInLoading: loading.effects['homePage/getNewestSendIn'],    // 最新接收文件
+  getTrendsLoading: loading.effects['homePage/getTrends'],                // 最新动态
 }))
 class Home extends PureComponent {
 
   state = {
     userName: getUserInfo(),       // 获取登录用户的用户名称
     userId: getUserId(),           // 获取登录用户的用户ID
-    operationkey: 'tab1',
     isKey: true,                   // true 为 最新发送文件  false 为 最新接收文件
     sizeArray: {        // 存储 本日 (发送、接收)  和  历史(发送、接收)  次数      
       "unConfirm": 0,   // 待确认规则
@@ -42,8 +42,7 @@ class Home extends PureComponent {
     sendList: [],      //  存储最新接收文件 数组
     sendTotals: 1,      //  存储最新接收文件 数组总数
 
-    trendsList:[],      //  动态
-    trendsSize: 5,     
+    trendsSize: 5,      // 最新动态初始化展示5条数据
   };
 
   componentDidMount() {
@@ -67,13 +66,6 @@ class Home extends PureComponent {
     this.homeNewestSendOut();    // 最新发送文件
     this.homeNewestSendIn();     // 最新接收文件
     this.homeTrends();           // 最新动态
-
-    const { dispatch } = this.props;
-    this.reqRef = requestAnimationFrame(() => {
-      dispatch({
-        type: 'chart/fetch',
-      });
-    });
   }
 
   // 统计 本日 (发送、接收)  和  历史(发送、接收)  次数
@@ -109,17 +101,18 @@ class Home extends PureComponent {
     });
   }
 
+  // 最新发送文件     最新接收文件  tab 切换
   onOperationTabChange = key => {
     if(key === "tab1"){
       this.setState({ 
-        operationkey: key,
         isKey: true,    //  控制 最新发送文件 翻页组件
       });
+      this.homeNewestSendOut();    // 最新发送文件
     }else{
       this.setState({ 
-        operationkey: key,
         isKey: false,   //  控制 最新接收文件 翻页组件
       });
+      this.homeNewestSendIn();     // 最新接收文件
     }
   };
 
@@ -195,9 +188,6 @@ class Home extends PureComponent {
     dispatch({
       type: 'homePage/getTrends',
       payload: { userId, size},
-      callback: (result) => {
-        this.state.trendsList = result.lists;
-      } 
     });
   }
 
@@ -207,29 +197,21 @@ class Home extends PureComponent {
     const { dispatch } = this.props;
     const { userId, trendsSize } = this.state;   // 查询条件参数
     const size = trendsSize + number;
+    this.setState({
+      trendsSize: size,
+    })
     dispatch({
       type: 'homePage/getTrends',
       payload: { userId, size},
-      callback: (result) => {
-        this.state.trendsList = result.lists;
-        this.setState({
-          trendsSize: size,
-        })
-      } 
     });
   };
 
   
 
   render() {
-    const { 
-      loading, 
-      getFleCountLoading, 
-      getNewestSendOutLoading,
-      getNewestSendInLoading,
-      getTrendsLoading,
-    } = this.props;
-
+    const { loading, homePage, getFleCountLoading, getNewestSendOutLoading, getNewestSendInLoading, getTrendsLoading } = this.props;
+    const { trendsData } = homePage;
+    
     const { 
       name, 
       sizeArray, 
@@ -237,9 +219,7 @@ class Home extends PureComponent {
       sendOutList, 
       sendOutTotal, 
       sendList, 
-      sendTotals, 
-      trendsList,
-      operationkey,
+      sendTotals,
       isKey, 
     } = this.state;
 
@@ -285,25 +265,6 @@ class Home extends PureComponent {
       </div>
     );
 
-    // 最新动态  加载更多
-    const loadMores =
-      trendsList.length > 0 && trendsList.length < 20 ? (
-        <div style={{ textAlign: 'center', marginTop: 16 }}>
-          <Button onClick={this.fetchMore} style={{ paddingLeft: 48, paddingRight: 48 }}>
-            {loading ? (
-              <span>
-                <Icon type="loading" /> 加载中...
-              </span>
-            ) : (
-              '加载更多'
-            )}
-          </Button>
-        </div>
-      ) : 
-        <div style={{ textAlign: 'center', marginTop: 16 }}>
-          <Button style={{ paddingLeft: 48, paddingRight: 48 }} disabled>已加载完</Button>
-        </div>;
-
     const operationTabList = [
       {
         key: 'tab1',
@@ -314,67 +275,6 @@ class Home extends PureComponent {
         tab: '最新接收文件',
       },
     ];   
-    
-    const contentList = {
-      tab1: (
-        <List
-          size="large"
-          rowKey="id"
-          loading={getNewestSendOutLoading}
-          pagination={false}
-          dataSource={sendOutList}
-          style={{padding: '0 40px'}}
-          renderItem={item => (
-            <List.Item>
-              <List.Item.Meta
-                avatar={<Avatar src={headportrait} shape="square" size="large" />}
-                title={<a>接收人</a>}
-                description={item.targetUserName}
-              />
-              <div className={styles.listContent}>
-                <div className={styles.listContentItem}>
-                  <span>文件名</span>
-                  <p>{item.sourceFileName}</p>
-                </div>
-                <div className={styles.listContentItem}>
-                  <span>接收时间</span>
-                  <p>{moment(item.createTime).format('YYYY-MM-DD HH:mm:ss')}</p>
-                </div>
-              </div>
-            </List.Item>
-          )}
-        />
-      ),
-      tab2: (
-        <List
-          size="large"
-          rowKey="id"
-          loading={getNewestSendInLoading}
-          pagination={false}
-          dataSource={sendList}
-          style={{padding: '0 40px'}}
-          renderItem={item => (
-            <List.Item>
-              <List.Item.Meta
-                avatar={<Avatar src={headportrait} shape="square" size="large" />}
-                title={<a>发送人</a>}
-                description={item.sourceUserName}
-              />
-              <div className={styles.listContent}>
-                <div className={styles.listContentItem}>
-                  <span>规则名</span>
-                  <p>{item.ruleName}</p>
-                </div>
-                <div className={styles.listContentItem}>
-                  <span>接收时间</span>
-                  <p>{moment(item.createTime).format('YYYY-MM-DD HH:mm:ss')}</p>
-                </div>
-              </div>
-            </List.Item>
-          )}
-        />
-      ),
-    };
 
     return (
       <PageHeaderWrapper
@@ -383,74 +283,37 @@ class Home extends PureComponent {
         extraContent={extraContent}
       >
         <Row gutter={24} style={{marginTop: '20px'}}>
+
+          {/* 首页--最新发送文件     最新接收文件 */}
           <Col xl={16} lg={24} md={24} sm={24} xs={24}>
-            <Card
-              className={styles.tabsCard}
-              bordered={false}
-              tabList={operationTabList}
-              onTabChange={this.onOperationTabChange}
-            >
-              {contentList[operationkey]}
-              {
-                isKey ? (
-                  <div style={{margin: '0px 40px'}}>
-                    <Divider style={{marginTop: '3px'}} />
-                    <Pagination 
-                      size="small" 
-                      onChange={this.sendOutTableChange} 
-                      pageSize={5} 
-                      total={sendOutTotal} 
-                      style={{float: 'right',padding: '0px 0px 30px 40px'}} 
-                    />   
-                  </div>
-                ) : 
-                  <div style={{margin: '0px 40px'}}>
-                    <Divider style={{marginTop: '3px'}} />
-                    <Pagination 
-                      size="small" 
-                      onChange={this.sendTableChange} 
-                      pageSize={5} 
-                      total={sendTotals} 
-                      style={{float: 'right',padding: '0px 0px 30px 40px'}} 
-                    />
-                  </div>
-              }
-            </Card>
+            <Suspense fallback={null}>
+              <UpdatedFile
+                loading={loading}
+                operationTabList={operationTabList}
+                isKey={isKey}
+                sendOutTotal={sendOutTotal} 
+                sendTotals={sendTotals}
+                getNewestSendOutLoading={getNewestSendOutLoading}
+                getNewestSendInLoading={getNewestSendInLoading}
+                sendOutList={sendOutList}
+                sendList={sendList}
+                onOperationTabChange={this.onOperationTabChange}
+                sendOutTableChange={this.sendOutTableChange}
+                sendTableChange={this.sendTableChange}
+              />
+            </Suspense>
           </Col>
 
+          {/* 首页--最新动态 */}
           <Col xl={8} lg={24} md={24} sm={24} xs={24}>
-            <Card
-              bodyStyle={{ paddingTop: 12, paddingBottom: 12 }}
-              bordered={false}
-              title="最新动态"
-              loading={getTrendsLoading}
-            >
-              <List
-                size="large"
-                loading={trendsList.length === 0 ? loading : false}
-                rowKey="id"
-                itemLayout="vertical"
-                loadMore={loadMores}
-                dataSource={trendsList}
-                renderItem={item => (
-                  <List.Item 
-                    key={item.id}
-                    style={{ paddingBottom: '9px', paddingTop: '5px', height: '40px',borderBottom: '1px solid #ffffff' }}
-                  >
-                    <List.Item.Meta
-                      title={
-                        <Link to="/ruleCore" style={{fontSize:'14px'}}>
-                          <span className={styles.member}>
-                            {moment(item.createTime).format('YYYY-MM-DD HH:mm:ss')} 
-                          </span>
-                          <span style={{float:'right'}}>{item.event}[{item.desc}]</span>
-                        </Link>
-                      }
-                    />
-                  </List.Item>
-                )}
+            <Suspense fallback={null}>
+              <UpdatedTrends
+                loading={loading}
+                getTrendsLoading={getTrendsLoading}
+                trendsData={trendsData}
+                fetchMore={this.fetchMore}
               />
-            </Card>
+            </Suspense>
           </Col>
         </Row>
       </PageHeaderWrapper>

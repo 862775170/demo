@@ -34,8 +34,3 @@ export async function trends(params) {
   const { userId, size } = params;
   return request(`${baseurl}/trends?userId=${userId}&page=0&size=${size}&sortColumn=createTime&direction=desc`);
 }
-
-// export async function fakeChartData(params) {
-//   const { userId } = params;
-//   return request(`${baseurl}/rule/getMyRuleReceiveCount/chart?userId=${userId}`);
-// }

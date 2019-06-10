@@ -11,7 +11,7 @@ export default {
   namespace: 'homePage',
 
   state: {
-     
+    trendsData: [],  // 最新动态
   },
 
   effects: {
@@ -56,27 +56,30 @@ export default {
     },
 
     // 最新动态
-    *getTrends({ payload, callback }, { call }) {
+    *getTrends({ payload }, { call, put }) {
       const response = yield call(trends, payload);
-      const result = {
-        lists: response.data.content,
-        pagination: {
-          total: response.data.totalElements,
-          pageSize: response.data.size,
-          current: response.data.number,
+      yield put({
+        type: 'saveList',
+        payload: {
+          trendsData: response.data.content,
         },
-      };
-      if (callback) callback(result);  
+      }); 
     },
     
   },
 
   reducers: {
-    // --------
-    saveSendOut(state, action) {
+    // 最新动态
+    saveList(state, { payload }) {
       return {
         ...state,
-        dataList: action.payload,
+        ...payload,
+      };
+    },
+
+    clear() {
+      return {
+        trendsData:[],   // 最新动态
       };
     },
 
