@@ -74,9 +74,10 @@ public interface RuleService {
 	 * 获得规则关系
 	 * 
 	 * @param userId
+	 * @param targetUserId
 	 * @return
 	 */
-	List<Map<Object, Object>> getRuleRelation(String userId);
+	List<Map<Object, Object>> getRuleRelation(String userId, String targetUserId);
 
 	void deleteRule(String userId, Integer ruleId);
 
@@ -147,5 +148,9 @@ public interface RuleService {
 	Page<Map<String, Object>> getRuleReceiveCount(String userId, Pageable pageable);
 
 	Long countByUserId(String userId);
+
+	List<Map<String, Object>> getRuleReceiveCountByChart(String userId);
+
+	List<Map<String, Object>> getRuleCountByChart(String userId);
 
 }

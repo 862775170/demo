@@ -90,6 +90,8 @@ public class RuleServiceImpl implements RuleService {
 		Map<String, Object> variables = new HashMap<>();
 		variables.put("userIds", userIds);
 		variables.put("createBy", rule.getCreateBy());
+		UserInfo userInfo = userService.getUserInfo(rule.getCreateBy());
+		variables.put("createByName", userInfo.getUserName());
 		variables.put("ruleName", rule.getRuleName());
 		variables.put("userId", rule.getUserId());
 		variables.put("sourcePath", rule.getSourcePath());
@@ -220,10 +222,14 @@ public class RuleServiceImpl implements RuleService {
 	}
 
 	@Override
-	public List<Map<Object, Object>> getRuleRelation(String userId) {
-		List<Integer> rids = ruleDao.findByUserId(userId).stream().map(m -> m.getRuleId()).collect(Collectors.toList());
-		List<RuleConfirm> ruleConfirm = ruleConfirmDao.findByUserId(userId);
-		ruleConfirm.addAll(ruleConfirmDao.findByRuleIdIn(rids));
+	public List<Map<Object, Object>> getRuleRelation(String userId, String targetUserId) {
+		List<Integer> rids = ruleDao.findByUserIdAndDeleteTimeIsNull(userId).stream().map(m -> m.getRuleId())
+				.collect(Collectors.toList());
+		List<Integer> targetRuleIds = ruleDao.findByUserIdAndDeleteTimeIsNull(targetUserId).stream()
+				.map(m -> m.getRuleId()).collect(Collectors.toList());
+		List<RuleConfirm> ruleConfirm = new ArrayList<>();
+		ruleConfirm.addAll(ruleConfirmDao.findByRuleIdInAndUserId(rids, targetUserId));
+		ruleConfirm.addAll(ruleConfirmDao.findByRuleIdInAndUserId(targetRuleIds, userId));
 		Set<String> userIds = new HashSet<>();
 		Set<Integer> ruleIds = new HashSet<>();
 		userIds.add(userId);
@@ -231,7 +237,7 @@ public class RuleServiceImpl implements RuleService {
 			userIds.add(a.getUserId());
 			ruleIds.add(a.getRuleId());
 		});
-		List<Rule> rules = ruleDao.findByRuleIdIn(new ArrayList<>(ruleIds));
+		List<Rule> rules = ruleDao.findByDeleteTimeIsNullAndRuleIdIn(new ArrayList<>(ruleIds));
 		Map<Integer, Rule> ruleMap = new HashMap<>();
 		rules.stream().forEach(a -> {
 			userIds.add(a.getUserId());
@@ -246,7 +252,12 @@ public class RuleServiceImpl implements RuleService {
 			map.put("sendUserName", userNames.get(rule.getUserId()));
 			map.put("receiveUserName", userNames.get(m.getUserId()));
 			map.put("ruleName", rule.getRuleName());
-			map.put("deleteTime", rule.getDeleteTime());
+			if (userId.equals(m.getUserId())) {
+				map.put("startTime", m.getCreateTime());
+			} else {
+				map.put("startTime", rule.getCreateTime());
+			}
+
 			return map;
 		}).collect(Collectors.toList());
 		return collect;
@@ -255,8 +266,27 @@ public class RuleServiceImpl implements RuleService {
 	@Override
 	public void deleteRule(String userId, Integer ruleId) {
 		Rule rule = ruleDao.findById(ruleId).get();
-		rule.setDeleteTime(new Date());
+		Date date = new Date();
+		rule.setDeleteTime(date);
 		ruleDao.save(rule);
+		List<RuleConfirm> ruleConfirms = ruleConfirmDao.findByRuleId(ruleId);
+		List<Trends> trendList = new ArrayList<>();
+		for (RuleConfirm ruleConfirm : ruleConfirms) {
+			ruleConfirm.setDeleteTime(date);
+			Trends trends = new Trends();
+			trends.setCreateTime(date);
+			trends.setDesc(rule.getRuleName());
+			trends.setEvent("删除规则");
+			trends.setUserId(ruleConfirm.getUserId());
+			trendList.add(trends);
+		}
+		if (!ruleConfirms.isEmpty()) {
+			ruleConfirmDao.saveAll(ruleConfirms);
+		}
+		if (!trendList.isEmpty()) {
+			trendsService.saveBatch(trendList);
+		}
+
 	}
 
 	@Override
@@ -418,5 +448,42 @@ public class RuleServiceImpl implements RuleService {
 	@Override
 	public Long countByUserId(String userId) {
 		return ruleDao.countByUserIdAndDeleteTimeIsNull(userId);
+	}
+
+	@Override
+	public List<Map<String, Object>> getRuleReceiveCountByChart(String userId) {
+
+		RuleConfirm ruleConfirm = new RuleConfirm();
+		ruleConfirm.setUserId(userId);
+		List<RuleConfirm> findAll = ruleConfirmDao.findAll(Example.of(ruleConfirm));
+		Set<Integer> ruleIds = new HashSet<>();
+
+		findAll.forEach(a -> {
+			ruleIds.add(a.getRuleId());
+		});
+		Map<Integer, String> ruleMap = getRuleMap(ruleIds);
+		List<Map<String, Object>> results = findAll.stream().map(m -> {
+			Map<String, Object> map = new HashMap<>();
+			map.put("x", ruleMap.get(m.getRuleId()));
+			map.put("y", fileExchangeLogDao.countByRuleId(m.getRuleId()));
+			return map;
+		}).collect(Collectors.toList());
+		return results;
+	}
+
+	@Override
+	public List<Map<String, Object>> getRuleCountByChart(String userId) {
+		Rule rule = new Rule();
+		rule.setUserId(userId);
+
+		List<Rule> findAll = ruleDao.findAll(Example.of(rule));
+		List<Map<String, Object>> map = findAll.stream().map(s -> {
+			Map<String, Object> obj = new HashMap<>();
+			obj.put("ruleName", s.getRuleName());
+			obj.put("countSendFile", fileExchangeLogDao.countByRuleId(s.getRuleId()));
+			obj.put("countSendUser", ruleConfirmDao.countByRuleId(s.getRuleId()));
+			return obj;
+		}).collect(Collectors.toList());
+		return map;
 	}
 }

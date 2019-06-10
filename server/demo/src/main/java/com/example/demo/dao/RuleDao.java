@@ -1,5 +1,6 @@
 package com.example.demo.dao;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -18,4 +19,6 @@ public interface RuleDao extends JpaRepository<Rule, Integer> {
 	List<Rule> findByUserIdAndDeleteTimeIsNull(String userId);
 
 	Long countByUserIdAndDeleteTimeIsNull(String userId);
+
+	List<Rule> findByDeleteTimeIsNullAndRuleIdIn(ArrayList arrayList);
 }
