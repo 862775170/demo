@@ -1,6 +1,5 @@
 import React, { memo } from 'react';
 import { Card, Pagination, Divider, List, Avatar } from 'antd';
-import moment from 'moment';
 import styles from './Home.less';
 import headportrait from '../../../public/icon-title.png';
 
@@ -26,17 +25,17 @@ const UpdatedFile = memo(({ loading, operationTabList, isKey, sendOutTotal, send
             <List.Item>
               <List.Item.Meta
                 avatar={<Avatar src={headportrait} shape="square" size="large" />}
-                title={<a>接收人</a>}
-                description={item.targetUserName}
+                title={<a>规则名</a>}
+                description={item.ruleName}
               />
               <div className={styles.listContent}>
                 <div className={styles.listContentItem}>
-                  <span>文件名</span>
-                  <p>{item.sourceFileName}</p>
+                  <span>发送人数</span>
+                  <p>{item.countSendUser}</p>
                 </div>
                 <div className={styles.listContentItem}>
-                  <span>接收时间</span>
-                  <p>{moment(item.createTime).format('YYYY-MM-DD HH:mm:ss')}</p>
+                  <span>文件数</span>
+                  <p>{item.countSendFile}</p>
                 </div>
               </div>
             </List.Item>
@@ -54,17 +53,13 @@ const UpdatedFile = memo(({ loading, operationTabList, isKey, sendOutTotal, send
             <List.Item>
               <List.Item.Meta
                 avatar={<Avatar src={headportrait} shape="square" size="large" />}
-                title={<a>发送人</a>}
-                description={item.sourceUserName}
+                title={<a>规则名</a>}
+                description={item.ruleName}
               />
               <div className={styles.listContent}>
                 <div className={styles.listContentItem}>
-                  <span>规则名</span>
-                  <p>{item.ruleName}</p>
-                </div>
-                <div className={styles.listContentItem}>
-                  <span>接收时间</span>
-                  <p>{moment(item.createTime).format('YYYY-MM-DD HH:mm:ss')}</p>
+                  <span>接收文件数</span>
+                  <p>{item.countSendFile}</p>
                 </div>
               </div>
             </List.Item>
