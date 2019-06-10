@@ -8,10 +8,27 @@ export async function ruleFriends(params) {
   return request(`${baseurl}/rule/getFriends?userId=${userId}`);
 }
 
-// 好友中心 规则
+// 好友中心 发送规则
 export async function ruleRelation(params) {
   const { userId, targetUserId } = params;
-  return request(`${baseurl}/rule/rule/relation?userId=${userId}&targetUserId=${targetUserId}`);
+  return request(`${baseurl}/rule/${userId}/${targetUserId}`);
+}
+
+// 好友中心 接收规则
+export async function ruleReceive(params) {
+  const { userId, targetUserId } = params;
+  return request(`${baseurl}/rule/receive/${userId}/${targetUserId}`);
+}
+
+// 源路径
+export async function fileList(params){
+  return request('/api/sw/file/list', {
+    method: 'POST',
+    body: {
+      ...params,
+      method: 'post',
+    },
+  });
 }
 
 // 好友中心 已发送

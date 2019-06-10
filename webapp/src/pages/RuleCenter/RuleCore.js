@@ -361,7 +361,6 @@ class RuleCore extends PureComponent {
     });
   }
 
-
   // 发送规则 接收人员列表
   coleGetRileDetails = item => {
     const { dispatch } =  this.props;
@@ -476,15 +475,15 @@ class RuleCore extends PureComponent {
     // 待处理规则
     const columns1 = [
       {
+        title: '规则名',
+        dataIndex: 'ruleName',
+      },
+      {
         title: '发送方',
         dataIndex: 'createBy',
         render:(text, record)=>{
           return <div>{record.createByName}</div>;
         }
-      },   
-      {
-        title: '规则描述',
-        dataIndex: 'ruleName',
       },
       {
         title: '源路径',
@@ -509,7 +508,7 @@ class RuleCore extends PureComponent {
     // 发送规则
     const columns2 = [
       {
-        title: '规则描述',
+        title: '规则名',
         dataIndex: 'ruleName',
       },
       {
@@ -520,6 +519,10 @@ class RuleCore extends PureComponent {
         title: '生效时间',
         dataIndex: 'createTime',
         render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>,
+      },
+      {
+        title: '备注',
+        dataIndex: 'desc',
       },
       {
         title: '操作',
@@ -538,7 +541,7 @@ class RuleCore extends PureComponent {
     // 接收规则
     const columns3 = [
       {
-        title: '规则描述',
+        title: '规则名',
         dataIndex: 'ruleName',
       },
       {
@@ -570,7 +573,7 @@ class RuleCore extends PureComponent {
       return (
         <Form layout="vertical">
           <Row gutter={16}>
-            <Col span={12}>
+            <Col span={16}>
               <FormItem label="规则名">
                 {getFieldDecorator('ruleName', {
                   rules: [{ required: visibles, message: '请输入规则名! ' }],
@@ -580,14 +583,14 @@ class RuleCore extends PureComponent {
             </Col>
           </Row>
           <Row gutter={16}>
-            <Col span={12}>
+            <Col span={16}>
               <FormItem label="源路径">
                 <Tree loadData={this.onLoadData} onSelect={this.getOnSelect}>{this.renderTreeNodes(treeData)}</Tree>
               </FormItem>
             </Col>
           </Row>
           <Row gutter={16} style={{ display: isRoute ? 'block' : 'none'}}>
-            <Col span={12}>
+            <Col span={16}>
               <FormItem label="接收方">
                 {getFieldDecorator('userIds', {
                   rules: [{ required: isRoute, message: '请选择接收方名! ' }],
@@ -601,6 +604,16 @@ class RuleCore extends PureComponent {
                     })}
                   </Select>
                 )}
+              </FormItem>
+            </Col>
+          </Row>
+          <Row gutter={16}>
+            <Col span={16}>
+              <FormItem label="备注">
+                {getFieldDecorator('desc', {
+                  rules: [{ required: false}],
+                  initialValue: drawerParameter.desc,
+                })(<Input placeholder="请输入备注" />)}
               </FormItem>
             </Col>
           </Row>
@@ -750,7 +763,7 @@ class RuleCore extends PureComponent {
         {/* 发送规则  新建规则 */}
         <Drawer
           title={isRoute ? '新建规则' : '修改规则'}
-          width={720}
+          width={600}
           onClose={this.onClose}
           visible={visibles}
           destroyOnClose
@@ -786,7 +799,7 @@ class RuleCore extends PureComponent {
           <Card bordered={false} style={{ marginBottom:'20px' }}>
             <Form layout="horizontal">
               <Form.Item {...formItemLayout} className={styles.stepFormText} label="发送方">
-                {receiveCurrent.createBy}
+                {receiveCurrent.receiverUserName}
               </Form.Item>
               <Form.Item {...formItemLayout} className={styles.stepFormText} label="规则描述">
                 {receiveCurrent.ruleName}

@@ -284,9 +284,33 @@ class FileCore extends PureComponent {
               </FormItem>
             </Col>
             <Col md={8} sm={24}>
-              <FormItem label="目标文件名">
+              {/* <FormItem label="目标文件名">
                 {getFieldDecorator('targetFileName')(
                   <Input placeholder="输入目标文件名" />
+                )}
+              </FormItem> */}
+              {/* 发送规则 */}
+              <FormItem label="规则名" style={{display: isTask ? 'none' : 'block'}}>
+                {getFieldDecorator('sendout')(
+                  <Select placeholder="请选择规则.">
+                    {
+                      sendoutArr.map((item) => {
+                        return <Option key={item.ruleId} value={item.ruleId}>{item.ruleName}</Option>
+                      })
+                    }
+                  </Select>
+                )}
+              </FormItem>
+              {/* 收取规则 */}
+              <FormItem label="规则名" style={{display: isTask ? 'block' : 'none'}}>
+                {getFieldDecorator('collect')(
+                  <Select placeholder="请选择规则..">
+                    {
+                      collectArr.map((item) => {
+                        return <Option key={item.rule.ruleId} value={item.rule.ruleId}>{item.rule.ruleName}</Option>
+                      })
+                    }
+                  </Select>
                 )}
               </FormItem>
             </Col>
@@ -306,32 +330,9 @@ class FileCore extends PureComponent {
           </Row>
           <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
             
-            <Col md={8} sm={24}>
-              {/* 发送规则 */}
-              <FormItem label="规则" style={{display: isTask ? 'none' : 'block'}}>
-                {getFieldDecorator('sendout')(
-                  <Select placeholder="请选择规则.">
-                    {
-                      sendoutArr.map((item) => {
-                        return <Option key={item.ruleId} value={item.ruleId}>{item.ruleName}</Option>
-                      })
-                    }
-                  </Select>
-                )}
-              </FormItem>
-              {/* 收取规则 */}
-              <FormItem label="规则" style={{display: isTask ? 'block' : 'none'}}>
-                {getFieldDecorator('collect')(
-                  <Select placeholder="请选择规则..">
-                    {
-                      collectArr.map((item) => {
-                        return <Option key={item.rule.ruleId} value={item.rule.ruleId}>{item.rule.ruleName}</Option>
-                      })
-                    }
-                  </Select>
-                )}
-              </FormItem>
-            </Col>
+            {/* <Col md={8} sm={24}>
+              
+            </Col> */}
             <Col md={8} sm={24}>
               <FormItem label="时间">
                 {getFieldDecorator('date')(

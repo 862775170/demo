@@ -3,6 +3,8 @@ import {
   ruleRelation,
   sender,
   receiver,
+  ruleReceive,
+  fileList,
 } from '@/services/friends';
 
 // 规则中心
@@ -20,13 +22,28 @@ export default {
       if (callback) callback(response);  // 后端返回回调
     },
 
-    // 好友中心 规则
+    // 好友中心 发送规则
     *getRuleRelation({ payload }, { call, put }) {
       const response = yield call(ruleRelation, payload);
       yield put({
         type: 'saveRuleList',
-        payload: response.data,
+        payload: response.content,
       });
+    },
+
+    // 好友中心 接收规则
+    *getRuleReceive({ payload }, { call, put }) {
+      const response = yield call(ruleReceive, payload);
+      yield put({
+        type: 'saveRuleList',
+        payload: response.content,
+      });
+    },
+
+    // 源路径
+    *getFileList({ payload, callback }, { call }) {
+      const response = yield call(fileList, payload);
+      if (callback) callback(response);  // 后端返回回调
     },
 
     // 已发送

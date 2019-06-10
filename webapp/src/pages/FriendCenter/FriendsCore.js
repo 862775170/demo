@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
 import {
   Layout, 
@@ -10,31 +10,82 @@ import {
   Form,  
   Divider,
   Alert,
+  Button,
+  Row,
+  Col,
+  Input,
+  Tree,
+  Drawer,
 } from 'antd';
 import moment from 'moment';
-import {getUserId} from '@/utils/authority'
+import {getUserId, getUserInfo, getRootIds} from '@/utils/authority'
 
 const { Content, Sider } = Layout;
 const { TabPane } = Tabs;
+const FormItem = Form.Item;
+const { TreeNode } = Tree;
 
-// 规则
+// 发送规则
 const columns = [
-  {
-    title: '发送方',
-    dataIndex: 'sendUserName',
-  },
-  {
-    title: '接收方',
-    dataIndex: 'receiveUserName',
-  },
   {
     title: '规则名',
     dataIndex: 'ruleName',
+  },
+
+  {
+    title: '文件数',
+    dataIndex: 'count',
+    render: val => `${val} 个`,
   },
   {
     title: '生效时间',
     dataIndex: 'startTime',
     render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>, 
+  },
+  {
+    title: '备注',
+    dataIndex: 'desc',
+  },
+  {
+    title: '操作',
+    render: (record) => (
+      <Fragment>
+        <a onClick={() => this.showSaveRuleModal(record)}>编辑</a>
+        <Divider type="vertical" />
+        <a onClick={() => this.showSaveRuleModal(record)}>删除</a>
+      </Fragment>
+    ),
+  },
+];
+// 接收规则
+const columns5 = [
+  {
+    title: '规则名',
+    dataIndex: 'ruleName',
+  },
+  // {
+  //   title: '发送人',
+  //   dataIndex: 'sourceUserName',
+  // },
+  {
+    title: '文件数',
+    dataIndex: 'count',
+    render: val => `${val} 个`,
+  },
+  {
+    title: '生效时间',
+    dataIndex: 'startTime',
+    render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>, 
+  },
+  {
+    title: '操作',
+    render: (record) => (
+      <Fragment>
+        <a onClick={() => this.showSaveRuleModal(record)}>编辑</a>
+        <Divider type="vertical" />
+        <a onClick={() => this.showSaveRuleModal(record)}>删除</a>
+      </Fragment>
+    ),
   },
 ];
 // 已发送 
@@ -88,12 +139,22 @@ const columns3 = [
 class FriendsCore extends PureComponent {
 
   state = {
+    treeData: [                // 发送规则  新建和修改共用  源路径
+      { filename_KeywordIkPinyin:'/' ,file_id:getRootIds() }
+    ],
     userId: getUserId(),       // 获取登录用户的用户ID
     friendsId: '',             // 好友列表用户ID
     friendsName: '',           // 好友列表用户名
     friendsArr: [],          // 存储好友列表数据
     operationkey: 'tab1',    // 用于存储切换的是哪个tab
     isTips: true,           // 左边栏没数据提示
+
+    drawerParameter: {},      // 新建规则    
+    isRoute: false,            // 用于判断调用新建还是修改
+    visibles: false,           // 发送规则  抽屉属性
+    fileId: '',
+    path: '',
+    userInfo: getUserInfo(),
   };
 
   // 初始化方法
@@ -157,12 +218,15 @@ class FriendsCore extends PureComponent {
     const { userId } = this.state;           // 获取登录用户的用户ID
     switch(key){
       case "tab1": 
-        this.coreRuleRelation(userId, id);              // 规则列表
+        this.coreRuleRelation(userId, id);              // 发送规则列表
         break;
       case "tab2": 
-        this.coreSender(id, userId);         // 已发送列表
+        this.coreRuleReceive(userId, id);              // 接收规则列表
         break;
       case "tab3": 
+        this.coreSender(id, userId);         // 已发送列表
+        break;
+      case "tab4": 
         this.coreReceiver(id, userId);       // 已收取列表
         break;
       default : 
@@ -171,13 +235,24 @@ class FriendsCore extends PureComponent {
     }
   }
 
-  // 规则列表
+  // 发送规则
   coreRuleRelation = (userid, id) => {
     const { dispatch } = this.props;
     const userId = userid;
     const targetUserId = id;
     dispatch({
       type: 'friend/getRuleRelation',
+      payload: { userId, targetUserId },
+    });
+  }
+
+  // 接收规则
+  coreRuleReceive = (userid, id) => {
+    const { dispatch } = this.props;
+    const userId = userid;
+    const targetUserId = id;
+    dispatch({
+      type: 'friend/getRuleReceive',
       payload: { userId, targetUserId },
     });
   }
@@ -203,17 +278,180 @@ class FriendsCore extends PureComponent {
       payload: { sourceUserId, targetUserId },
     });
   }
+
+   // 新建规则 抽屉 点击保存按钮
+   handleSubmit = e => {
+    e.preventDefault();
+    const { form } = this.props;
+    const { isRoute } = this.state;
+    form.validateFields((err, fieldsValue) => { 
+      if (err) return;
+      if(isRoute){     // true 为新建规则
+        this.urleGetSubmitRule(fieldsValue);   // 新建规则提交方法
+      }else{           // false 为发送规则-->修改
+        this.coreRuleUpdate(fieldsValue);  // 发送规则  修改 
+      }
+      this.onClose();   // 关闭抽屉
+    });
+  };
+
+  // 新建规则  提交方法
+  urleGetSubmitRule = fields => {
+    const { dispatch } =  this.props;
+    const { userInfo } = this.state;
+    const user = userInfo;
+    const createBy = getUserId()
+    const rootIds = user.root_ids;
+    const path = this.state;
+    const fileid = this.state
+    const sourceFileId = fileid.fileId;
+    const sourcePath = path.path;
+    dispatch({
+      type: 'core/getSubmitRule',
+      payload:{ ...fields, createBy, rootIds, sourcePath, sourceFileId },
+      callback: () => {
+        this.coreRuleMyRule();    // 我的规则   发送规则
+      } 
+    });
+  }
+
+  // 新建规则  点击新建按钮点击此方法   抽屉  源路径实现方法  start
+  showDrawer = () => {
+    this.setState({
+      isRoute: true,            // 发送规则  用于判断调用新建还是修改
+      visibles: true,           // 发送规则抽屉属性
+      drawerParameter: {},      // 发送规则  存储某行对象参数
+    });
+  };
+
+  // 新建规则 抽屉取消
+  onClose = () => {
+    this.setState({
+      visibles: false,    // false 关系抽屉
+    });
+  };
+
+  // 新建和修改共用  源路径
+  onLoadData = treeNode => {
+    const { dispatch } = this.props;
+    return new Promise(resolve => {
+    if (treeNode.props.children) {
+      resolve();
+      return;
+    }
+    const { file_id:fileId } = treeNode.props.dataRef;
+    dispatch({
+      type: 'friend/getFileList',
+      payload:{ fileId },
+      callback: (result) => {
+        const fileArr = [];
+        const dataValue = result.result;
+        // eslint-disable-next-line no-restricted-syntax
+        for( const i of dataValue){
+          if(i.isdir === true){
+            fileArr.push(i);
+          }
+        }
+        // eslint-disable-next-line no-param-reassign
+        treeNode.props.dataRef.children = fileArr;
+        const { treeData } = this.state;
+        this.setState({
+          treeData,
+        });
+        resolve();
+      } 
+    });
+  })
+};
+
+// 新建和修改共用  源路径
+getOnSelect = (selectedKeys, e) => {
+  if(e.selectedNodes.length > 0){
+    const titleValue = e.selectedNodes[0].props.title;
+    let paths = "";
+    let fileid ="";
+    if(titleValue === '/'){
+      paths = e.selectedNodes[0].props.dataRef.filename_KeywordIkPinyin;
+      fileid = e.selectedNodes[0].props.dataRef.file_id;
+    }else{
+      paths = e.selectedNodes[0].props.dataRef.fullpath;
+      fileid = e.selectedNodes[0].props.dataRef.file_id;
+    }
+    this.setState({
+      path: paths,  // 源路径
+      fileId: fileid,
+    });      
+  }
+}
+
+// 新建和修改共用  源路径
+renderTreeNodes = data => data.map(item => {
+  if (item.children) {
+    return (
+      <TreeNode title={item.filename_KeywordIkPinyin} key={item.file_id} dataRef={item}>
+        {this.renderTreeNodes(item.children)}
+      </TreeNode>
+    );
+  }
+  return <TreeNode title={item.filename_KeywordIkPinyin} key={item.file_id} dataRef={item} />;
+});
+
+  
   
   
 
   render() {
-    const { 
-      loading, 
-      // eslint-disable-next-line no-unused-vars
+    const { loading, 
       form: {getFieldDecorator}, 
       friend: { ruleList },   // 规则列表返回数据
     } = this.props;
-    const { operationkey, friendsArr, friendsName, isTips } = this.state;
+    const { operationkey, friendsArr, friendsName, isTips, drawerParameter, isRoute, treeData, visibles } = this.state;
+
+    // 发送规则   新建
+    const getAddForm = () => {
+      return (
+        <Form layout="vertical">
+          <Row gutter={16}>
+            <Col span={16}>
+              <FormItem label="规则名">
+                {getFieldDecorator('ruleName', {
+                  rules: [{ required: isRoute, message: '请输入规则名! ' }],
+                  initialValue: drawerParameter.ruleName,
+                })(<Input placeholder="请输入规则名" />)}
+              </FormItem>
+            </Col>
+          </Row>
+          <Row gutter={16}>
+            <Col span={16}>
+              <FormItem label="源路径">
+                <Tree loadData={this.onLoadData} onSelect={this.getOnSelect}>{this.renderTreeNodes(treeData)}</Tree>
+              </FormItem>
+            </Col>
+          </Row>
+          <Row gutter={16} style={{ display: isRoute ? 'block' : 'none'}}>
+            <Col span={16}>
+              <FormItem label="接收方">
+                {getFieldDecorator('userIds', {
+                  rules: [{ required: false }],
+                })(
+                  <Input disabled />
+                )}
+              </FormItem>
+            </Col>
+          </Row>
+          <Row gutter={16}>
+            <Col span={16}>
+              <FormItem label="备注">
+                {getFieldDecorator('desc', {
+                  rules: [{ required: false}],
+                  initialValue: drawerParameter.desc,
+                })(<Input placeholder="请输入备注" />)}
+              </FormItem>
+            </Col>
+          </Row>
+        </Form>
+      );
+    };
 
     // table组件属性
     const paginationProps = {
@@ -241,13 +479,25 @@ class FriendsCore extends PureComponent {
           pagination={false}
           loading={loading}
           dataSource={ruleList}
-          columns={columns2}
+          columns={columns5}
           size="middle"
           // eslint-disable-next-line react/jsx-no-duplicate-props
           pagination={paginationProps}
         />
       ),
       tab3: (
+        <Table
+          rowKey="id"
+          pagination={false}
+          loading={loading}
+          dataSource={ruleList}
+          columns={columns2}
+          size="middle"
+          // eslint-disable-next-line react/jsx-no-duplicate-props
+          pagination={paginationProps}
+        />
+      ),
+      tab4: (
         <Table
           rowKey="id"
           pagination={false}
@@ -284,22 +534,51 @@ class FriendsCore extends PureComponent {
             <Breadcrumb.Item>好友中心</Breadcrumb.Item>
             <Breadcrumb.Item>{ friendsName }</Breadcrumb.Item>
           </Breadcrumb>
-          <Divider style={{marginTop: '10px'}} />
-          <Tabs defaultActiveKey="tab1" onChange={this.clickTabs} size="default" style={{marginTop: '15px'}}>
-            <TabPane tab="相关规则" key="tab1">
+          <Divider style={{margin: '10px 0px'}} />
+          <div>
+            <Button icon="plus" type="primary" onClick={this.showDrawer}>新建</Button>
+          </div>
+          <Tabs defaultActiveKey="tab1" onChange={this.clickTabs} size="default" style={{marginTop: '5px'}}>
+            <TabPane tab="发送规则" key="tab1">
               {contentList[operationkey]}
             </TabPane>
-            <TabPane tab="已发送" key="tab2">
+            <TabPane tab="接收规则" key="tab2">
               {contentList[operationkey]}
             </TabPane>
-            <TabPane tab="已收取" key="tab3">
+            <TabPane tab="已发送" key="tab3">
               {contentList[operationkey]}
             </TabPane>
-            {/* <TabPane tab="任务" key="tab4">
-              任务
-            </TabPane> */}
+            <TabPane tab="已收取" key="tab4">
+              {contentList[operationkey]}
+            </TabPane>
           </Tabs>
         </Content>
+
+        {/* 抽屉  新建规则 */}
+        <Drawer
+          title={isRoute ? '新建规则' : '修改规则'}
+          width={600}
+          onClose={this.onClose}
+          visible={visibles}
+          destroyOnClose
+        >
+          { getAddForm() }
+          <div
+            style={{
+              position: 'absolute',
+              left: 0,
+              bottom: 0,
+              width: '100%',
+              borderTop: '1px solid #e9e9e9',
+              padding: '10px 16px',
+              background: '#fff',
+              textAlign: 'right',
+            }}
+          >
+            <Button onClick={this.onClose} style={{ marginRight: 8 }}>取消</Button>
+            <Button onClick={this.handleSubmit} type="primary">确定</Button>
+          </div>
+        </Drawer>
       </Layout>
     );
   }
