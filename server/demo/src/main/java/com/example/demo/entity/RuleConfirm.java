@@ -37,6 +37,8 @@ public class RuleConfirm {
 
 	private String rootIds;
 
+	private String desc;
+
 	public Integer getId() {
 		return id;
 	}
@@ -115,5 +117,13 @@ public class RuleConfirm {
 
 	public void setSaveFileId(String saveFileId) {
 		this.saveFileId = saveFileId;
+	}
+
+	public String getDesc() {
+		return desc;
+	}
+
+	public void setDesc(String desc) {
+		this.desc = desc;
 	}
 }

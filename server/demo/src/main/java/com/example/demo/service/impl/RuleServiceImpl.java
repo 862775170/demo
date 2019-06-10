@@ -98,6 +98,7 @@ public class RuleServiceImpl implements RuleService {
 		variables.put("sourceFileId", rule.getSourceFileId());
 		variables.put("rootIds", rule.getRootIds());
 		variables.put("createTime", rule.getCreateTime());
+		variables.put("desc", rule.getDesc());
 		variables.put("sourcePathName", fileService.getFileFullPath(rule.getSourcePath(), rule.getRootIds()));
 		runtimeService.startProcessInstanceByKey("CreateRuleProcess", variables);
 		List<Trends> trendList = new ArrayList<>();
@@ -438,6 +439,7 @@ public class RuleServiceImpl implements RuleService {
 		Map<Integer, String> ruleMap = getRuleMap(ruleIds);
 		Page<Map<String, Object>> results = findAll.map(m -> {
 			Map<String, Object> map = new HashMap<>();
+			map.putAll(ObjectUtils.objectToMap(m));
 			map.put("ruleName", ruleMap.get(m.getRuleId()));
 			map.put("count", fileExchangeLogDao.countByRuleId(m.getRuleId()));
 			return map;
@@ -479,11 +481,26 @@ public class RuleServiceImpl implements RuleService {
 		List<Rule> findAll = ruleDao.findAll(Example.of(rule));
 		List<Map<String, Object>> map = findAll.stream().map(s -> {
 			Map<String, Object> obj = new HashMap<>();
+			obj.putAll(ObjectUtils.objectToMap(s));
 			obj.put("ruleName", s.getRuleName());
 			obj.put("countSendFile", fileExchangeLogDao.countByRuleId(s.getRuleId()));
 			obj.put("countSendUser", ruleConfirmDao.countByRuleId(s.getRuleId()));
 			return obj;
 		}).collect(Collectors.toList());
+		return map;
+	}
+
+	@Override
+	public Page<Map<String, Object>> getRuleOutCount(String userId, String targetUserId, Pageable pageable) {
+		List<RuleConfirm> ruleConfirmList = ruleConfirmDao.findByUserId(targetUserId);
+		List<Integer> ruleIds = ruleConfirmList.stream().map(RuleConfirm::getRuleId).collect(Collectors.toList());
+		Page<Rule> page = ruleDao.findByRuleIdInAndUserId(ruleIds, userId, pageable);
+		Page<Map<String, Object>> map = page.map(r -> {
+			Map<String, Object> objectToMap = ObjectUtils.objectToMap(r);
+			Long count = fileExchangeLogDao.countByRuleIdAndTargetUserId(r.getRuleId(), targetUserId);
+			objectToMap.put("count", count);
+			return objectToMap;
+		});
 		return map;
 	}
 }

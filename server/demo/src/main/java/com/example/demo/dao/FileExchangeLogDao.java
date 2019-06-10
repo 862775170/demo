@@ -23,7 +23,9 @@ public interface FileExchangeLogDao
 
 	Long countByRuleId(Integer ruleId);
 
+	Long countByRuleConfirmId(Integer ruleConfirmId);
 //	List<FileExchangeLog> findByRuleIdGroupByTargetUserId(Integer ruleId);
 
+	Long countByRuleIdAndTargetUserId(Integer ruleId, String targetUserId);
 
 }

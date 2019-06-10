@@ -25,6 +25,7 @@ public class Rule {
 
 	private String userId;
 
+	private String desc;
 	private String createBy;
 
 	private Date createTime;
@@ -111,5 +112,13 @@ public class Rule {
 
 	public void setSourceFileId(String sourceFileId) {
 		this.sourceFileId = sourceFileId;
+	}
+
+	public String getDesc() {
+		return desc;
+	}
+
+	public void setDesc(String desc) {
+		this.desc = desc;
 	}
 }

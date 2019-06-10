@@ -153,4 +153,16 @@ public interface RuleService {
 
 	List<Map<String, Object>> getRuleCountByChart(String userId);
 
+	/**
+	 * 获得规则发出去的文件个数
+	 * 
+	 * @param userId
+	 * @param targetUserId
+	 * @param pageable
+	 * @return
+	 */
+	Page<Map<String, Object>> getRuleOutCount(String userId, String targetUserId, Pageable pageable);
+	
+	
+	
 }

@@ -8,7 +8,10 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +23,7 @@ import com.example.demo.common.ParamException;
 import com.example.demo.common.Result;
 import com.example.demo.entity.Rule;
 import com.example.demo.entity.RuleConfirm;
+import com.example.demo.service.RuleConfirmService;
 import com.example.demo.service.RuleService;
 
 import io.swagger.annotations.ApiOperation;
@@ -29,6 +33,9 @@ import io.swagger.annotations.ApiOperation;
 public class RuleController {
 	@Autowired
 	private RuleService ruleService;
+
+	@Autowired
+	private RuleConfirmService ruleConfirmService;
 
 	@PostMapping()
 	@ApiOperation("创建规则")
@@ -89,7 +96,6 @@ public class RuleController {
 	@GetMapping("/myRule")
 	@ApiOperation("获得我发起规则")
 	public Result getMyRule(String userId) {
-
 		List<Map<String, Object>> rules = ruleService.getRules(userId);
 		return Result.ok(rules);
 	}
@@ -144,17 +150,42 @@ public class RuleController {
 		return Result.ok(page);
 	}
 
-	@GetMapping("/getMyRuleReceiveCount/chart")
-	@ApiOperation("获得我确认的规则分别接收了多少文件")
-	public Result getRuleReceiveCountByChart(String userId) {
-		List<Map<String, Object>> page = ruleService.getRuleReceiveCountByChart(userId);
-		return Result.ok(page);
+	/**
+	 * 获得我给目标用户发送的文件数 规则分组
+	 * 
+	 * @param userId       当前登录用户
+	 * @param targetUserId 接收规则用户
+	 * @param pages
+	 * @return
+	 */
+	@GetMapping("/{userId}/{targetUserId}")
+	@ApiOperation("获得我给目标用户发送的文件数")
+	public ResponseEntity<?> getUserIdAndTargetUserId(@PathVariable("userId") String userId,
+			@PathVariable("targetUserId") String targetUserId, Pages pages) {
+		Pageable pageable = PageUtils.createPageRequest(pages);
+		Page<Map<String, Object>> page = ruleService.getRuleOutCount(userId, targetUserId, pageable);
+		return new ResponseEntity<>(page, HttpStatus.OK);
 	}
 
-	@GetMapping("/getRuleCount/chart")
-	@ApiOperation("获得规则发送了多少文件和接收人数")
-	public Result getRuleSendCountBychart(String userId) {
-		List<Map<String, Object>> page = ruleService.getRuleCountByChart(userId);
-		return Result.ok(page);
+	@GetMapping("/receive/{userId}/{targetUserId}")
+	@ApiOperation("获得我接收文件的个数 规则 分组")
+	public ResponseEntity<?> getRuleConfirmFileCount(@PathVariable("userId") String userId,
+			@PathVariable("targetUserId") String targetUserId, Pages pages) {
+		Pageable pageable = PageUtils.createPageRequest(pages);
+		Page<Map<String, Object>> page = ruleConfirmService.getRuleConfirmFileCount(userId, targetUserId, pageable);
+		return new ResponseEntity<>(page, HttpStatus.OK);
 	}
+//	@GetMapping("/getMyRuleReceiveCount/chart")
+//	@ApiOperation("获得我确认的规则分别接收了多少文件")
+//	public Result getRuleReceiveCountByChart(String userId) {
+//		List<Map<String, Object>> page = ruleService.getRuleReceiveCountByChart(userId);
+//		return Result.ok(page);
+//	}
+//
+//	@GetMapping("/getRuleCount/chart")
+//	@ApiOperation("获得规则发送了多少文件和接收人数")
+//	public Result getRuleSendCountBychart(String userId) {
+//		List<Map<String, Object>> page = ruleService.getRuleCountByChart(userId);
+//		return Result.ok(page);
+//	}
 }
