@@ -29,7 +29,7 @@ import {
           pagination: {
             total: response.data.totalElements,
             pageSize: response.data.size,
-            current: response.data.number,
+            current: response.data.number + 1,
           },
         };
         yield put({
@@ -46,7 +46,7 @@ import {
           pagination: {
             total: response.data.totalElements,
             pageSize: response.data.size,
-            current: response.data.number,
+            current: response.data.number + 1,
           },
         };
         yield put({
