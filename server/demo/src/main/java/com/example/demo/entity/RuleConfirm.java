@@ -39,6 +39,10 @@ public class RuleConfirm {
 
 	private String desc;
 
+	private Date confirmTime;
+
+	private String confirmBy;
+
 	public Integer getId() {
 		return id;
 	}
@@ -125,5 +129,21 @@ public class RuleConfirm {
 
 	public void setDesc(String desc) {
 		this.desc = desc;
+	}
+
+	public Date getConfirmTime() {
+		return confirmTime;
+	}
+
+	public void setConfirmTime(Date confirmTime) {
+		this.confirmTime = confirmTime;
+	}
+
+	public String getConfirmBy() {
+		return confirmBy;
+	}
+
+	public void setConfirmBy(String confirmBy) {
+		this.confirmBy = confirmBy;
 	}
 }

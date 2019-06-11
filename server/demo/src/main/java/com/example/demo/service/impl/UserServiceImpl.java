@@ -30,6 +30,7 @@ public class UserServiceImpl implements UserService {
 	@Autowired
 	private ObjectMapper objectMapper;
 
+	
 	@Override
 	public Map<String, String> getUserNames(Collection<String> userIds) {
 		Map<String, String> result = new HashMap<>();
@@ -78,6 +79,35 @@ public class UserServiceImpl implements UserService {
 			}
 		}
 		return userInfo;
+	}
+
+	@Override
+	public UserInfo getUserInfoByToken(String token) {
+		// TODO Auto-generated method stub
+
+//		Map<String, Object> body = new HashMap<>();
+//		body.put("userIds", new String[] { userId });
+//		ResponseEntity<JsonObject> postByJson = httpClient.postByJson(ApiConstants.api_batch_user_info, body,
+//				JsonObject.class);
+//		UserInfo userInfo = null;
+//		if (postByJson.getBody().has("result")) {
+//			JsonArray jsonArray = postByJson.getBody().get("result").getAsJsonArray();
+//			if (!jsonArray.isJsonNull() && jsonArray.size() == 1) {
+//				JsonElement jsonElement = jsonArray.get(0);
+//				if (!jsonElement.isJsonNull()) {
+//					log.info("{}", jsonElement);
+//					try {
+//						userInfo = objectMapper.readValue(jsonElement.toString(), UserInfo.class);
+//						log.debug("userInfo => {}", userInfo);
+//					} catch (IOException e) {
+//						log.error("json pojo error", e);
+//					}
+//				}
+//			} else {
+//				log.warn("");
+//			}
+//		}
+		return null;
 	}
 
 }

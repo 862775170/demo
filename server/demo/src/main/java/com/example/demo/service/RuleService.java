@@ -36,7 +36,7 @@ public interface RuleService {
 	 * @param rootIds
 	 * @param taskId
 	 */
-	void confirmRuleProcess(String savePath, String saveFileId, String rootIds, String taskId);
+	void confirmRuleProcess(String savePath, String saveFileId, String rootIds, Integer taskId);
 
 	/**
 	 * 获得用户下面所有规则
@@ -162,7 +162,5 @@ public interface RuleService {
 	 * @return
 	 */
 	Page<Map<String, Object>> getRuleOutCount(String userId, String targetUserId, Pageable pageable);
-	
-	
-	
+
 }

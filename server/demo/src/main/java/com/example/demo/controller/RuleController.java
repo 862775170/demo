@@ -55,13 +55,23 @@ public class RuleController {
 		return Result.ok();
 	}
 
-	@PostMapping("ruleConfirm/update")
+	@PostMapping("/ruleConfirm/update")
 	@ApiOperation("修改确认规则")
 	public Result updateRuleConfirm(@RequestBody RuleConfirm confirm) {
 		if (confirm.getId() == null) {
 			throw new ParamException("400", "[id] 为空");
 		}
 		ruleService.updateRuleConfirm(confirm);
+		return Result.ok();
+	}
+
+	@PostMapping("/addRuleUser")
+	@ApiOperation("修改确认规则")
+	public Result addRuleUser(String userId, Integer ruleId) {
+//		if (confirm.getRuleId() == null) {
+//			throw new ParamException("400", "[id] 为空");
+//		}
+//		ruleConfirmService.saveRuleConfirm(confirm);
 		return Result.ok();
 	}
 
@@ -81,7 +91,7 @@ public class RuleController {
 
 	@PostMapping("/confirmRule")
 	@ApiOperation("接收人却认规则")
-	public Result confirmRule(String savePath, String saveFildId, String rootIds, String taskId) {
+	public Result confirmRule(String savePath, String saveFildId, String rootIds, Integer taskId) {
 		ruleService.confirmRuleProcess(savePath, saveFildId, rootIds, taskId);
 		return Result.ok();
 	}
