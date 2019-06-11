@@ -326,13 +326,21 @@ class Home extends PureComponent {
           <p>接收文件</p>
           <p>{sizeArray.receive}</p>
         </div>
+        <div className={styles.statItem}>
+          <p>今日发送文件</p>
+          <p>{sizeArray.toDayReceive}</p>
+        </div>
+        <div className={styles.statItem}>
+          <p>今日接收文件</p>
+          <p>{sizeArray.toDaySend}</p>
+        </div>
       </div>
     );
 
     const operationTabList = [
       {
         key: 'tab1',
-        tab: '上传文件',
+        tab: '发送文件',
       },
       {
         key: 'tab2',
