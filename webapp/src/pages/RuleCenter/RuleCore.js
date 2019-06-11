@@ -751,9 +751,9 @@ class RuleCore extends PureComponent {
                     <Checkbox key={item.id} value={item.id}>
                       { item.confirmTime 
                       ? 
-                        <Tag color="#2db7f5" title={item.confirmTime ? '已确认' : '未确认'}>{item.userName}</Tag> 
+                        <Tag color="#2db7f5" title='已确认'>{item.userName}</Tag> 
                         : 
-                        <Tag color="#f50" title={item.confirmTime ? '已确认' : '未确认'}>{item.userName}</Tag> 
+                        <Tag color="#f50" title='未确认'>{item.userName}</Tag> 
                       }
                     </Checkbox>
                   </Col>
