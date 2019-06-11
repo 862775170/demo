@@ -32,7 +32,7 @@ class RuleCore extends PureComponent {
     treeData: [                // 发送规则  新建和修改共用  源路径
       { filename_KeywordIkPinyin:'/' ,file_id:getRootIds() }
     ], 
-    fileArr: [],               // 发送规则  新建和修改共用  源路径 数组存储获取的路径
+    // fileArr: [],               // 发送规则  新建和修改共用  源路径 数组存储获取的路径
     allGroupUser: [],          // 发送规则  新建规则  存储接收方数组值
     ruleDetailsList: [],        // 发送规则  接收人员列表
     checkedList: [],            // 发送规则  接收人员列表  单个选择
@@ -257,18 +257,18 @@ class RuleCore extends PureComponent {
   }
 
   // 发送规则  新建和修改共用  源路径
-  ruleGetFileList = () => {
-    const { dispatch } = this.props;
-    const fileId = getRootIds();
-    dispatch({
-      type: 'core/getFileList',
-      payload:{ fileId },
-      callback: (result) => {
-        this.state.fileArr = result.result;
-        this.setState({treeData:result.result});
-      } 
-    });
-  }
+  // ruleGetFileList = () => {
+  //   const { dispatch } = this.props;
+  //   const fileId = getRootIds();
+  //   dispatch({
+  //     type: 'core/getFileList',
+  //     payload:{ fileId },
+  //     callback: (result) => {
+  //       this.state.fileArr = result.result;
+  //       this.setState({treeData:result.result});
+  //     } 
+  //   });
+  // }
 
   // 发送规则  新建和修改共用  源路径
   onLoadData = treeNode => {
@@ -516,7 +516,7 @@ class RuleCore extends PureComponent {
         dataIndex: 'sourcePathName',
       },
       {
-        title: '生效时间',
+        title: '创建时间',
         dataIndex: 'createTime',
         render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>,
       },
@@ -554,8 +554,8 @@ class RuleCore extends PureComponent {
       },
       {
         title: '生效时间',
-        dataIndex: 'createTime',
-        render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>,
+        dataIndex: 'confirmTime',
+        render: val => val?<span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>:'未生效', 
       },
       {
         title: '操作',

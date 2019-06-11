@@ -31,6 +31,39 @@ export async function fileList(params){
   });
 }
 
+// 新建规则  提交 借口
+export async function submitRule(params){
+  const { userIds } = params;
+  return request(`${baseurl}/rule?userIds=${userIds}`, {
+    method: 'POST',
+    body: {
+      ...params,
+      method: 'post',
+    },
+  });
+}
+// 发送规则 编辑
+export async function ruleUpdate(params) {
+  return request(`${baseurl}/rule/update`, {
+    method: 'POST',
+    body: {
+      ...params,
+      method: 'post',
+    },
+  });
+}
+
+// 接收规则 编辑
+export async function ruleConfirmUpdate(params) {
+  return request(`${baseurl}/rule/ruleConfirm/update`, {
+    method: 'POST',
+    body: {
+      ...params,
+      method: 'post',
+    },
+  });
+}
+
 // 好友中心 已发送
 export async function sender(params) {
   const { sourceUserId, targetUserId } = params;

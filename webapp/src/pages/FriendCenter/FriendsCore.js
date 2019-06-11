@@ -16,78 +16,18 @@ import {
   Input,
   Tree,
   Drawer,
+  Modal,
+  Card,
 } from 'antd';
 import moment from 'moment';
-import {getUserId, getUserInfo, getRootIds} from '@/utils/authority'
+import {getUserId, getUserInfo, getRootIds} from '@/utils/authority';
+import styles from './style.less';
 
 const { Content, Sider } = Layout;
 const { TabPane } = Tabs;
 const FormItem = Form.Item;
 const { TreeNode } = Tree;
 
-// 发送规则
-const columns = [
-  {
-    title: '规则名',
-    dataIndex: 'ruleName',
-  },
-
-  {
-    title: '文件数',
-    dataIndex: 'count',
-    render: val => `${val} 个`,
-  },
-  {
-    title: '生效时间',
-    dataIndex: 'startTime',
-    render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>, 
-  },
-  {
-    title: '备注',
-    dataIndex: 'desc',
-  },
-  {
-    title: '操作',
-    render: (record) => (
-      <Fragment>
-        <a onClick={() => this.showSaveRuleModal(record)}>编辑</a>
-        <Divider type="vertical" />
-        <a onClick={() => this.showSaveRuleModal(record)}>删除</a>
-      </Fragment>
-    ),
-  },
-];
-// 接收规则
-const columns5 = [
-  {
-    title: '规则名',
-    dataIndex: 'ruleName',
-  },
-  // {
-  //   title: '发送人',
-  //   dataIndex: 'sourceUserName',
-  // },
-  {
-    title: '文件数',
-    dataIndex: 'count',
-    render: val => `${val} 个`,
-  },
-  {
-    title: '生效时间',
-    dataIndex: 'startTime',
-    render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>, 
-  },
-  {
-    title: '操作',
-    render: (record) => (
-      <Fragment>
-        <a onClick={() => this.showSaveRuleModal(record)}>编辑</a>
-        <Divider type="vertical" />
-        <a onClick={() => this.showSaveRuleModal(record)}>删除</a>
-      </Fragment>
-    ),
-  },
-];
 // 已发送 
 const columns2 = [
   {
@@ -139,6 +79,7 @@ const columns3 = [
 class FriendsCore extends PureComponent {
 
   state = {
+    done: false,
     treeData: [                // 发送规则  新建和修改共用  源路径
       { filename_KeywordIkPinyin:'/' ,file_id:getRootIds() }
     ],
@@ -148,6 +89,10 @@ class FriendsCore extends PureComponent {
     friendsArr: [],          // 存储好友列表数据
     operationkey: 'tab1',    // 用于存储切换的是哪个tab
     isTips: true,           // 左边栏没数据提示
+    subEdit: true,           // 用于控制新建按钮
+
+    receiveCurrent: {},      // 接收规则 存储某行对象参数
+    acceptanceRule: false,   // 接收规则 模态框属性
 
     drawerParameter: {},      // 新建规则    
     isRoute: false,            // 用于判断调用新建还是修改
@@ -216,9 +161,15 @@ class FriendsCore extends PureComponent {
   // 不同的用户和tab联动却换
   tabs = (key, id) => {
     const { userId } = this.state;           // 获取登录用户的用户ID
+    this.setState({
+      subEdit: false,
+    });
     switch(key){
       case "tab1": 
         this.coreRuleRelation(userId, id);              // 发送规则列表
+        this.setState({
+          subEdit: true,
+        });
         break;
       case "tab2": 
         this.coreRuleReceive(userId, id);              // 接收规则列表
@@ -298,7 +249,7 @@ class FriendsCore extends PureComponent {
   // 新建规则  提交方法
   urleGetSubmitRule = fields => {
     const { dispatch } =  this.props;
-    const { userInfo } = this.state;
+    const { userInfo, friendsId, userId } = this.state;
     const user = userInfo;
     const createBy = getUserId()
     const rootIds = user.root_ids;
@@ -306,11 +257,33 @@ class FriendsCore extends PureComponent {
     const fileid = this.state
     const sourceFileId = fileid.fileId;
     const sourcePath = path.path;
+    const userIds = friendsId
     dispatch({
-      type: 'core/getSubmitRule',
-      payload:{ ...fields, createBy, rootIds, sourcePath, sourceFileId },
+      type: 'friend/getSubmitRule',
+      payload:{ ...fields, createBy, rootIds, sourcePath, sourceFileId, userIds },
       callback: () => {
-        this.coreRuleMyRule();    // 我的规则   发送规则
+        this.coreRuleReceive(userId, friendsId);              // 接收规则列表
+      } 
+    });
+  }
+
+  // 发送规则 修改  提交方法
+  coreRuleUpdate = fields => {
+    const { dispatch } = this.props;
+    const { userInfo, path, drawerParameter, userId, friendsId } = this.state;
+    // eslint-disable-next-line no-unused-vars
+    const user = userInfo;
+    const createBy = getUserId();
+    const {ruleId} = drawerParameter;
+    const sourcePath = path;
+    const fileid = this.state
+    const sourceFileId = fileid.fileId;
+    const userIds = friendsId;
+    dispatch({
+      type: 'friend/getRuleUpdate',
+      payload:{ ...fields, createBy, sourcePath, ruleId, sourceFileId, userIds },
+      callback: () => {
+        this.coreRuleReceive(userId, friendsId);              // 接收规则列表
       } 
     });
   }
@@ -321,6 +294,15 @@ class FriendsCore extends PureComponent {
       isRoute: true,            // 发送规则  用于判断调用新建还是修改
       visibles: true,           // 发送规则抽屉属性
       drawerParameter: {},      // 发送规则  存储某行对象参数
+    });
+  };
+
+  // 发送规则 修改  调出抽屉  
+  showUpdateDrawer = item => {
+    this.setState({
+      isRoute: false,            // 发送规则  false调用修改
+      visibles: true,            // 发送规则抽屉属性
+      drawerParameter: item,     // 发送规则  存储某行对象参数
     });
   };
 
@@ -396,6 +378,38 @@ renderTreeNodes = data => data.map(item => {
   return <TreeNode title={item.filename_KeywordIkPinyin} key={item.file_id} dataRef={item} />;
 });
 
+// 接收规则 修改  点击修改弹出模态框
+showReceiveModal = item => {
+  this.setState({
+    acceptanceRule: true,
+    receiveCurrent: item,
+  });
+}
+
+// 接收规则 修改
+ruleModalOk = () => {
+  const { dispatch } =  this.props;
+  const { path, receiveCurrent, userId, friendsId } = this.state;
+  const {id} = receiveCurrent;
+  const {rootIds} = receiveCurrent;
+  const savePath = path;
+  dispatch({
+    type: 'friend/getRuleConfirmUpdate',
+    payload:{ savePath, id, rootIds },
+    callback: () => {
+      this.coreRuleReceive(userId, friendsId);              // 接收规则列表
+      this.ruleModalCancel(); // 接收规则  修改规则  取消模态框
+    } 
+  });
+}
+
+// 接收规则  修改规则  取消模态框
+ruleModalCancel = () => {
+  this.setState({
+    acceptanceRule: false,
+  });
+};
+
   
   
   
@@ -405,7 +419,21 @@ renderTreeNodes = data => data.map(item => {
       form: {getFieldDecorator}, 
       friend: { ruleList },   // 规则列表返回数据
     } = this.props;
-    const { operationkey, friendsArr, friendsName, isTips, drawerParameter, isRoute, treeData, visibles } = this.state;
+
+    const { 
+      operationkey, 
+      friendsArr, 
+      friendsName, 
+      isTips, 
+      drawerParameter, 
+      isRoute, 
+      treeData, 
+      visibles, 
+      subEdit, 
+      done,
+      receiveCurrent, 
+      acceptanceRule, 
+    } = this.state;
 
     // 发送规则   新建
     const getAddForm = () => {
@@ -415,7 +443,7 @@ renderTreeNodes = data => data.map(item => {
             <Col span={16}>
               <FormItem label="规则名">
                 {getFieldDecorator('ruleName', {
-                  rules: [{ required: isRoute, message: '请输入规则名! ' }],
+                  rules: [{ required: true, message: '请输入规则名! ' }],
                   initialValue: drawerParameter.ruleName,
                 })(<Input placeholder="请输入规则名" />)}
               </FormItem>
@@ -433,6 +461,7 @@ renderTreeNodes = data => data.map(item => {
               <FormItem label="接收方">
                 {getFieldDecorator('userIds', {
                   rules: [{ required: false }],
+                  initialValue: friendsName,
                 })(
                   <Input disabled />
                 )}
@@ -459,6 +488,66 @@ renderTreeNodes = data => data.map(item => {
       showQuickJumper: false,
       showTotal: total => `总数 ${total} 条`,
     };
+
+    // 发送规则
+    const columns = [
+      {
+        title: '规则名',
+        dataIndex: 'ruleName',
+      },
+
+      {
+        title: '文件数',
+        dataIndex: 'count',
+        render: val => `${val} 个`,
+      },
+      {
+        title: '备注',
+        dataIndex: 'desc',
+      },
+      {
+        title: '操作',
+        render: (record) => (
+          <Fragment>
+            <a onClick={() => this.showUpdateDrawer(record)}>编辑</a>
+            <Divider type="vertical" />
+            <a onClick={() => this.showSaveRuleModal(record)}>删除</a>
+          </Fragment>
+        ),
+      },
+    ];
+
+    // 接收规则
+    const columns5 = [
+      {
+        title: '规则名',
+        dataIndex: 'ruleName',
+      },
+      {
+        title: '保存目录',
+        dataIndex: 'savePathName',
+      },
+      {
+        title: '文件数',
+        dataIndex: 'count',
+        render: val => `${val} 个`,
+      },
+      {
+        title: '生效时间',
+        dataIndex: 'confirmTime',
+        render: val => val?<span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>:'未生效', 
+      },
+      {
+        title: '操作',
+        render: (record) => (
+          <Fragment>
+            <a onClick={() => this.showReceiveModal(record)}>编辑</a>
+            <Divider type="vertical" />
+            <a onClick={() => this.showSaveRuleModal(record)}>删除</a>
+          </Fragment>
+        ),
+      },
+    ];
 
     const contentList = {
       tab1: (
@@ -511,6 +600,15 @@ renderTreeNodes = data => data.map(item => {
       ),
     };
 
+    const formItemLayout = {
+      labelCol: {
+        span: 5,
+      },
+      wrapperCol: {
+        span: 19,
+      },
+    };
+
     return (
       <Layout style={{width: '100%',height:'91%',position: 'absolute',marginTop: '0px'}}>
         <Sider width={200}>
@@ -535,7 +633,7 @@ renderTreeNodes = data => data.map(item => {
             <Breadcrumb.Item>{ friendsName }</Breadcrumb.Item>
           </Breadcrumb>
           <Divider style={{margin: '10px 0px'}} />
-          <div>
+          <div style={{display: subEdit ? 'block' : 'none',}}>
             <Button icon="plus" type="primary" onClick={this.showDrawer}>新建</Button>
           </div>
           <Tabs defaultActiveKey="tab1" onChange={this.clickTabs} size="default" style={{marginTop: '5px'}}>
@@ -579,6 +677,32 @@ renderTreeNodes = data => data.map(item => {
             <Button onClick={this.handleSubmit} type="primary">确定</Button>
           </div>
         </Drawer>
+
+        {/* 接收规则（修改） */}
+        <Modal
+          title='接收规则详情'
+          width={640}
+          bodyStyle={done ? { padding: '72px 0' } : { padding: '28px 0 0' }}
+          destroyOnClose
+          visible={acceptanceRule}
+          onOk={this.ruleModalOk}
+          onCancel={this.ruleModalCancel}
+        >
+          <Card bordered={false} style={{ marginBottom:'20px' }}>
+            <Form layout="horizontal">
+              <Form.Item {...formItemLayout} className={styles.stepFormText} label="发送方">
+                {friendsName}
+              </Form.Item>
+              <Form.Item {...formItemLayout} className={styles.stepFormText} label="规则描述">
+                {receiveCurrent.ruleName}
+              </Form.Item>
+              <Divider style={{ margin: '24px 0' }} />
+              <Form.Item {...formItemLayout} label="选择路径" required={false}>
+                <Tree loadData={this.onLoadData} onSelect={this.getOnSelect}>{this.renderTreeNodes(treeData)}</Tree>
+              </Form.Item>
+            </Form>
+          </Card>
+        </Modal>
       </Layout>
     );
   }

@@ -5,6 +5,9 @@ import {
   receiver,
   ruleReceive,
   fileList,
+  submitRule,
+  ruleUpdate,
+  ruleConfirmUpdate,
 } from '@/services/friends';
 
 // 规则中心
@@ -43,6 +46,24 @@ export default {
     // 源路径
     *getFileList({ payload, callback }, { call }) {
       const response = yield call(fileList, payload);
+      if (callback) callback(response);  // 后端返回回调
+    },
+
+    //  新建规则  提交 借口
+    *getSubmitRule({ payload, callback }, { call }) {
+      const response = yield call(submitRule, payload);
+      if (callback) callback(response);  // 后端返回回调
+    },
+
+    // 发送规则  编辑
+    *getRuleUpdate({ payload, callback }, { call }) {
+      const response = yield call(ruleUpdate, payload);
+      if (callback) callback(response);  // 后端返回回调
+    },
+
+    // 接收规则 编辑
+    *getRuleConfirmUpdate({ payload, callback }, { call }) {
+      const response = yield call(ruleConfirmUpdate, payload);
       if (callback) callback(response);  // 后端返回回调
     },
 
