@@ -128,8 +128,10 @@ public class RuleServiceImpl implements RuleService {
 		Set<Integer> ruleIds = new HashSet<>();
 		Set<String> userIds = new HashSet<>();
 		confirms.forEach(a -> {
-			ruleIds.add(a.getRuleId());
-			userIds.add(a.getCreateBy());
+			if (a.getRuleId() != null)
+				ruleIds.add(a.getRuleId());
+			if (StringUtils.isNotEmpty(a.getCreateBy()))
+				userIds.add(a.getCreateBy());
 		});
 
 		Map<String, String> userNames = userService.getUserNames(userIds);
@@ -152,6 +154,7 @@ public class RuleServiceImpl implements RuleService {
 			objectToMap.put("ruleName", ruleMap.get(m.getRuleId()));
 			objectToMap.put("userName", userNames.get(m.getCreateBy()));
 			objectToMap.put("taskId", m.getId());
+			objectToMap.put("createByName", userNames.get(m.getCreateBy()));
 			return objectToMap;
 		}).collect(Collectors.toList());
 		return list2;
@@ -220,8 +223,10 @@ public class RuleServiceImpl implements RuleService {
 		Set<Integer> ruleIds = new HashSet<>();
 		Set<String> userIds = new HashSet<>();
 		findByUserId.forEach(r -> {
-			ruleIds.add(r.getRuleId());
-			userIds.add(r.getUserId());
+			if (r.getRuleId() != null)
+				ruleIds.add(r.getRuleId());
+			if (StringUtils.isNotEmpty(r.getCreateBy()))
+				userIds.add(r.getCreateBy());
 		});
 		Map<Integer, Rule> ruleMap = new HashMap<>();
 		List<Rule> rules = ruleDao.findByRuleIdIn(ruleIds);
@@ -264,8 +269,10 @@ public class RuleServiceImpl implements RuleService {
 		Set<Integer> ruleIds = new HashSet<>();
 		userIds.add(userId);
 		ruleConfirm.stream().forEach(a -> {
-			userIds.add(a.getUserId());
-			ruleIds.add(a.getRuleId());
+			if (a.getRuleId() != null)
+				ruleIds.add(a.getRuleId());
+			if (StringUtils.isNotEmpty(a.getCreateBy()))
+				userIds.add(a.getCreateBy());
 		});
 		List<Rule> rules = ruleDao.findByDeleteTimeIsNullAndRuleIdIn(new ArrayList<>(ruleIds));
 		Map<Integer, Rule> ruleMap = new HashMap<>();
@@ -395,12 +402,12 @@ public class RuleServiceImpl implements RuleService {
 //			FileInfo ruleFileInfo = fileService.getFineInfo(sourceFileId);
 //			String sourcePath = ruleFileInfo.getFullPath();
 			if (fullPath.indexOf(sourceFileId) != -1) {
-				List<RuleConfirm> ruleConfirms = ruleConfirmDao.findByRuleIdAndDeleteTimeIsNull(ruleId);
+				List<RuleConfirm> ruleConfirms = ruleConfirmDao
+						.findByRuleIdAndDeleteTimeIsNullAndConfirmTimeIsNotNull(ruleId);
 				if (ruleConfirms.isEmpty()) {
 					log.info("rule confirms is null ruleId=>{}", ruleId);
 				}
 				for (RuleConfirm ruleConfirm : ruleConfirms) {
-
 					FileCopyMessage fileCopyMessage = new FileCopyMessage();
 					fileCopyMessage.setRuleConfirmId(ruleConfirm.getId());
 					fileCopyMessage.setRuleId(ruleId);
