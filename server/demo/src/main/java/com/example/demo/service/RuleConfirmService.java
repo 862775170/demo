@@ -5,6 +5,8 @@ import java.util.Map;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import com.example.demo.entity.RuleConfirm;
+
 public interface RuleConfirmService {
 
 	Long countByUserId(String userId);
@@ -18,4 +20,11 @@ public interface RuleConfirmService {
 	 * @return
 	 */
 	Page<Map<String, Object>> getRuleConfirmFileCount(String userId, String targetUserId, Pageable pageable);
+
+	/**
+	 * 保存确认规则
+	 * 
+	 * @param confirm
+	 */
+	void saveRuleConfirm(RuleConfirm confirm);
 }

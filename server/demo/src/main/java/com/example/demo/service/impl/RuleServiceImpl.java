@@ -35,6 +35,7 @@ import com.example.demo.entity.Trends;
 import com.example.demo.message.FileCopyMessage;
 import com.example.demo.model.FileInfo;
 import com.example.demo.model.UserInfo;
+import com.example.demo.service.FileSendHisService;
 import com.example.demo.service.FileService;
 import com.example.demo.service.RuleService;
 import com.example.demo.service.TrendsService;
@@ -68,6 +69,8 @@ public class RuleServiceImpl implements RuleService {
 	private MqProperties mqQueueConfig;
 	@Autowired
 	private FileExchangeLogDao fileExchangeLogDao;
+	@Autowired
+	private FileSendHisService fileSendHisService;
 	/**
 	 * 热点
 	 */
@@ -91,6 +94,7 @@ public class RuleServiceImpl implements RuleService {
 //		variables.put("desc", rule.getDesc());
 //		variables.put("sourcePathName", fileService.getFileFullPath(rule.getSourcePath(), rule.getRootIds()));
 //		runtimeService.startProcessInstanceByKey("CreateRuleProcess", variables);
+		rule.setUserId(rule.getCreateBy());
 		rule.setSourcePathName(fileService.getFileFullPath(rule.getSourcePath(), rule.getRootIds()));
 		rule = ruleDao.save(rule);
 		List<RuleConfirm> ruleConfirmList = new ArrayList<>();
@@ -211,6 +215,7 @@ public class RuleServiceImpl implements RuleService {
 			hashMap.put("id", r.getId());
 			hashMap.put("userId", r.getUserId());
 			hashMap.put("userName", userNames.get(r.getUserId()));
+			hashMap.put("confirmTime", r.getConfirmTime());
 //			hashMap.put("username", targetUser.getUsername());
 			return hashMap;
 		}).collect(Collectors.toList());
@@ -431,6 +436,7 @@ public class RuleServiceImpl implements RuleService {
 					rabbitTemplate.convertAndSend(mqQueueConfig.getExchange(), mqQueueConfig.getRoutingKey(),
 							writeValueAsString);
 				}
+				fileSendHisService.addFileSendHis(userId, ruleId, ruleConfirms.size(), fileId, fileName, sendTime);
 			} else {
 				log.info("no matching ruleId=>{},fullPath=>{}", rule.getRuleId(), fullPath);
 			}

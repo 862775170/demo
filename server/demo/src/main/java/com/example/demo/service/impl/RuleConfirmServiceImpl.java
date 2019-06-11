@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -15,10 +14,8 @@ import com.example.demo.common.ObjectUtils;
 import com.example.demo.dao.FileExchangeLogDao;
 import com.example.demo.dao.RuleConfirmDao;
 import com.example.demo.dao.RuleDao;
-import com.example.demo.entity.Rule;
 import com.example.demo.entity.RuleConfirm;
 import com.example.demo.service.RuleConfirmService;
-import com.example.demo.service.RuleService;
 
 @Service
 public class RuleConfirmServiceImpl implements RuleConfirmService {
@@ -52,6 +49,11 @@ public class RuleConfirmServiceImpl implements RuleConfirmService {
 			return objectToMap;
 		});
 		return page2;
+	}
+
+	@Override
+	public void saveRuleConfirm(RuleConfirm confirm) {
+		ruleConfirmDao.save(confirm);
 	}
 
 }
