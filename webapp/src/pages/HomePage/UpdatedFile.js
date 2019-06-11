@@ -65,7 +65,7 @@ const UpdatedFile = memo(({ loading, operationTabList, isKey, sendOutTotal, send
               <div className={styles.listContent}>
                 <div className={styles.listContentItem}>
                   <span>接收文件数</span>
-                  <p>{item.countSendFile}</p>
+                  <p>{item.count}</p>
                 </div>
               </div>
             </List.Item>
