@@ -11,17 +11,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.persistence.Tuple;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Selection;
-
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.client.utils.DateUtils;
 import org.flowable.engine.RuntimeService;
 import org.flowable.engine.TaskService;
-import org.flowable.task.api.Task;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -33,7 +25,6 @@ import org.springframework.stereotype.Service;
 
 import com.example.demo.common.ObjectUtils;
 import com.example.demo.common.ParamException;
-import com.example.demo.common.UUIDUtils;
 import com.example.demo.config.MqProperties;
 import com.example.demo.dao.FileExchangeLogDao;
 import com.example.demo.dao.RuleConfirmDao;
@@ -44,7 +35,6 @@ import com.example.demo.entity.Trends;
 import com.example.demo.message.FileCopyMessage;
 import com.example.demo.model.FileInfo;
 import com.example.demo.model.UserInfo;
-import com.example.demo.service.FileExchangeLogService;
 import com.example.demo.service.FileService;
 import com.example.demo.service.RuleService;
 import com.example.demo.service.TrendsService;
@@ -87,21 +77,39 @@ public class RuleServiceImpl implements RuleService {
 	@Override
 	public void startCreateProcess(Rule rule, String[] userIds) {
 		log.info("create from => {}", rule.toString(), Arrays.toString(userIds));
-		Map<String, Object> variables = new HashMap<>();
-		variables.put("userIds", userIds);
-		variables.put("createBy", rule.getCreateBy());
-		UserInfo userInfo = userService.getUserInfo(rule.getCreateBy());
-		variables.put("createByName", userInfo.getUserName());
-		variables.put("ruleName", rule.getRuleName());
-		variables.put("userId", rule.getUserId());
-		variables.put("sourcePath", rule.getSourcePath());
-		variables.put("sourceFileId", rule.getSourceFileId());
-		variables.put("rootIds", rule.getRootIds());
-		variables.put("createTime", rule.getCreateTime());
-		variables.put("desc", rule.getDesc());
-		variables.put("sourcePathName", fileService.getFileFullPath(rule.getSourcePath(), rule.getRootIds()));
-		runtimeService.startProcessInstanceByKey("CreateRuleProcess", variables);
+//		Map<String, Object> variables = new HashMap<>();
+//		variables.put("userIds", userIds);
+//		variables.put("createBy", rule.getCreateBy());
+//		UserInfo userInfo = userService.getUserInfo(rule.getCreateBy());
+//		variables.put("createByName", userInfo.getUserName());
+//		variables.put("ruleName", rule.getRuleName());
+//		variables.put("userId", rule.getUserId());
+//		variables.put("sourcePath", rule.getSourcePath());
+//		variables.put("sourceFileId", rule.getSourceFileId());
+//		variables.put("rootIds", rule.getRootIds());
+//		variables.put("createTime", rule.getCreateTime());
+//		variables.put("desc", rule.getDesc());
+//		variables.put("sourcePathName", fileService.getFileFullPath(rule.getSourcePath(), rule.getRootIds()));
+//		runtimeService.startProcessInstanceByKey("CreateRuleProcess", variables);
+		rule.setSourcePathName(fileService.getFileFullPath(rule.getSourcePath(), rule.getRootIds()));
+		rule = ruleDao.save(rule);
+		List<RuleConfirm> ruleConfirmList = new ArrayList<>();
+		for (String userId : userIds) {
+			UserInfo user = userService.getUserInfo(userId);
+			RuleConfirm ruleConfirm = new RuleConfirm();
+			ruleConfirm.setCreateBy(rule.getUserId());
+			ruleConfirm.setUserId(userId);
+			ruleConfirm.setCreateTime(rule.getCreateTime());
+			ruleConfirm.setRootIds(user.getRootIds());
+			ruleConfirm.setSaveFileId(user.getRootIds());
+			ruleConfirm.setSavePathName("/");
+			ruleConfirm.setRuleId(rule.getRuleId());
+			ruleConfirmList.add(ruleConfirm);
+		}
+		ruleConfirmDao.saveAll(ruleConfirmList);
+
 		List<Trends> trendList = new ArrayList<>();
+
 		Date createTime = new Date();
 		for (String userId : userIds) {
 			Trends trends = new Trends();
@@ -116,29 +124,50 @@ public class RuleServiceImpl implements RuleService {
 
 	@Override
 	public List<Map<String, Object>> getTasks(String assignee) {
-		List<Task> list = taskService.createTaskQuery().taskAssignee(assignee).list();
-		List<Map<String, Object>> list2 = new ArrayList<>();
-		for (Task task : list) {
-			Map<String, Object> map = new HashMap<>();
-			map.put("id", task.getId());
-			map.put("name", task.getName());
-			map.put("processInstanceId", task.getProcessInstanceId());
-//			map.put("processVariables", task.getProcessVariables());
-//			map.put("taskLocalVariables", task.getTaskLocalVariables());
-			map.put("variables", taskService.getVariables(task.getId()));
-			list2.add(map);
-		}
+		List<RuleConfirm> confirms = ruleConfirmDao.findByUserIdAndConfirmTimeIsNull(assignee);
+		Set<Integer> ruleIds = new HashSet<>();
+		Set<String> userIds = new HashSet<>();
+		confirms.forEach(a -> {
+			ruleIds.add(a.getRuleId());
+			userIds.add(a.getCreateBy());
+		});
+
+		Map<String, String> userNames = userService.getUserNames(userIds);
+		Map<Integer, String> ruleMap = getRuleMap(ruleIds);
+		// List<Task> list =
+		// taskService.createTaskQuery().taskAssignee(assignee).list();
+		// List<Map<String, Object>> list2 = new ArrayList<>();
+//		for (Task task : list) {
+//			Map<String, Object> map = new HashMap<>();
+//			map.put("id", task.getId());
+//			map.put("name", task.getName());
+//			map.put("processInstanceId", task.getProcessInstanceId());
+////			map.put("processVariables", task.getProcessVariables());
+////			map.put("taskLocalVariables", task.getTaskLocalVariables());
+//			map.put("variables", taskService.getVariables(task.getId()));
+//			list2.add(map);
+//		}
+		List<Map<String, Object>> list2 = confirms.stream().map(m -> {
+			Map<String, Object> objectToMap = ObjectUtils.objectToMap(m);
+			objectToMap.put("ruleName", ruleMap.get(m.getRuleId()));
+			objectToMap.put("userName", userNames.get(m.getCreateBy()));
+			objectToMap.put("taskId", m.getId());
+			return objectToMap;
+		}).collect(Collectors.toList());
 		return list2;
 	}
 
 	@Override
-	public void confirmRuleProcess(String savePath, String saveFileId, String rootIds, String taskId) {
-		Map<String, Object> variables = new HashMap<>();
-		variables.put("savePath", savePath);
-		variables.put("rootIds", rootIds);
-		variables.put("saveFileId", saveFileId);
-		variables.put("savePathName", fileService.getFileFullPath(savePath, rootIds));
-		taskService.complete(taskId, variables);
+	public void confirmRuleProcess(String savePath, String saveFileId, String rootIds, Integer taskId) {
+		RuleConfirm ruleConfirm = ruleConfirmDao.findById(taskId).get();
+		ruleConfirm.setSaveFileId(saveFileId);
+		ruleConfirm.setSavePath(savePath);
+		ruleConfirm.setRootIds(rootIds);
+		ruleConfirm.setSavePathName(fileService.getFileFullPath(savePath, rootIds));
+		FileInfo fineInfo = fileService.getFineInfo(saveFileId);
+		ruleConfirm.setConfirmBy(fineInfo.getUserId());
+		ruleConfirm.setConfirmTime(new Date());
+		ruleConfirmDao.save(ruleConfirm);
 	}
 
 	@Override

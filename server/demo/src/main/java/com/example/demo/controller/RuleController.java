@@ -81,7 +81,7 @@ public class RuleController {
 
 	@PostMapping("/confirmRule")
 	@ApiOperation("接收人却认规则")
-	public Result confirmRule(String savePath, String saveFildId, String rootIds, String taskId) {
+	public Result confirmRule(String savePath, String saveFildId, String rootIds, Integer taskId) {
 		ruleService.confirmRuleProcess(savePath, saveFildId, rootIds, taskId);
 		return Result.ok();
 	}

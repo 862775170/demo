@@ -22,4 +22,6 @@ public interface UserService {
 	 */
 	UserInfo getUserInfo(String userId);
 
+	UserInfo getUserInfoByToken(String token);
+
 }
