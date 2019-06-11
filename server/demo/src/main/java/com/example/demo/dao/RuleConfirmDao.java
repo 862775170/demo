@@ -3,6 +3,8 @@ package com.example.demo.dao;
 import java.util.Collection;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.example.demo.entity.RuleConfirm;
@@ -22,5 +24,7 @@ public interface RuleConfirmDao extends JpaRepository<RuleConfirm, Integer> {
 	Long countByRuleId(Integer ruleId);
 
 	List<RuleConfirm> findByRuleIdInAndUserId(List<Integer> ruleIds, String userId);
+
+	Page<RuleConfirm> findByRuleIdInAndUserId(List<Integer> ruleIds, String userId, Pageable pageable);
 
 }

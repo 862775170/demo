@@ -21,6 +21,7 @@ public class InsertRuleConfirmDelegate implements JavaDelegate {
 		String saveFileId = execution.getVariable("saveFileId", String.class);
 		String savePathName = execution.getVariable("savePathName", String.class);
 		String rootIds = execution.getVariable("rootIds", String.class);
+		String desc = execution.getVariable("desc", String.class);
 		entity.setRuleId(ruleId);
 		entity.setSavePath(savePath);
 		entity.setUserId(userId);
@@ -29,7 +30,9 @@ public class InsertRuleConfirmDelegate implements JavaDelegate {
 		entity.setRootIds(rootIds);
 		entity.setSavePathName(savePathName);
 		entity.setSaveFileId(saveFileId);
+		entity.setDesc(desc);
 		bean.save(entity);
+
 	}
 
 }
