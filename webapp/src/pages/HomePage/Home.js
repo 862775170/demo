@@ -14,7 +14,7 @@ const UpdatedFile = React.lazy(() => import('./UpdatedFile'));      // 最新发
   homePage,
   loading: loading.effects['homePage/getFleCount'],
   getFleCountLoading: loading.effects['homePage/getFleCount'],    // 统计 本日 (发送、接收)  和  历史(发送、接收)  次数
-  getNewestSendOutLoading: loading.effects['homePage/getNewestSendOut'],  // 最新发送文件
+  getNewestSendOutLoading: loading.effects['homePage/getFileSendHis'],  // 最新发送文件
   getNewestSendInLoading: loading.effects['homePage/getNewestSendIn'],    // 最新接收文件
   getTrendsLoading: loading.effects['homePage/getTrends'],                // 最新动态
 }))
@@ -121,7 +121,7 @@ class Home extends PureComponent {
     const { dispatch } = this.props;
     const { userId } = this.state;   // 查询条件参数
     dispatch({
-      type: 'homePage/getRuleRetRuleCount',
+      type: 'homePage/getFileSendHis',
       payload: { userId, page: 1, size: 5 },
       callback: (result) => {
         this.state.sendOutList = result.list;
@@ -139,7 +139,7 @@ class Home extends PureComponent {
       size: 5,
     };
     dispatch({
-      type: 'homePage/getRuleRetRuleCount',
+      type: 'homePage/getFileSendHis',
       payload: { userId, ...params },
       callback: (result) => {
         this.state.sendOutList = result.list;
@@ -332,7 +332,7 @@ class Home extends PureComponent {
     const operationTabList = [
       {
         key: 'tab1',
-        tab: '发送文件',
+        tab: '上传文件',
       },
       {
         key: 'tab2',

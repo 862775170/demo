@@ -1,7 +1,9 @@
 import React, { memo } from 'react';
 import { Card, Pagination, Divider, List, Avatar } from 'antd';
+import moment from 'moment';
 import styles from './Home.less';
 import headportrait from '../../../public/icon-title.png';
+
 
 // 首页--最新发送文件     最新接收文件
 const UpdatedFile = memo(({ loading, operationTabList, isKey, sendOutTotal, sendTotals, getNewestSendOutLoading, getNewestSendInLoading, onOperationTabChange, sendOutTableChange, sendTableChange, sendOutList, sendList }) => (
@@ -30,12 +32,16 @@ const UpdatedFile = memo(({ loading, operationTabList, isKey, sendOutTotal, send
               />
               <div className={styles.listContent}>
                 <div className={styles.listContentItem}>
-                  <span>发送人数</span>
-                  <p>{item.countSendUser}</p>
+                  <span>文件名</span>
+                  <p>{item.fileName}</p>
                 </div>
                 <div className={styles.listContentItem}>
-                  <span>文件数</span>
-                  <p>{item.countSendFile}</p>
+                  <span>预计发送/实际发送</span>
+                  <p>{item.fileNumber} / {item.confirmNumber}</p>
+                </div>
+                <div className={styles.listContentItem}>
+                  <span>上传时间</span>
+                  <p>{moment(item.uploadTime).format('YYYY-MM-DD HH:mm:ss')}</p>
                 </div>
               </div>
             </List.Item>

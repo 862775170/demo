@@ -1,5 +1,6 @@
 import request from '@/utils/request';
-import {getUserId} from '@/utils/authority'
+import {getUserId} from '@/utils/authority';
+
 const baseurl = '/server/api'
 
 // 已发送

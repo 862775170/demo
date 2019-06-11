@@ -277,9 +277,9 @@ class FileCore extends PureComponent {
         <Form onSubmit={this.handleSearch}>
           <Row gutter={{ md: 8, lg: 24, xl: 48 }}>
             <Col md={8} sm={24}>
-              <FormItem label="源文件名">
+              <FormItem label="文件名">
                 {getFieldDecorator('sourceFileName')(
-                  <Input placeholder="输入源文件名" />
+                  <Input placeholder="输入文件名" />
                 )}
               </FormItem>
             </Col>
@@ -292,7 +292,7 @@ class FileCore extends PureComponent {
               {/* 发送规则 */}
               <FormItem label="规则名" style={{display: isTask ? 'none' : 'block'}}>
                 {getFieldDecorator('sendout')(
-                  <Select placeholder="请选择规则.">
+                  <Select placeholder="请选择规则">
                     {
                       sendoutArr.map((item) => {
                         return <Option key={item.ruleId} value={item.ruleId}>{item.ruleName}</Option>
@@ -304,7 +304,7 @@ class FileCore extends PureComponent {
               {/* 收取规则 */}
               <FormItem label="规则名" style={{display: isTask ? 'block' : 'none'}}>
                 {getFieldDecorator('collect')(
-                  <Select placeholder="请选择规则..">
+                  <Select placeholder="请选择规则">
                     {
                       collectArr.map((item) => {
                         return <Option key={item.rule.ruleId} value={item.rule.ruleId}>{item.rule.ruleName}</Option>
@@ -336,7 +336,14 @@ class FileCore extends PureComponent {
             <Col md={8} sm={24}>
               <FormItem label="时间">
                 {getFieldDecorator('date')(
-                  <RangePicker size="default" onChange={this.onChangeTime} />
+                  <RangePicker 
+                    size="default" 
+                    showTime={{
+                      hideDisabledOptions: true,
+                      defaultValue: [moment('00:00:00', 'HH:mm:ss'), moment('23:59:59', 'HH:mm:ss')],
+                    }} 
+                    onChange={this.onChangeTime} 
+                  />
                 )}
               </FormItem>
             </Col>

@@ -1,6 +1,6 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import { Layout, Menu,Alert,Card, Checkbox, Breadcrumb, Icon, Table, Form, Divider, Modal, Button, Select, Input, Drawer, Row, Col, Tree } from 'antd';
+import { Layout, Menu,Alert,Card,Tag, Checkbox, Breadcrumb, Icon, Table, Form, Divider, Modal, Button, Select, Input, Drawer, Row, Col, Tree } from 'antd';
 import moment from 'moment';
 import styles from './models/style.less';
 import {getUserId,getUserInfo,getRootIds} from '@/utils/authority'
@@ -486,10 +486,6 @@ class RuleCore extends PureComponent {
         }
       },
       {
-        title: '源路径',
-        dataIndex: 'sourcePathName',
-      },
-      {
         title: '时间',
         dataIndex: 'createTime',
         render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>,
@@ -752,7 +748,14 @@ class RuleCore extends PureComponent {
               {
                 ruleDetailsList.map(item => (
                   <Col span={8}>
-                    <Checkbox key={item.id} value={item.id}>{ item.userName }</Checkbox>
+                    <Checkbox key={item.id} value={item.id}>
+                      { item.confirmTime 
+                      ? 
+                        <Tag color="#2db7f5" title={item.confirmTime ? '已确认' : '未确认'}>{item.userName}</Tag> 
+                        : 
+                        <Tag color="#f50" title={item.confirmTime ? '已确认' : '未确认'}>{item.userName}</Tag> 
+                      }
+                    </Checkbox>
                   </Col>
                 ))
               }

@@ -30,10 +30,20 @@ export async function ruleFriends(params) {
 // }
 
 // 发送文件
-export async function ruleRetRuleCount(params) {
-  const {userId, page, size } = params;
-  const json = `page=${page}&size=${size}&userId=${userId}`;
-  return request(`${baseurl}/rule/getRuleCount?${json}`);
+// export async function ruleRetRuleCount(params) {
+//   const {userId, page, size } = params;
+//   const json = `page=${page}&size=${size}&userId=${userId}`;
+//   return request(`${baseurl}/rule/getRuleCount?${json}`);
+// }
+
+// 上传文件
+export async function fileSendHis(params) {
+  const { page, size } = params;
+  const json = `page=${page}&size=${size}&sortColumn=uploadTime&direction=desc`;
+  return request(`${baseurl}/file/exchage/getFileSendHis?${json}`, {
+    method: 'POST',
+    body: params,
+  });
 }
 
 // 接收文件

@@ -3,7 +3,8 @@ import {
   ruleFriends,
   // newestSendOut,
   // newestSendIn,
-  ruleRetRuleCount,
+  // ruleRetRuleCount,
+  fileSendHis,
   ruleMyRuleReceiveCount,
   trends,
 } from '@/services/home';
@@ -30,14 +31,28 @@ export default {
     },
 
     // 发送文件
-    *getRuleRetRuleCount({ payload, callback }, { call }) {
-      const response = yield call(ruleRetRuleCount, payload);
+    // *getRuleRetRuleCount({ payload, callback }, { call }) {
+    //   const response = yield call(ruleRetRuleCount, payload);
+    //   const result = {
+    //     list: response.data.content,
+    //     pagination: {
+    //       total: response.data.totalElements,
+    //       pageSize: response.data.size,
+    //       current: response.data.number,
+    //     },
+    //   };
+    //   if (callback) callback(result);  
+    // },
+    
+    // 发送文件
+    *getFileSendHis({ payload, callback }, { call }) {
+      const response = yield call(fileSendHis, payload);
       const result = {
-        list: response.data.content,
+        list: response.content,
         pagination: {
-          total: response.data.totalElements,
-          pageSize: response.data.size,
-          current: response.data.number,
+          total: response.totalElements,
+          pageSize: response.size,
+          current: response.number,
         },
       };
       if (callback) callback(result);  
