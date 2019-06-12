@@ -397,7 +397,7 @@ public class RuleServiceImpl implements RuleService {
 		UserInfo userInfo = userService.getUserInfo(userId);
 		String fullPathName = fileService.getFileFullPath(fullPath, userInfo.getRootIds());
 		List<Rule> rules = ruleDao.findByUserIdAndDeleteTimeIsNull(userId);
-		log.info("matching rule sum=> {}", rules.size());
+		log.info("matching rule sum=> {},userId {}", rules.size(), userId);
 		String fileName = fineInfo.getFilename();
 		String sourceFileName = fileName;
 		for (Rule rule : rules) {
