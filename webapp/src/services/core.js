@@ -22,7 +22,7 @@ export async function fileList(params){
   return request('/api/sw/file/list', {
     method: 'POST',
     body: {   
-      pageSize:10000000,
+      pageSize: 10000,
       ...params,
       method: 'post',
     },
