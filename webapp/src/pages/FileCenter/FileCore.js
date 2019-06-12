@@ -34,13 +34,14 @@ class FileCore extends PureComponent {
   // 已发送
   columns1 = [
     {
+      title: '规则名',
+      dataIndex: 'ruleName',
+    },
+    {
       title: '接收人',
       dataIndex: 'targetUserName',
     },
-    {
-      title: '文件规则',
-      dataIndex: 'ruleName',
-    },
+    
     {
       title: '文件名',
       dataIndex: 'sourceFileName',
@@ -54,6 +55,10 @@ class FileCore extends PureComponent {
 
   // 已收取
   columns2 = [
+    {
+      title: '规则名',
+      dataIndex: 'ruleName',
+    },
     {
       title: '发送人',
       dataIndex: 'sourceUserName',
@@ -70,10 +75,6 @@ class FileCore extends PureComponent {
       title: '接收时间',
       dataIndex: 'createTime',
       render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>, 
-    },
-    {
-      title: '文件描述',
-      dataIndex: 'ruleName',
     }
   ]; 
 

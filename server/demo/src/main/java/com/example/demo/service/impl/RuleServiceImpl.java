@@ -12,8 +12,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.flowable.engine.RuntimeService;
-import org.flowable.engine.TaskService;
+//import org.flowable.engine.RuntimeService;
+//import org.flowable.engine.TaskService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -49,11 +49,11 @@ public class RuleServiceImpl implements RuleService {
 	private static final Logger log = LoggerFactory.getLogger(RuleServiceImpl.class);
 	@Autowired
 	private ObjectMapper objectMapper;
-	@Autowired
-	private RuntimeService runtimeService;
-
-	@Autowired
-	private TaskService taskService;
+//	@Autowired
+//	private RuntimeService runtimeService;
+//
+//	@Autowired
+//	private TaskService taskService;
 	@Autowired
 	private RuleDao ruleDao;
 	@Autowired
@@ -346,6 +346,7 @@ public class RuleServiceImpl implements RuleService {
 
 	@Override
 	public void updateRule(Rule rule) {
+		log.info("update rule =>{}", rule);
 		Rule ruleEntity = ruleDao.findById(rule.getRuleId()).get();
 		if (StringUtils.isNotEmpty(rule.getSourcePath())) {
 			if (rule.getSourcePath().equals(ruleEntity.getSourcePath())) {

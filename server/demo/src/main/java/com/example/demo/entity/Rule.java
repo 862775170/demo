@@ -121,4 +121,13 @@ public class Rule {
 	public void setDesc(String desc) {
 		this.desc = desc;
 	}
+
+	@Override
+	public String toString() {
+		return "Rule [ruleId=" + ruleId + ", ruleName=" + ruleName + ", sourcePath=" + sourcePath + ", sourceFileId="
+				+ sourceFileId + ", sourcePathName=" + sourcePathName + ", rootIds=" + rootIds + ", userId=" + userId
+				+ ", desc=" + desc + ", createBy=" + createBy + ", createTime=" + createTime + ", deleteTime="
+				+ deleteTime + "]";
+	}
+
 }

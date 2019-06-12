@@ -319,20 +319,20 @@ class Home extends PureComponent {
           <p>{sizeArray.confirm}</p>
         </div>
         <div className={styles.statItem}>
-          <p>发送文件</p>
+          <p>累计发送文件</p>
           <p>{sizeArray.send}</p>
         </div>
         <div className={styles.statItem}>
-          <p>接收文件</p>
+          <p>累计接收文件</p>
           <p>{sizeArray.receive}</p>
         </div>
         <div className={styles.statItem}>
           <p>今日发送文件</p>
-          <p>{sizeArray.toDayReceive}</p>
+          <p>{sizeArray.toDaySend}</p>
         </div>
         <div className={styles.statItem}>
           <p>今日接收文件</p>
-          <p>{sizeArray.toDaySend}</p>
+          <p>{sizeArray.toDayReceive}</p>
         </div>
       </div>
     );

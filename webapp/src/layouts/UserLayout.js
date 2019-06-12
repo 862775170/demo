@@ -66,7 +66,7 @@ class UserLayout extends Component {
                   <img alt="logo" className={styles.logo} src={logo} style={{width:'200px',height:'50px'}} />                  
                 </Link>
               </div>
-              <div className={styles.desc}>文件传输系统</div>
+              <div className={styles.desc}>文件交换系统</div>
             </div>
             {children}
           </div>

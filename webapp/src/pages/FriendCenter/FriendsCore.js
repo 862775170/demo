@@ -495,7 +495,10 @@ ruleModalCancel = () => {
         title: '规则名',
         dataIndex: 'ruleName',
       },
-
+      {
+        title: '原路径',
+        dataIndex: 'sourcePathName',
+      },
       {
         title: '文件数',
         dataIndex: 'count',

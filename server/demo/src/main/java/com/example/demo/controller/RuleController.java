@@ -52,7 +52,7 @@ public class RuleController {
 			throw new ParamException("400", "rule 为空");
 		}
 		ruleService.updateRule(rule);
-		return Result.ok();
+		return Result.ok(rule);
 	}
 
 	@PostMapping("/ruleConfirm/update")
