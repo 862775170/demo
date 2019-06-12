@@ -353,6 +353,9 @@ public class RuleServiceImpl implements RuleService {
 			}
 			ruleEntity.setSourcePath(rule.getSourcePath());
 			ruleEntity.setSourcePathName(fileService.getFileFullPath(rule.getSourcePath(), ruleEntity.getRootIds()));
+			ruleEntity.setSourceFileId(rule.getSourceFileId());
+			ruleEntity.setDesc(rule.getDesc());
+			ruleEntity.setRuleName(rule.getRuleName());
 			ruleDao.save(ruleEntity);
 		} else {
 			throw new ParamException("400", "请选择路径");
