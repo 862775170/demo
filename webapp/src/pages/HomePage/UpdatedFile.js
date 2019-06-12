@@ -25,16 +25,11 @@ const UpdatedFile = memo(({ loading, operationTabList, isKey, sendOutTotal, send
           style={{padding: '0 40px'}}
           renderItem={item => (
             <List.Item>
-              {/* <List.Item.Meta
-                avatar={<Avatar src={headportrait} shape="square" size="large" />}
+              <List.Item.Meta
                 title={<a>规则名</a>}
                 description={item.ruleName}
-              /> */}
+              />
               <div className={styles.listContent}>
-                <div className={styles.listContentItem}>
-                  <span>规则名</span>
-                  <p>{item.ruleName}</p>
-                </div>
                 <div className={styles.listContentItem}>
                   <span>文件名</span>
                   <p>{item.fileName}</p>
@@ -61,16 +56,11 @@ const UpdatedFile = memo(({ loading, operationTabList, isKey, sendOutTotal, send
           style={{padding: '0 40px'}}
           renderItem={item => (
             <List.Item>
-              {/* <List.Item.Meta
-                avatar={<Avatar src={headportrait} shape="square" size="large" />}
+              <List.Item.Meta
                 title={<a>规则名</a>}
                 description={item.ruleName}
-              /> */}
+              />
               <div className={styles.listContent}>
-                <div className={styles.listContentItem}>
-                  <span>规则名</span>
-                  <p>{item.ruleName}</p>
-                </div>
                 <div className={styles.listContentItem}>
                   <span>接收文件数</span>
                   <p>{item.count}</p>

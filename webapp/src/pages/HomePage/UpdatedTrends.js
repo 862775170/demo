@@ -18,7 +18,7 @@ const UpdatedTrends = memo(({ loading, getTrendsLoading, trendsData, fetchMore }
       rowKey="id"
       itemLayout="vertical"
       dataSource={trendsData}
-      renderItem={item => (
+      renderItem={(item, index) => (
         <List.Item 
           key={item.id}
           style={{ paddingBottom: '9px', paddingTop: '5px', height: '40px',borderBottom: '1px solid #ffffff' }}
@@ -26,10 +26,15 @@ const UpdatedTrends = memo(({ loading, getTrendsLoading, trendsData, fetchMore }
           <List.Item.Meta
             title={
               <Link to="/ruleCore" style={{fontSize:'14px'}}>
+                <span
+                  className={`${styles.rankingItemNumber} ${index < 3 ? styles.active : ''}`}
+                >
+                  {index + 1}
+                </span>
                 <span className={styles.member}>
                   {moment(item.createTime).format('YYYY-MM-DD HH:mm:ss')} 
                 </span>
-                <span style={{float:'right'}}>{item.event}[{item.desc}]</span>
+                <span style={{float:'right'}}>{item.event}【{item.desc}】</span>
               </Link>
             }
           />
