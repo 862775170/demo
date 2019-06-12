@@ -1,8 +1,8 @@
 import React, { memo } from 'react';
-import { Card, Pagination, Divider, List, Avatar } from 'antd';
+import { Card, Pagination, Divider, List } from 'antd';
 import moment from 'moment';
 import styles from './Home.less';
-import headportrait from '../../../public/icon-title.png';
+// import headportrait from '../../../public/icon-title.png';
 
 
 // 首页--最新发送文件     最新接收文件
@@ -25,18 +25,22 @@ const UpdatedFile = memo(({ loading, operationTabList, isKey, sendOutTotal, send
           style={{padding: '0 40px'}}
           renderItem={item => (
             <List.Item>
-              <List.Item.Meta
+              {/* <List.Item.Meta
                 avatar={<Avatar src={headportrait} shape="square" size="large" />}
                 title={<a>规则名</a>}
                 description={item.ruleName}
-              />
+              /> */}
               <div className={styles.listContent}>
+                <div className={styles.listContentItem}>
+                  <span>规则名</span>
+                  <p>{item.ruleName}</p>
+                </div>
                 <div className={styles.listContentItem}>
                   <span>文件名</span>
                   <p>{item.fileName}</p>
                 </div>
                 <div className={styles.listContentItem}>
-                  <span>预计发送/实际发送</span>
+                  <span>预计 / 实际发送</span>
                   <p>{item.fileNumber} / {item.confirmNumber}</p>
                 </div>
                 <div className={styles.listContentItem}>
@@ -57,12 +61,16 @@ const UpdatedFile = memo(({ loading, operationTabList, isKey, sendOutTotal, send
           style={{padding: '0 40px'}}
           renderItem={item => (
             <List.Item>
-              <List.Item.Meta
+              {/* <List.Item.Meta
                 avatar={<Avatar src={headportrait} shape="square" size="large" />}
                 title={<a>规则名</a>}
                 description={item.ruleName}
-              />
+              /> */}
               <div className={styles.listContent}>
+                <div className={styles.listContentItem}>
+                  <span>规则名</span>
+                  <p>{item.ruleName}</p>
+                </div>
                 <div className={styles.listContentItem}>
                   <span>接收文件数</span>
                   <p>{item.count}</p>

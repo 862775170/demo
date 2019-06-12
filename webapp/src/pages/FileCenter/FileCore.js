@@ -244,12 +244,14 @@ class FileCore extends PureComponent {
 
   // 开始时间   ~     结束时间
   onChangeTime = (dates) => {
-    this.setState({
-      // eslint-disable-next-line no-underscore-dangle
-      startTime: dates[0]._d.toGMTString(),      // 开始时间
-      // eslint-disable-next-line no-underscore-dangle
-      endTime: dates[1]._d.toGMTString(),        // 结束时间
-    })
+    if(dates.length > 0){
+      this.setState({
+        // eslint-disable-next-line no-underscore-dangle
+        startTime: dates[0]._d.toGMTString(),      // 开始时间
+        // eslint-disable-next-line no-underscore-dangle
+        endTime: dates[1]._d.toGMTString(),        // 结束时间
+      })
+    }
   }
 
   // 重置
