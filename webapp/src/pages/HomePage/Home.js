@@ -154,7 +154,7 @@ class Home extends PureComponent {
     const { userId } = this.state;   // 查询条件参数
     dispatch({
       type: 'homePage/getRuleMyRuleReceiveCount',
-      payload: { userId, page: 1, size: 5 },
+      payload: { userId },
       callback: (result) => {
         this.state.sendList = result.list;
         this.state.sendTotals = result.pagination.total;

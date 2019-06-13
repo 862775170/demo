@@ -65,24 +65,22 @@ const UpdatedFile = memo(({ loading, operationTabList, isKey, sendOutTotal, send
                 avatar={<Avatar src={headportrait} style={{marginTop:'8px'}} />}
                 title={
                   <span>
-                    <a className={styles.username}>规则名</a>
-                    &nbsp;
-                    <span className={styles.event}>{item.ruleName}</span>
+                    <span className={styles.event}>{item.sourceFileName}</span>
                   </span>
                 }
                 description={
                   <div>
                     <span className={styles.datetime} style={{width: '200px',display: '-webkit-inline-box'}}>
-                      累计接收文件数：{item.count}
+                      规则名：{item.ruleName}
                     </span>
-                    {/* &nbsp;
+                    &nbsp;
                     <span className={styles.datetime}>
-                      预计/实际发送：{item.fileNumber}/{item.confirmNumber}
+                      接收人：{item.sourceUserName}
                     </span>
                     &nbsp;
                     <span className={styles.datetime} style={{float: 'right'}}>
-                      上传时间：{moment(item.uploadTime).format('YYYY-MM-DD HH:mm:ss')}
-                    </span> */}
+                      上传时间：{moment(item.createTime).format('YYYY-MM-DD HH:mm:ss')}
+                    </span>
                   </div>
                 }
               />

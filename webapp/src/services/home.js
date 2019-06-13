@@ -47,10 +47,17 @@ export async function fileSendHis(params) {
 }
 
 // 接收文件
+// export async function ruleMyRuleReceiveCount(params) {
+//   const { userId, page, size } = params;
+//   const json = `page=${page}&size=${size}&userId=${userId}`;
+//   return request(`${baseurl}/rule/getMyRuleReceiveCount?${json}`);
+// }
+
+// 接收文件
 export async function ruleMyRuleReceiveCount(params) {
-  const { userId, page, size } = params;
-  const json = `page=${page}&size=${size}&userId=${userId}`;
-  return request(`${baseurl}/rule/getMyRuleReceiveCount?${json}`);
+  const { userId } = params;
+  const json = `targetUserId=${userId}&size=100&sortColumn=createTime&direction=desc`;
+  return request(`${baseurl}/file/exchage/search?${json}`);
 }
 
 // 最新动态
