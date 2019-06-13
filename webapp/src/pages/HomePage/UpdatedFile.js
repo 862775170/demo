@@ -22,28 +22,34 @@ const UpdatedFile = memo(({ loading, operationTabList, isKey, sendOutTotal, send
           loading={getNewestSendOutLoading}
           pagination={false}
           dataSource={sendOutList}
-          style={{padding: '0 40px'}}
+          style={{padding: '0 15px'}}
           renderItem={item => (
             <List.Item>
               <List.Item.Meta
-                avatar={<Avatar src={headportrait} />}
-                title={<a>规则名</a>}
-                description={item.ruleName}
+                avatar={<Avatar src={headportrait} style={{marginTop:'8px'}} />}
+                title={
+                  <span>
+                    <a className={styles.username}>文件名：</a>
+                    &nbsp;
+                    <span className={styles.event}>{item.fileName}</span>
+                  </span>
+                }
+                description={
+                  <div>
+                    <span className={styles.datetime} style={{width: '200px',display: '-webkit-inline-box'}}>
+                      规则名：{item.ruleName}
+                    </span>
+                    &nbsp;
+                    <span className={styles.datetime}>
+                      预计/实际发送：{item.fileNumber}/{item.confirmNumber}
+                    </span>
+                    &nbsp;
+                    <span className={styles.datetime} style={{float: 'right'}}>
+                      上传时间：{moment(item.uploadTime).format('YYYY-MM-DD HH:mm:ss')}
+                    </span>
+                  </div>
+                }
               />
-              <div className={styles.listContent}>
-                <div className={styles.listContentItem}>
-                  <span>文件名</span>
-                  <p>{item.fileName}</p>
-                </div>
-                <div className={styles.listContentItem}>
-                  <span>预计 / 实际发送</span>
-                  <p>{item.fileNumber} / {item.confirmNumber}</p>
-                </div>
-                <div className={styles.listContentItem}>
-                  <span>上传时间</span>
-                  <p>{moment(item.uploadTime).format('YYYY-MM-DD HH:mm:ss')}</p>
-                </div>
-              </div>
             </List.Item>
           )}
         />
@@ -54,27 +60,41 @@ const UpdatedFile = memo(({ loading, operationTabList, isKey, sendOutTotal, send
           loading={getNewestSendInLoading}
           pagination={false}
           dataSource={sendList}
-          style={{padding: '0 40px'}}
+          style={{padding: '0 15px'}}
           renderItem={item => (
             <List.Item>
               <List.Item.Meta
-                avatar={<Avatar src={headportrait} />}
-                title={<a>规则名</a>}
-                description={item.ruleName}
+                avatar={<Avatar src={headportrait} style={{marginTop:'8px'}} />}
+                title={
+                  <span>
+                    <a className={styles.username}>规则名</a>
+                    &nbsp;
+                    <span className={styles.event}>{item.ruleName}</span>
+                  </span>
+                }
+                description={
+                  <div>
+                    <span className={styles.datetime} style={{width: '200px',display: '-webkit-inline-box'}}>
+                      累计接收文件数：{item.count}
+                    </span>
+                    {/* &nbsp;
+                    <span className={styles.datetime}>
+                      预计/实际发送：{item.fileNumber}/{item.confirmNumber}
+                    </span>
+                    &nbsp;
+                    <span className={styles.datetime} style={{float: 'right'}}>
+                      上传时间：{moment(item.uploadTime).format('YYYY-MM-DD HH:mm:ss')}
+                    </span> */}
+                  </div>
+                }
               />
-              <div className={styles.listContent}>
-                <div className={styles.listContentItem}>
-                  <span>累计接收文件数</span>
-                  <p>{item.count}</p>
-                </div>
-              </div>
             </List.Item>
           )}
         />
     }
     {
       isKey ? (
-        <div style={{margin: '0px 40px'}}>
+        <div style={{margin: '0px 15px'}}>
           <Divider style={{marginTop: '3px'}} />
           <Pagination 
             size="small" 
@@ -85,7 +105,7 @@ const UpdatedFile = memo(({ loading, operationTabList, isKey, sendOutTotal, send
           />   
         </div>
       ) : 
-        <div style={{margin: '0px 40px'}}>
+        <div style={{margin: '0px 15px'}}>
           <Divider style={{marginTop: '3px'}} />
           <Pagination 
             size="small" 
