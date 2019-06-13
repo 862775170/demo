@@ -75,7 +75,7 @@ const UpdatedFile = memo(({ loading, operationTabList, isKey, sendOutTotal, send
                     </span>
                     &nbsp;
                     <span className={styles.datetime}>
-                      接收人：{item.sourceUserName}
+                      发送人：{item.sourceUserName}
                     </span>
                     &nbsp;
                     <span className={styles.datetime} style={{float: 'right'}}>
