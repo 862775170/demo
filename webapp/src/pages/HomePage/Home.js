@@ -1,5 +1,6 @@
 import React, { PureComponent, Suspense } from 'react';
 import { connect } from 'dva';
+import Link from 'umi/link';
 import moment from 'moment';
 import { Row, Col, Avatar } from 'antd';
 import PageHeaderWrapper from '@/components/PageHeaderWrapper';
@@ -156,8 +157,12 @@ class Home extends PureComponent {
       type: 'homePage/getRuleMyRuleReceiveCount',
       payload: { userId },
       callback: (result) => {
-        this.state.sendList = result.list;
-        this.state.sendTotals = result.pagination.total;
+        this.setState({
+          sendList:result.list,
+          sendTotals:result.pagination.total
+        })
+        // this.state.sendList = result.list;
+        // this.state.sendTotals = result.pagination.total;
       } 
     });
   };
@@ -166,6 +171,7 @@ class Home extends PureComponent {
   sendTableChange = (pagination) => {
     const { dispatch } = this.props;
     const { userId  } = this.state;   // 查询条件参数
+    
     const params = {
       page: pagination,
       size: 5,
@@ -174,8 +180,12 @@ class Home extends PureComponent {
       type: 'homePage/getRuleMyRuleReceiveCount',
       payload: { userId, ...params },
       callback: (result) => {
-        this.state.sendList = result.list;
-        this.state.sendTotals = result.pagination.total;
+        this.setState({
+          sendList: result.list,
+          sendTotals:result.pagination.total
+        })
+        // this.state.sendList = result.list;
+        // this.state.sendTotals = result.pagination.total;
       } 
     });
   };
@@ -305,17 +315,17 @@ class Home extends PureComponent {
         <div className={styles.statItem}>
           <p>好友</p>
           <p>
-            <a href="/friendsCore" style={{color:'#000000'}}>
+            <Link to="/friendsCore" style={{color:'#000000'}}>
               {friendsArr}
-            </a>
+            </Link>
           </p>
         </div>
         <div className={styles.statItem}>
           <p>待确认规则</p>
           <p>
-            <a href="/ruleCore" style={{color:'#000000'}}>
+            <Link to="/ruleCore" style={{color:'#000000'}}>
               {sizeArray.unConfirm}
-            </a>
+            </Link>
           </p>
         </div>
         <div className={styles.statItem}>

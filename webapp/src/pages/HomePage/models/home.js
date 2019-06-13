@@ -65,7 +65,9 @@ export default {
         list: response.data.content,
         pagination: {
           total: response.data.totalElements,
+          // total: response.data.content.length,
           pageSize: response.data.size,
+          // pageSize: 5,
           current: response.data.number,
         },
       };

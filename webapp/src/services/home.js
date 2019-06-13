@@ -55,8 +55,12 @@ export async function fileSendHis(params) {
 
 // 接收文件
 export async function ruleMyRuleReceiveCount(params) {
-  const { userId } = params;
-  const json = `targetUserId=${userId}&size=100&sortColumn=createTime&direction=desc`;
+  const { userId,page } = params;
+  let lpage = 1
+  if(page){
+    lpage= page
+  }
+  const json = `targetUserId=${userId}&page=${lpage}&size=5&sortColumn=createTime&direction=desc`;
   return request(`${baseurl}/file/exchage/search?${json}`);
 }
 
