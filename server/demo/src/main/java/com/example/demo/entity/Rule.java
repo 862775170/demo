@@ -2,6 +2,7 @@ package com.example.demo.entity;
 
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -14,17 +15,20 @@ public class Rule {
 	private Integer ruleId;
 
 	private String ruleName;
-
+	@Column(length = 2048)
 	private String sourcePath;
 
 	private String sourceFileId;
-
+	@Column(length = 2048)
 	private String sourcePathName;
 
 	private String rootIds;
 
 	private String userId;
 
+	private String swapFolder;
+
+	@Column(name = "`desc`")
 	private String desc;
 	private String createBy;
 
@@ -120,6 +124,14 @@ public class Rule {
 
 	public void setDesc(String desc) {
 		this.desc = desc;
+	}
+
+	public String getSwapFolder() {
+		return swapFolder;
+	}
+
+	public void setSwapFolder(String swapFolder) {
+		this.swapFolder = swapFolder;
 	}
 
 	@Override

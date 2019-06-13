@@ -8,6 +8,7 @@ import java.util.Map;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import com.example.demo.common.ConfirmSyncModel;
 import com.example.demo.entity.Rule;
 import com.example.demo.entity.RuleConfirm;
 
@@ -35,8 +36,9 @@ public interface RuleService {
 	 * @param saveFileId
 	 * @param rootIds
 	 * @param taskId
+	 * @param model      同步模式
 	 */
-	void confirmRuleProcess(String savePath, String saveFileId, String rootIds, Integer taskId);
+	void confirmRuleProcess(String savePath, String saveFileId, String rootIds, Integer taskId, ConfirmSyncModel model);
 
 	/**
 	 * 获得用户下面所有规则

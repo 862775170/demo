@@ -2,21 +2,15 @@ logging.level.com.example=debug
 
 server.port=8088
 spring.datasource.url=jdbc:h2:file:~/test;DB_CLOSE_ON_EXIT=FALSE
-spring.datasource.driver-class-name=org.h2.Driver
+#spring.datasource.driver-class-name=org.h2.Driver
 spring.datasource.username=sa
 spring.datasource.password=
 
 spring.jpa.hibernate.ddl-auto=update
+spring.jpa.properties.hibernate.temp.use_jdbc_metadata_defaults=false
 #spring.jpa.properties.hibernate.show_sql=true
 #spring.jpa.properties.hibernate.use_sql_comments=true
 #spring.jpa.properties.hibernate.format_sql=true
-
-spring.h2.console.enabled=true
-spring.h2.console.path=/h2-console
-spring.h2.console.settings.trace=true
-spring.h2.console.settings.web-allow-others=true
-
-flowable.process-definition-location-prefix=classpath*:/processes/
 
 http.access-key=
 http.secret-key=
@@ -49,3 +43,6 @@ mq.routingKey=operationkey
 mq.exchange=ex_file
 mq.queue=operation
 mq.retry-time=30000
+
+system.exchange-file-id=2019061309_e22c581b1cc900fd5aa417a9c34d3299_lv0
+system.user-id=admin

@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.common.ConfirmSyncModel;
 import com.example.demo.common.PageUtils;
 import com.example.demo.common.Pages;
 import com.example.demo.common.ParamException;
@@ -91,8 +92,12 @@ public class RuleController {
 
 	@PostMapping("/confirmRule")
 	@ApiOperation("接收人却认规则")
-	public Result confirmRule(String savePath, String saveFildId, String rootIds, Integer taskId) {
-		ruleService.confirmRuleProcess(savePath, saveFildId, rootIds, taskId);
+	public Result confirmRule(String savePath, String saveFildId, String rootIds, Integer taskId,
+			ConfirmSyncModel model) {
+		if (model == null) {
+			model = ConfirmSyncModel.current;
+		}
+		ruleService.confirmRuleProcess(savePath, saveFildId, rootIds, taskId, model);
 		return Result.ok();
 	}
 

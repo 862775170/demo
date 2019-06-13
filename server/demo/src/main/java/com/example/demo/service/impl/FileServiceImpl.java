@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import com.example.demo.common.ApiConstants;
 import com.example.demo.common.HttpClient;
 import com.example.demo.common.ParamException;
+import com.example.demo.config.SystemProperties;
 import com.example.demo.model.FileInfo;
 import com.example.demo.model.UserInfo;
 import com.example.demo.service.FileService;
@@ -35,6 +36,8 @@ public class FileServiceImpl implements FileService {
 	private HttpClient httpClient;
 	@Autowired
 	private ObjectMapper objectMapper;
+	@Autowired
+	private SystemProperties systemProperties;
 
 	@Override
 	public String getFileFullPath(String fullPath, String rootIds) {
@@ -133,6 +136,47 @@ public class FileServiceImpl implements FileService {
 		}
 		FileInfo fileInfo = getFineInfo(fileId);
 		return fileInfo;
+	}
+
+	@Override
+	public String copyToSwap(String fileId, String parentFileId, String fileName) {
+		String userId = systemProperties.getUserId();
+		FileInfo copyObject = copyObject(fileId, parentFileId, fileName, userId);
+		return copyObject.getFileId();
+	}
+
+	@Override
+	public FileInfo createFolder(String parentFileId, String fileName, String userId) {
+		Map<String, Object> body = new HashMap<>();
+		body.put("parentId", parentFileId);
+		body.put("fileName", fileName);
+		body.put("userId", userId);
+		ResponseEntity<JsonObject> postByJson = httpClient.postByJson(ApiConstants.api_create_folder, body,
+				JsonObject.class);
+		String fileId = null;
+		if (postByJson.getBody().has("result")) {
+			JsonObject body2 = postByJson.getBody();
+			if (body2.get("result").isJsonObject()) {
+				JsonObject result = body2.get("result").getAsJsonObject();
+				if (result.get("file_id").isJsonNull()) {
+
+				} else {
+					fileId = result.get("file_id").getAsString();
+				}
+			}
+		}
+		if (fileId == null) {
+			throw new RuntimeException("创建目录失败" + postByJson.getBody().toString());
+		}
+		FileInfo fileInfo = getFineInfo(fileId);
+		return fileInfo;
+	}
+
+	@Override
+	public String createRuleSwap(String ruleId) {
+		FileInfo createFolder = createFolder(systemProperties.getExchangeFileId(), ruleId,
+				systemProperties.getUserId());
+		return createFolder.getFileId();
 	}
 
 }

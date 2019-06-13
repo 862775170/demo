@@ -8,8 +8,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
-import com.example.demo.message.FileCopyMessage;
-
 @Entity
 public class FileExchangeLog {
 	@Id
@@ -28,7 +26,7 @@ public class FileExchangeLog {
 	/**
 	 * 源文件全路径
 	 */
-	@Column(length = 1024)
+	@Column(length = 2048)
 	private String sourceFullPath;
 
 	private String sourceFileId;
@@ -45,7 +43,7 @@ public class FileExchangeLog {
 	/**
 	 * 拷贝目标全路径
 	 */
-	@Column(length = 1024)
+	@Column(length = 2048)
 	private String targetFullPath;
 
 	/**

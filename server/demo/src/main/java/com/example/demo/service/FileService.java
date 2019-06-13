@@ -4,7 +4,7 @@ import java.util.Map;
 
 import com.example.demo.model.FileInfo;
 
-public interface FileService {
+public interface FileService extends FileXService {
 	/**
 	 * 全路径Id 转换 全路径name
 	 * 
@@ -32,4 +32,14 @@ public interface FileService {
 	 * @return
 	 */
 	FileInfo copyObject(String sourceFileId, String parentId, String displayName, String targetUserId);
+
+	/**
+	 * 创建目录
+	 * 
+	 * @param parentFileId 上级目录
+	 * @param fileName     目录名字
+	 * @param userId       目录所属人
+	 * @return
+	 */
+	FileInfo createFolder(String parentFileId, String fileName, String userId);
 }

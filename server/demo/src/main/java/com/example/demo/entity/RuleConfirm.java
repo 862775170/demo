@@ -3,6 +3,7 @@ package com.example.demo.entity;
 import java.util.Date;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -22,9 +23,9 @@ public class RuleConfirm {
 	private Integer ruleId;
 
 	private String saveFileId;
-
+	@Column(length = 2048)
 	private String savePath;
-
+	@Column(length = 2048)
 	private String savePathName;
 
 	private String userId;
@@ -36,7 +37,7 @@ public class RuleConfirm {
 	private Date deleteTime;
 
 	private String rootIds;
-
+	@Column(name = "`desc`")
 	private String desc;
 
 	private Date confirmTime;
