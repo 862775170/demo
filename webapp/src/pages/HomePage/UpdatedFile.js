@@ -29,8 +29,6 @@ const UpdatedFile = memo(({ loading, operationTabList, isKey, sendOutTotal, send
                 avatar={<Avatar src={headportrait} style={{marginTop:'8px'}} />}
                 title={
                   <span>
-                    <a className={styles.username}>文件名：</a>
-                    &nbsp;
                     <span className={styles.event}>{item.fileName}</span>
                   </span>
                 }
