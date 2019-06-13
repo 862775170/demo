@@ -10,8 +10,8 @@ export async function ruleTasks(params) {
 
 // 待确认规则  保存
 export async function ruleConfirmRule(params) {
-  const { savePath, taskId, rootIds, saveFildId } = params;
-  return request(`${baseurl}/rule/confirmRule?savePath=${savePath}&taskId=${taskId}&rootIds=${rootIds}&saveFildId=${saveFildId}`, {
+  const { savePath, taskId, rootIds, saveFildId, modelValue } = params;
+  return request(`${baseurl}/rule/confirmRule?savePath=${savePath}&taskId=${taskId}&rootIds=${rootIds}&saveFildId=${saveFildId}&model=${modelValue}`, {
     method: 'POST',
   });
 }

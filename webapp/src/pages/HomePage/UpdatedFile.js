@@ -1,8 +1,8 @@
 import React, { memo } from 'react';
-import { Card, Pagination, Divider, List } from 'antd';
+import { Card, Pagination, Divider, List, Avatar } from 'antd';
 import moment from 'moment';
 import styles from './Home.less';
-// import headportrait from '../../../public/icon-title.png';
+import headportrait from '../../../public/icon-title.png';
 
 
 // 首页--最新发送文件     最新接收文件
@@ -26,6 +26,7 @@ const UpdatedFile = memo(({ loading, operationTabList, isKey, sendOutTotal, send
           renderItem={item => (
             <List.Item>
               <List.Item.Meta
+                avatar={<Avatar src={headportrait} />}
                 title={<a>规则名</a>}
                 description={item.ruleName}
               />
@@ -57,6 +58,7 @@ const UpdatedFile = memo(({ loading, operationTabList, isKey, sendOutTotal, send
           renderItem={item => (
             <List.Item>
               <List.Item.Meta
+                avatar={<Avatar src={headportrait} />}
                 title={<a>规则名</a>}
                 description={item.ruleName}
               />

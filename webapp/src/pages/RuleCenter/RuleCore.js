@@ -24,6 +24,7 @@ class RuleCore extends PureComponent {
     crumbs: '待确认规则',
     saveRuleVisible: false,    // 待确定规则模态框属性
     saveRuleoBject: {},        // 待确定规则 保存规则存储对象
+    modelValue: 'all',        // 待确定规则 同步规则
 
     isRoute: false,            // 发送规则  用于判断调用新建还是修改
     visibles: false,           // 发送规则  抽屉属性
@@ -98,7 +99,7 @@ class RuleCore extends PureComponent {
   // 待确定规则  保存规则  确定模态框  saveRuleoBject
   saveRuleModalOk = () => {
     const { dispatch } =  this.props;
-    const { path, saveRuleoBject, userInfo } = this.state;  // 获取所有用户 userInfo
+    const { path, saveRuleoBject, userInfo, modelValue } = this.state;  // 获取所有用户 userInfo
     const user = userInfo;
     const rootIds = user.root_ids;
     const taskId = saveRuleoBject.id;
@@ -107,12 +108,18 @@ class RuleCore extends PureComponent {
     const saveFildId = fileid.fileId;
     dispatch({
       type: 'core/getRuleConfirmRule',
-      payload:{ savePath, rootIds, taskId, saveFildId },
+      payload:{ savePath, rootIds, taskId, saveFildId, modelValue },
       callback: () => {
         this.saveRuleModalCancel();  // 待确定规则  保存规则  取消模态框
         this.coreRuleTasks();        // 待确认规则 全部列表
       } 
     });
+  }
+
+  getModel = item => {
+    this.setState({
+      modelValue: item,
+    })
   }
 
   // 待确定规则 弹出  保存规则  模态框
@@ -725,6 +732,13 @@ class RuleCore extends PureComponent {
                 {saveRuleoBject.ruleName}
               </Form.Item>
               <Divider style={{ margin: '24px 0' }} />
+              <Form.Item {...formItemLayout} label="同步规则" required={false}>
+                <Select placeholder="请选择规则" defaultValue="all" onChange={this.getModel} style={{ width: 230 }}>
+                  <Option key="all" value="all">全部</Option>
+                  <Option key="toDay" value="toDay">当天</Option>
+                  <Option key="current" value="current">当前</Option>
+                </Select>
+              </Form.Item>
               <Form.Item {...formItemLayout} label="选择路径" required={false}>
                 <Tree loadData={this.onLoadData} onSelect={this.getOnSelect}>{this.renderTreeNodes(treeData)}</Tree>
               </Form.Item>

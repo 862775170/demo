@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { Card, List, Button, Icon } from 'antd';
+import { Card, List, Button, Icon, Avatar } from 'antd';
 import moment from 'moment';
 import Link from 'umi/link';
 import styles from './Home.less';
@@ -18,23 +18,36 @@ const UpdatedTrends = memo(({ loading, getTrendsLoading, trendsData, fetchMore }
       rowKey="id"
       itemLayout="vertical"
       dataSource={trendsData}
-      renderItem={(item, index) => (
+      renderItem={item => (
         <List.Item 
           key={item.id}
-          style={{ paddingBottom: '9px', paddingTop: '5px', height: '40px',borderBottom: '1px solid #ffffff' }}
+          style={{ paddingBottom: '9px', paddingTop: '5px', height: '60px',borderBottom: '1px solid #ffffff' }}
         >
           <List.Item.Meta
+            avatar={
+              <Avatar 
+                shape="square" 
+                icon="file" 
+                style={{
+                  backgroundColor:'orange',
+                  marginTop:'2px',
+                  width:'38px',
+                  height:'45px',
+                  lineHeight: '45px',
+                  fontSize: '24px'
+                }} 
+              />
+            }
             title={
               <Link to="/ruleCore" style={{fontSize:'14px'}}>
-                <span
-                  className={`${styles.rankingItemNumber} ${index < 3 ? styles.active : ''}`}
-                >
-                  {index + 1}
-                </span>
-                <span className={styles.member}>
-                  {moment(item.createTime).format('YYYY-MM-DD HH:mm:ss')} 
-                </span>
-                <span style={{float:'right'}}>{item.event}【{item.desc}】</span>
+                <span>{item.event}【{item.desc}】</span>
+                <div>
+                  <div className={styles.listContentItem}>
+                    <span>时间：</span>
+                    <span>{moment(item.createTime).format('YYYY-MM-DD HH:mm:ss')}</span>
+                  </div>
+                </div>
+                
               </Link>
             }
           />
