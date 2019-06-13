@@ -189,6 +189,8 @@ public class RuleServiceImpl implements RuleService {
 		default:
 			break;
 		}
+		log.info("userId -> {} comfirm model ->{} copy size ->{},ruleId->{}", targetUserId, model, ruleFiles.size(),
+				ruleId);
 		for (RuleFile ruleFile : ruleFiles) {
 			Date sendTime = ruleFile.getUploadTime();
 			String fullPathName = ruleFile.getSourceFullPath();
