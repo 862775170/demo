@@ -43,7 +43,7 @@ const UpdatedFile = memo(({ loading, operationTabList, isKey, sendOutTotal, send
                     </span>
                     &nbsp;
                     <span className={styles.datetime} style={{float: 'right'}}>
-                      上传时间：{moment(item.uploadTime).format('YYYY-MM-DD HH:mm:ss')}
+                      时间：{moment(item.uploadTime).format('YYYY-MM-DD HH:mm:ss')}
                     </span>
                   </div>
                 }
@@ -79,7 +79,7 @@ const UpdatedFile = memo(({ loading, operationTabList, isKey, sendOutTotal, send
                     </span>
                     &nbsp;
                     <span className={styles.datetime} style={{float: 'right'}}>
-                      上传时间：{moment(item.createTime).format('YYYY-MM-DD HH:mm:ss')}
+                      时间：{moment(item.createTime).format('YYYY-MM-DD HH:mm:ss')}
                     </span>
                   </div>
                 }
