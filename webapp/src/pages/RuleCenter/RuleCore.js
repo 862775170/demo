@@ -585,6 +585,13 @@ class RuleCore extends PureComponent {
               </FormItem>
             </Col>
           </Row>
+          <Row gutter={16} style={{ display: isRoute ? 'none' : 'block'}}>
+            <Col span={16}>
+              <FormItem label="当前路径">
+                <span style={{color:'#1890FF'}}>{drawerParameter.sourcePathName}</span>
+              </FormItem>
+            </Col>
+          </Row>
           <Row gutter={16}>
             <Col span={16}>
               <FormItem label="源路径">

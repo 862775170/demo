@@ -2,7 +2,6 @@ import React, { memo } from 'react';
 import { Card, Pagination, Divider, List, Avatar } from 'antd';
 import moment from 'moment';
 import styles from './Home.less';
-import headportrait from '../../../public/icon-title.png';
 
 
 // 首页--最新发送文件     最新接收文件
@@ -26,7 +25,20 @@ const UpdatedFile = memo(({ loading, operationTabList, isKey, sendOutTotal, send
           renderItem={item => (
             <List.Item>
               <List.Item.Meta
-                avatar={<Avatar src={headportrait} style={{marginTop:'8px'}} />}
+                avatar={
+                  <Avatar 
+                    shape="square" 
+                    icon="file" 
+                    style={{
+                      backgroundColor:'orange',
+                      marginTop:'2px',
+                      width:'38px',
+                      height:'45px',
+                      lineHeight: '45px',
+                      fontSize: '24px'
+                    }} 
+                  />
+                }
                 title={
                   <span>
                     <span className={styles.event}>{item.fileName}</span>
@@ -62,7 +74,20 @@ const UpdatedFile = memo(({ loading, operationTabList, isKey, sendOutTotal, send
           renderItem={item => (
             <List.Item>
               <List.Item.Meta
-                avatar={<Avatar src={headportrait} style={{marginTop:'8px'}} />}
+                avatar={
+                  <Avatar 
+                    shape="square" 
+                    icon="file" 
+                    style={{
+                      backgroundColor:'orange',
+                      marginTop:'2px',
+                      width:'38px',
+                      height:'45px',
+                      lineHeight: '45px',
+                      fontSize: '24px'
+                    }} 
+                  />
+                }
                 title={
                   <span>
                     <span className={styles.event}>{item.sourceFileName}</span>

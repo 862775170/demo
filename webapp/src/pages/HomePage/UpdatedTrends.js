@@ -27,14 +27,12 @@ const UpdatedTrends = memo(({ loading, getTrendsLoading, trendsData, fetchMore }
             avatar={
               <Avatar 
                 shape="square" 
-                icon="file" 
+                icon="sound" 
                 style={{
-                  backgroundColor:'orange',
-                  marginTop:'2px',
-                  width:'38px',
-                  height:'45px',
-                  lineHeight: '45px',
-                  fontSize: '24px'
+                  backgroundColor:'#ffffff',
+                  marginTop:'10px',
+                  color: 'red',
+                  marginRight: '0px',
                 }} 
               />
             }
@@ -47,7 +45,6 @@ const UpdatedTrends = memo(({ loading, getTrendsLoading, trendsData, fetchMore }
                     <span>{moment(item.createTime).format('YYYY-MM-DD HH:mm:ss')}</span>
                   </div>
                 </div>
-                
               </Link>
             }
           />

@@ -304,11 +304,19 @@ class Home extends PureComponent {
       <div className={styles.extraContent}>
         <div className={styles.statItem}>
           <p>好友</p>
-          <p>{friendsArr}</p>
+          <p>
+            <a href="/friendsCore" style={{color:'#000000'}}>
+              {friendsArr}
+            </a>
+          </p>
         </div>
         <div className={styles.statItem}>
           <p>待确认规则</p>
-          <p>{sizeArray.unConfirm}</p>
+          <p>
+            <a href="/ruleCore" style={{color:'#000000'}}>
+              {sizeArray.unConfirm}
+            </a>
+          </p>
         </div>
         <div className={styles.statItem}>
           <p>发送规则</p>
