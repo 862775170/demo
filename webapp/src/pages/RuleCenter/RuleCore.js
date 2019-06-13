@@ -829,7 +829,10 @@ class RuleCore extends PureComponent {
                 {receiveCurrent.ruleName}
               </Form.Item>
               <Divider style={{ margin: '24px 0' }} />
-              <Form.Item {...formItemLayout} label="选择路径" required={false}>
+              <Form.Item {...formItemLayout} label="源保存路径" required={false}>
+                <span style={{color:'#1890FF'}}>{receiveCurrent.sourcePathName}</span>
+              </Form.Item>
+              <Form.Item {...formItemLayout} label="修改路径" required={false}>
                 <Tree loadData={this.onLoadData} onSelect={this.getOnSelect}>{this.renderTreeNodes(treeData)}</Tree>
               </Form.Item>
             </Form>
