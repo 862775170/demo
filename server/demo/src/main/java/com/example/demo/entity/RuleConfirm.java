@@ -36,6 +36,8 @@ public class RuleConfirm {
 
 	private Date deleteTime;
 
+	private String deleteBy;
+
 	private String rootIds;
 	@Column(name = "`desc`")
 	private String desc;
@@ -147,4 +149,13 @@ public class RuleConfirm {
 	public void setConfirmBy(String confirmBy) {
 		this.confirmBy = confirmBy;
 	}
+
+	public String getDeleteBy() {
+		return deleteBy;
+	}
+
+	public void setDeleteBy(String deleteBy) {
+		this.deleteBy = deleteBy;
+	}
+
 }

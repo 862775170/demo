@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -42,7 +43,7 @@ public class RuleController {
 	@ApiOperation("创建规则")
 	public Result createRule(@RequestBody Rule rule, String[] userIds) {
 		rule.setCreateTime(new Date());
-		ruleService.startCreateProcess(rule, userIds);
+		ruleService.startCreateProcess(rule, new HashSet<>(Arrays.asList(userIds)));
 		return Result.ok();
 	}
 
@@ -67,12 +68,12 @@ public class RuleController {
 	}
 
 	@PostMapping("/addRuleUser")
-	@ApiOperation("修改确认规则")
-	public Result addRuleUser(String userId, Integer ruleId) {
+	@ApiOperation("修改规则接收人")
+	public Result addRuleUser(List<String> userIds, Integer ruleId) {
 //		if (confirm.getRuleId() == null) {
 //			throw new ParamException("400", "[id] 为空");
 //		}
-//		ruleConfirmService.saveRuleConfirm(confirm);
+		ruleConfirmService.updateRuleConfirm(new HashSet<String>(userIds), ruleId);
 		return Result.ok();
 	}
 
