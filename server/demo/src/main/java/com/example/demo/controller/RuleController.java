@@ -69,11 +69,11 @@ public class RuleController {
 
 	@PostMapping("/addRuleUser")
 	@ApiOperation("修改规则接收人")
-	public Result addRuleUser(List<String> userIds, Integer ruleId) {
+	public Result addRuleUser(@RequestBody String[] userIds, Integer ruleId) {
 //		if (confirm.getRuleId() == null) {
 //			throw new ParamException("400", "[id] 为空");
 //		}
-		ruleConfirmService.updateRuleConfirm(new HashSet<String>(userIds), ruleId);
+		ruleConfirmService.updateRuleConfirm(new HashSet<String>(Arrays.asList(userIds)), ruleId);
 		return Result.ok();
 	}
 
