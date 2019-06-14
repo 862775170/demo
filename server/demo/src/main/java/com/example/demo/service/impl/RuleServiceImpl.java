@@ -1,7 +1,6 @@
 package com.example.demo.service.impl;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -32,7 +31,6 @@ import com.example.demo.config.MqProperties;
 import com.example.demo.dao.FileExchangeLogDao;
 import com.example.demo.dao.RuleConfirmDao;
 import com.example.demo.dao.RuleDao;
-import com.example.demo.dao.RuleFileDao;
 import com.example.demo.entity.Rule;
 import com.example.demo.entity.RuleConfirm;
 import com.example.demo.entity.RuleFile;
@@ -42,6 +40,7 @@ import com.example.demo.model.FileInfo;
 import com.example.demo.model.UserInfo;
 import com.example.demo.service.FileSendHisService;
 import com.example.demo.service.FileService;
+import com.example.demo.service.RuleConfirmService;
 import com.example.demo.service.RuleFileService;
 import com.example.demo.service.RuleService;
 import com.example.demo.service.TrendsService;
@@ -84,48 +83,27 @@ public class RuleServiceImpl implements RuleService {
 	private TrendsService trendsService;
 	@Autowired
 	private RuleFileService ruleFileService;
+	@Autowired
+	private RuleConfirmService ruleConfirmService;
 
 	@Override
-	public void startCreateProcess(Rule rule, String[] userIds) {
-		log.info("create from => {}", rule.toString(), Arrays.toString(userIds));
+	public void startCreateProcess(Rule rule, Set<String> userIds) {
+		log.info("create from => {}", rule.toString(), userIds);
 		rule.setUserId(rule.getCreateBy());
 		rule.setSourcePathName(fileService.getFileFullPath(rule.getSourcePath(), rule.getRootIds()));
 		rule = ruleDao.save(rule);
 		String swapFolder = fileService.createRuleSwap(rule.getRuleId().toString());
 		ruleDao.save(rule);
 		rule.setSwapFolder(swapFolder);
-		List<RuleConfirm> ruleConfirmList = new ArrayList<>();
-		for (String userId : userIds) {
-			UserInfo user = userService.getUserInfo(userId);
-			RuleConfirm ruleConfirm = new RuleConfirm();
-			ruleConfirm.setCreateBy(rule.getUserId());
-			ruleConfirm.setUserId(userId);
-			ruleConfirm.setCreateTime(rule.getCreateTime());
-			ruleConfirm.setRootIds(user.getRootIds());
-			ruleConfirm.setSaveFileId(user.getRootIds());
-			ruleConfirm.setSavePathName("/");
-			ruleConfirm.setRuleId(rule.getRuleId());
-			ruleConfirmList.add(ruleConfirm);
-		}
-		ruleConfirmDao.saveAll(ruleConfirmList);
-
-		List<Trends> trendList = new ArrayList<>();
-
+		Integer ruleId = rule.getRuleId();
+		String createBy = rule.getUserId();
 		Date createTime = new Date();
-		for (String userId : userIds) {
-			Trends trends = new Trends();
-			trends.setUserId(userId);
-			trends.setEvent("确认规则");
-			trends.setDesc(rule.getRuleName());
-			trends.setCreateTime(createTime);
-			trendList.add(trends);
-		}
-		trendsService.saveBatch(trendList);
+		ruleConfirmService.addRuleConfirm(userIds, ruleId, rule.getRuleName(), createBy, createTime);
 	}
 
 	@Override
 	public List<Map<String, Object>> getTasks(String assignee) {
-		List<RuleConfirm> confirms = ruleConfirmDao.findByUserIdAndConfirmTimeIsNull(assignee);
+		List<RuleConfirm> confirms = ruleConfirmDao.findByUserIdAndConfirmTimeIsNullAndDeleteTimeIsNull(assignee);
 		Set<Integer> ruleIds = new HashSet<>();
 		Set<String> userIds = new HashSet<>();
 		confirms.forEach(a -> {

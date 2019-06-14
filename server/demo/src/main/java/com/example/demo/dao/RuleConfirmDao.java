@@ -2,6 +2,7 @@ package com.example.demo.dao;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -30,5 +31,11 @@ public interface RuleConfirmDao extends JpaRepository<RuleConfirm, Integer> {
 	List<RuleConfirm> findByUserIdAndConfirmTimeIsNull(String userId);
 
 	List<RuleConfirm> findByRuleIdAndDeleteTimeIsNullAndConfirmTimeIsNotNull(Integer ruleId);
+
+	RuleConfirm findByRuleIdAndUserIdAndDeleteTimeIsNull(Integer ruleId, String userId);
+
+	List<RuleConfirm> findByRuleIdAndUserIdNotIn(Integer ruleId, Set<String> userIds);
+
+	List<RuleConfirm> findByUserIdAndConfirmTimeIsNullAndDeleteTimeIsNull(String assignee);
 
 }

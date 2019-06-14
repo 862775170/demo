@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,7 +20,7 @@ public interface RuleService {
 	 * @param rule
 	 * @param userIds
 	 */
-	void startCreateProcess(Rule rule, String[] userIds);
+	void startCreateProcess(Rule rule, Set<String> userIds);
 
 	/**
 	 * 获得待确认的规则
