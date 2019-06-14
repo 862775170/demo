@@ -60,7 +60,7 @@ export default {
       const response = yield call(ruleDetails, payload);
       if (callback) callback(response);  
     },
-    // 接收人员列表  勾选人员删除
+    // 接收人员列表 修改提交
     *getRuleConfirmDelete({ payload, callback }, { call }) {
       const response = yield call(ruleConfirmDelete, payload);
       if (callback) callback(response);  

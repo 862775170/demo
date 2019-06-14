@@ -81,12 +81,14 @@ export async function ruleDetails(params) {
   return request(`${baseurl}/rule/getRule/details?ruleId=${ruleId}`);
 }
 
-// 接收人员列表  勾选人员删除
+// 接收人员列表 修改提交
 export async function ruleConfirmDelete(params) {
-  const { userId, checkedList } = params;
-  return request(`${baseurl}/rule/ruleConfirm/delete?userId=${userId}`, {
+  const { renderArr, receiverListRuleId } = params;
+  return request(`${baseurl}/rule/addRuleUser?ruleId=${receiverListRuleId}`, {
     method: 'POST',
-    body: checkedList,
+    body: [
+      ...renderArr,
+    ],
   });
 }
 

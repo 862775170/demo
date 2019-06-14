@@ -1,9 +1,30 @@
 import React, { PureComponent, Fragment } from 'react';
 import { connect } from 'dva';
-import { Layout, Menu,Alert,Card,Tag, Checkbox, Breadcrumb, Icon, Table, Form, Divider, Modal, Button, Select, Input, Drawer, Row, Col, Tree } from 'antd';
+import { 
+  Layout, 
+  Menu,
+  // Alert,
+  Card,
+  Tag, 
+  // Checkbox,
+  Breadcrumb, 
+  Icon, 
+  Table, 
+  Form, 
+  Divider, 
+  Modal, 
+  Button, 
+  Select, 
+  Input, 
+  Drawer, 
+  Row, 
+  Col, 
+  Tree 
+} from 'antd';
 import moment from 'moment';
+import {getUserId, getUserInfo, getRootIds} from '@/utils/authority';
+import DescriptionList from '@/components/DescriptionList';
 import styles from './models/style.less';
-import {getUserId,getUserInfo,getRootIds} from '@/utils/authority'
 
 const { TreeNode } = Tree;
 const { Content, Sider } = Layout;
@@ -33,10 +54,13 @@ class RuleCore extends PureComponent {
     treeData: [                // 发送规则  新建和修改共用  源路径
       { filename_KeywordIkPinyin:'/' ,file_id:getRootIds() }
     ], 
-    // fileArr: [],               // 发送规则  新建和修改共用  源路径 数组存储获取的路径
-    allGroupUser: [],          // 发送规则  新建规则  存储接收方数组值
-    ruleDetailsList: [],        // 发送规则  接收人员列表
-    checkedList: [],            // 发送规则  接收人员列表  单个选择
+
+    allGroupUser: [],             // 发送规则  新建规则  存储接收方数组值
+    ruleDetailsList: [],          // 发送规则  接收人员列表 已确认数组
+    ruleUncertaintyList: [],      // 发送规则  接收人员列表 未确认数组
+    ruleAddUserNameList: [],      // 发送规则  接收人员列表 添加收方名数组
+    ruleAddUserIdList: [],        // 发送规则  接收人员列表 添加收方ID数组
+    receiverListRuleId: '',       // 发送规则  接收人员列表 每列ruleId
 
     acceptanceRule: false,   // 接收规则 模态框属性
     receiveCurrent: {},      // 接收规则 存储某行对象参数
@@ -375,28 +399,103 @@ class RuleCore extends PureComponent {
       type: 'core/getRuleDetails',
       payload:{ item },
       callback: (rel) => {
-        this.state.ruleDetailsList = rel.data;
+        const confirmedArr = [];         // 已确认数组
+        const uncertaintyArr = [];       // 未确认数组
+        const itemData = rel.data;
+        // eslint-disable-next-line no-restricted-syntax
+        for(const i of itemData){
+          if(i.confirmTime === null){
+            uncertaintyArr.push(i);
+          }else{
+            confirmedArr.push(i);
+          }
+        }
+        this.setState({
+          ruleDetailsList: confirmedArr,          // 发送规则  接收人员列表 已确认数组
+          ruleUncertaintyList: uncertaintyArr,    // 发送规则  接收人员列表 未确认数组
+          receiverListRuleId: item.ruleId,        // 发送规则  接收人员列表 每列ruleId
+        })
       } 
     });
     this.setState({
       visibleList: true,
     });
+    this.ruleGetUserGetRootGroup();   // 发送规则 新建规则   接收方  目录结构
+    this.addHandleChange([], []);     // 发送规则 接收人员列表  修改接收规则人
   }
 
-  // 发送规则 接收人员列表  单个选择
-  onChangEalon = ckList => {
+  // 发送规则 接收人员列表  修改接收规则人
+  addHandleChange = (key, item) => {
+    const addContactsName = [];   // 发送规则  接收人员列表 添加收方名数组
+    if(key.length > 0){
+      // eslint-disable-next-line no-restricted-syntax
+      for(const i of item){
+        addContactsName.push(i.ref);
+      }
+    }
     this.setState({
-      checkedList: ckList,
+      ruleAddUserNameList: addContactsName,
     })
-  };
+    this.state.ruleAddUserIdList = key;
+  }
 
-  // 发送规则  接收人员列表  删除   
+  // 发送规则 接收人员列表  删除已确认用户
+  deleteDetermine = item => {
+    const { ruleDetailsList } = this.state;
+    const addContactsName = [];
+    // eslint-disable-next-line no-restricted-syntax
+    for(const i of ruleDetailsList){
+      if(item !== i.userId){
+        addContactsName.push(i);
+      }
+    }              
+    this.state.ruleDetailsList = addContactsName;     // 删除保存 已确定数组
+  }
+
+  // 发送规则 接收人员列表  删除未确认用户
+  deleteUncertainty = item => {
+    const { ruleUncertaintyList } = this.state;
+    const addUncertaintyName = [];
+    // eslint-disable-next-line no-restricted-syntax
+    for(const i of ruleUncertaintyList){
+      if(item !== i.userId){
+        addUncertaintyName.push(i);
+      }
+    }
+    this.state.ruleUncertaintyList = addUncertaintyName;     // 删除保存 未确定数组
+  }
+
+  // 接收人员列表 修改提交
   receiveOk = () => {
     const { dispatch } =  this.props;
-    const { userId, checkedList } = this.state;
+    // ruleDetailsList       已确认数组
+    // ruleUncertaintyList   未确认数组
+    // ruleAddUserIdList     添加收方ID数组
+    const { receiverListRuleId, ruleDetailsList, ruleUncertaintyList, ruleAddUserIdList } = this.state;
+    if(ruleDetailsList.length > 0){
+      // eslint-disable-next-line no-restricted-syntax
+      for(const i of ruleDetailsList){
+        ruleAddUserIdList.push(i.userId);
+      }
+    }
+    if(ruleUncertaintyList.length > 0){
+      // eslint-disable-next-line no-restricted-syntax
+      for(const i of ruleUncertaintyList){
+        ruleAddUserIdList.push(i.userId);
+      }
+    }
+
+    // 去重
+    const renderArr = [];
+    // eslint-disable-next-line no-plusplus
+    for (let i = 0; i < ruleAddUserIdList.length; i++) {
+      if(renderArr.indexOf(ruleAddUserIdList[i]) === -1){
+        renderArr.push(ruleAddUserIdList[i]);
+      }
+    }
     dispatch({
       type: 'core/getRuleConfirmDelete',
-      payload:{ userId, checkedList },
+      payload:{ renderArr, receiverListRuleId },
       callback: () => {
         this.coreRuleMyRule();   // 我的规则   发送规则 
         this.receiveCancel();    // 接收人员列表  取消 模态框
@@ -474,6 +573,8 @@ class RuleCore extends PureComponent {
       isRoute,
       drawerParameter,
       ruleDetailsList,
+      ruleUncertaintyList,
+      ruleAddUserNameList,
       acceptanceRule,
       receiveCurrent,
       treeData,
@@ -740,7 +841,7 @@ class RuleCore extends PureComponent {
               </Form.Item>
               <Divider style={{ margin: '24px 0' }} />
               <Form.Item {...formItemLayout} label="同步规则" required={false}>
-                <Select placeholder="请选择规则" defaultValue="all" onChange={this.getModel} style={{ width: 230 }}>
+                <Select placeholder="请选择规则" defaultValue="all" onChange={this.getModel} style={{ width: '50%' }}>
                   <Option key="all" value="all">全部</Option>
                   <Option key="toDay" value="toDay">当天</Option>
                   <Option key="current" value="current">当前</Option>
@@ -757,31 +858,75 @@ class RuleCore extends PureComponent {
         <Modal
           title="接收人员列表"
           width={640}
-          bodyStyle={{padding: '10px 72px'}}
+          bodyStyle={{padding: '10px 55px'}}
           destroyOnClose
           visible={visibleList}
           onOk={this.receiveOk}
           onCancel={this.receiveCancel}
         >
-          <Alert message="勾选删除" type="info" closable showIcon style={{marginBottom: '10px'}} />
-          <Checkbox.Group style={{ width: '100%' }} onChange={this.onChangEalon}>
-            <Row>
-              {
-                ruleDetailsList.map(item => (
-                  <Col span={8}>
-                    <Checkbox key={item.id} value={item.id}>
-                      { item.confirmTime 
-                      ? 
-                        <Tag color="#2db7f5" title='已确认'>{item.userName}</Tag> 
-                        : 
-                        <Tag color="#f50" title='未确认'>{item.userName}</Tag> 
-                      }
-                    </Checkbox>
-                  </Col>
-                ))
+          <DescriptionList size="large" title="已确认用户" style={{marginBottom:32}}>
+            <div style={{ marginLeft:17 }}>
+              { ruleDetailsList.length > 0 
+                  ?
+                  ruleDetailsList.map(item => (
+                    <Tag 
+                      closable 
+                      color="cyan" 
+                      style={{marginBottom:10}}
+                      key={item.id}
+                      onClose={() => this.deleteDetermine(item.userId)}
+                    >
+                      {item.userName}
+                    </Tag>
+                  )) : <Tag color="cyan" style={{marginBottom:10}}>暂无已确认用户</Tag>
               }
-            </Row>
-          </Checkbox.Group>
+            </div>
+          </DescriptionList>
+          <Divider style={{ marginBottom: 15 }} />
+          <DescriptionList size="large" title="未确认用户" style={{marginBottom:32}}>
+            <div style={{ marginLeft:17 }}>
+              { ruleUncertaintyList.length > 0 
+                  ?
+                  ruleUncertaintyList.map(item => (
+                    <Tag 
+                      closable 
+                      color="gold" 
+                      style={{marginBottom:10}}
+                      key={item.id}
+                      onClose={() => this.deleteUncertainty(item.userId)}
+                    >
+                      {item.userName}
+                    </Tag>
+                  )) : <Tag color="gold" style={{marginBottom:10}}>暂无未确定用户</Tag>
+              }
+            </div>
+          </DescriptionList>
+          <Divider style={{ marginBottom: 15 }} />
+          <DescriptionList size="large" title="添加接收规则人" style={{marginBottom:32}}>
+            <div style={{ marginLeft:17 }}>
+              { ruleAddUserNameList.length > 0 
+                ?
+                ruleAddUserNameList.map((item, i) => (
+                  // eslint-disable-next-line react/no-array-index-key
+                  <Tag color="blue" key={i} style={{marginBottom:10}}>
+                    {item}
+                  </Tag>
+                )) : <Tag color="blue" style={{marginBottom:10}}>暂无添加接收规则人</Tag>
+              }
+            </div>
+          </DescriptionList>
+          <DescriptionList size="large" title="选择收方名" style={{ marginBottom: 32 }}>
+            <div style={{ marginLeft:17 }}>
+              <Select mode="multiple" placeholder="请选择收方名" onChange={this.addHandleChange} style={{ width: '70%' }}>
+                {allGroupUser.map(ruleArr => {
+                  // eslint-disable-next-line camelcase
+                  const { group: { group_name } } = ruleArr
+                  // eslint-disable-next-line camelcase
+                  return <Option key={ruleArr.id} ref={`${group_name}.${ruleArr.nick_name}`}>{`${group_name}.${ruleArr.nick_name}`}</Option>
+                })}
+              </Select>
+            </div>
+          </DescriptionList>
         </Modal>
 
         {/* 发送规则  新建规则 */}
