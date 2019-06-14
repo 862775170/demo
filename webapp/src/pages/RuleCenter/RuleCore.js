@@ -61,6 +61,7 @@ class RuleCore extends PureComponent {
     ruleAddUserNameList: [],      // 发送规则  接收人员列表 添加收方名数组
     ruleAddUserIdList: [],        // 发送规则  接收人员列表 添加收方ID数组
     receiverListRuleId: '',       // 发送规则  接收人员列表 每列ruleId
+    receiverName: '',             // 发送规则  接收人员列表 每列规则名
 
     acceptanceRule: false,   // 接收规则 模态框属性
     receiveCurrent: {},      // 接收规则 存储某行对象参数
@@ -414,6 +415,7 @@ class RuleCore extends PureComponent {
           ruleDetailsList: confirmedArr,          // 发送规则  接收人员列表 已确认数组
           ruleUncertaintyList: uncertaintyArr,    // 发送规则  接收人员列表 未确认数组
           receiverListRuleId: item.ruleId,        // 发送规则  接收人员列表 每列ruleId
+          receiverName: item.ruleName,            // 发送规则  接收人员列表 每列规则名
         })
       } 
     });
@@ -578,6 +580,7 @@ class RuleCore extends PureComponent {
       acceptanceRule,
       receiveCurrent,
       treeData,
+      receiverName,
     } = this.state;
     
     // 待处理规则
@@ -864,6 +867,12 @@ class RuleCore extends PureComponent {
           onOk={this.receiveOk}
           onCancel={this.receiveCancel}
         >
+          <DescriptionList size="large" title="规则名" style={{marginBottom:32}}>
+            <div style={{ marginLeft:17 }}>
+              {receiverName}
+            </div>
+          </DescriptionList>
+          <Divider style={{ marginBottom: 15 }} />
           <DescriptionList size="large" title="已确认用户" style={{marginBottom:32}}>
             <div style={{ marginLeft:17 }}>
               { ruleDetailsList.length > 0 
