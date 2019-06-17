@@ -867,13 +867,13 @@ class RuleCore extends PureComponent {
           onOk={this.receiveOk}
           onCancel={this.receiveCancel}
         >
-          <DescriptionList size="large" title="规则名" style={{marginBottom:32}}>
-            <div style={{ marginLeft:17 }}>
-              {receiverName}
+          <DescriptionList size="large" style={{marginBottom:30}}>
+            <div style={{ marginLeft:17,fontSize: 16,color: '#000000',marginTop:10 }}>
+              规则名: <span style={{fontWeight: 'bold'}}> {receiverName}</span>
             </div>
           </DescriptionList>
           <Divider style={{ marginBottom: 15 }} />
-          <DescriptionList size="large" title="已确认用户" style={{marginBottom:32}}>
+          <DescriptionList size="large" title="已确认用户" style={{marginBottom:25}}>
             <div style={{ marginLeft:17 }}>
               { ruleDetailsList.length > 0 
                   ?
@@ -892,7 +892,7 @@ class RuleCore extends PureComponent {
             </div>
           </DescriptionList>
           <Divider style={{ marginBottom: 15 }} />
-          <DescriptionList size="large" title="未确认用户" style={{marginBottom:32}}>
+          <DescriptionList size="large" title="未确认用户" style={{marginBottom:25}}>
             <div style={{ marginLeft:17 }}>
               { ruleUncertaintyList.length > 0 
                   ?
@@ -911,7 +911,7 @@ class RuleCore extends PureComponent {
             </div>
           </DescriptionList>
           <Divider style={{ marginBottom: 15 }} />
-          <DescriptionList size="large" title="添加接收规则人" style={{marginBottom:32}}>
+          <DescriptionList size="large" title="添加接收规则人" style={{marginBottom:25}}>
             <div style={{ marginLeft:17 }}>
               { ruleAddUserNameList.length > 0 
                 ?
@@ -924,7 +924,7 @@ class RuleCore extends PureComponent {
               }
             </div>
           </DescriptionList>
-          <DescriptionList size="large" title="选择收方名" style={{ marginBottom: 32 }}>
+          <DescriptionList size="large" title="选择收方名" style={{ marginBottom: 25 }}>
             <div style={{ marginLeft:17 }}>
               <Select mode="multiple" placeholder="请选择收方名" onChange={this.addHandleChange} style={{ width: '70%' }}>
                 {allGroupUser.map(ruleArr => {
