@@ -271,12 +271,18 @@ class RuleCore extends PureComponent {
   // 发送规则 修改  提交方法
   coreRuleUpdate = fields => {
     const { dispatch } = this.props;
-    const { userInfo, path, drawerParameter } = this.state;
-    // eslint-disable-next-line no-unused-vars
-    const user = userInfo;
+    const { path, drawerParameter } = this.state;
     const createBy = getUserId();
     const {ruleId} = drawerParameter;
-    const sourcePath = path;
+
+    // 用于判断修改规则 有没有选源路径 如选则用新路径，无则用就路径
+    let sourcePath = "";
+    if(path === ""){
+      sourcePath = fields.pathValue;
+    }else{
+      sourcePath = path;
+    }
+    
     const fileid = this.state
     const sourceFileId = fileid.fileId;
     dispatch({
@@ -623,6 +629,10 @@ class RuleCore extends PureComponent {
         dataIndex: 'sourcePathName',
       },
       {
+        title: '文件名规则',
+        dataIndex: 'fileName',
+      },
+      {
         title: '创建时间',
         dataIndex: 'createTime',
         render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>,
@@ -691,8 +701,19 @@ class RuleCore extends PureComponent {
           </Row>
           <Row gutter={16} style={{ display: isRoute ? 'none' : 'block'}}>
             <Col span={16}>
-              <FormItem label="当前路径">
+              <FormItem label="当前路径 (如不选新源路径，则用当前源路径)">
                 <span style={{color:'#1890FF'}}>{drawerParameter.sourcePathName}</span>
+              </FormItem>
+            </Col>
+          </Row>
+          {/* 隐藏域 */}
+          <Row gutter={16} style={{ display: 'none'}}>
+            <Col span={16}>
+              <FormItem label="当前路径ID">
+                {getFieldDecorator('pathValue', {
+                  rules: [{ required: false}],
+                  initialValue: drawerParameter.sourcePath,
+                })(<Input placeholder="请输入规则名" />)}
               </FormItem>
             </Col>
           </Row>
@@ -700,6 +721,16 @@ class RuleCore extends PureComponent {
             <Col span={16}>
               <FormItem label="源路径">
                 <Tree loadData={this.onLoadData} onSelect={this.getOnSelect}>{this.renderTreeNodes(treeData)}</Tree>
+              </FormItem>
+            </Col>
+          </Row>
+          <Row gutter={16}>
+            <Col span={16}>
+              <FormItem label="文件名规则">
+                {getFieldDecorator('fileName', {
+                  rules: [{ required: true, message: '请输入文件名规则! '}],
+                  initialValue: drawerParameter.fileName,
+                })(<Input placeholder="请输入文件名规则" />)}
               </FormItem>
             </Col>
           </Row>
