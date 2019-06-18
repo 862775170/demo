@@ -23,6 +23,7 @@ import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.PatternMatchUtils;
 
 import com.example.demo.common.ConfirmSyncModel;
 import com.example.demo.common.ObjectUtils;
@@ -49,7 +50,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
-public class RuleServiceImpl implements RuleService {
+public class RuleServiceImpl extends PatternMatchUtils implements RuleService {
 
 	private static final Logger log = LoggerFactory.getLogger(RuleServiceImpl.class);
 	@Autowired
@@ -352,15 +353,13 @@ public class RuleServiceImpl implements RuleService {
 		log.info("update rule =>{}", rule);
 		Rule ruleEntity = ruleDao.findById(rule.getRuleId()).get();
 		if (StringUtils.isNotEmpty(rule.getSourcePath())) {
-			if (rule.getSourcePath().equals(ruleEntity.getSourcePath())) {
-				return;
-			}
 			ruleEntity.setSourcePath(rule.getSourcePath());
 			ruleEntity.setSourcePathName(fileService.getFileFullPath(rule.getSourcePath(), ruleEntity.getRootIds()));
 			ruleEntity.setSourceFileId(rule.getSourceFileId());
 			ruleEntity.setDesc(rule.getDesc());
 			ruleEntity.setRuleName(rule.getRuleName());
-			ruleDao.save(ruleEntity);
+			ruleEntity.setFileName(rule.getFileName());
+			ruleDao.saveAndFlush(ruleEntity);
 		} else {
 			throw new ParamException("400", "请选择路径");
 		}
@@ -414,30 +413,37 @@ public class RuleServiceImpl implements RuleService {
 			String sourceFileId = rule.getSourceFileId();
 //			FileInfo ruleFileInfo = fileService.getFineInfo(sourceFileId);
 //			String sourcePath = ruleFileInfo.getFullPath();
-			if (fullPath.indexOf(sourceFileId) != -1) {
-
-				String swapFileId = fileService.copyToSwap(fileId, rule.getSwapFolder(), sourceFileName);
-				ruleFileService.saveRuleFile(ruleId, fileId, sendTime, sourceFileId, fullPathName, sourceUserId,
-						sourceFileName);
-
-				List<RuleConfirm> ruleConfirms = ruleConfirmDao
-						.findByRuleIdAndDeleteTimeIsNullAndConfirmTimeIsNotNull(ruleId);
-				if (ruleConfirms.isEmpty()) {
-					log.info("rule confirms is null ruleId=>{}", ruleId);
-				}
-				for (RuleConfirm ruleConfirm : ruleConfirms) {
-					String targetUserId = ruleConfirm.getUserId();
-					Integer ruleConfirmId = ruleConfirm.getId();
-					String saveFolderId = ruleConfirm.getSaveFileId();
-
-					sendFileCopyMessage(sendTime, fullPathName, sourceFileName, ruleId, sourceUserId, swapFileId,
-							targetUserId, ruleConfirmId, saveFolderId);
-				}
-				fileSendHisService.addFileSendHis(userId, ruleId, ruleConfirms.size(), fileId, sourceFileName,
-						sendTime);
-			} else {
+			if (fullPath.indexOf(sourceFileId) == -1) {
 				log.info("no matching ruleId=>{},fullPath=>{}", rule.getRuleId(), fullPath);
+				continue;
 			}
+			String pattern = rule.getFileName();
+			if (pattern == null) {
+				pattern = "*";
+			}
+			if (!simpleMatch(pattern, sourceFileName)) {
+				log.info("no matching pattern=>{},sourceFileName=>{}", pattern, sourceFileName);
+				continue;
+			}
+
+			String swapFileId = fileService.copyToSwap(fileId, rule.getSwapFolder(), sourceFileName);
+			ruleFileService.saveRuleFile(ruleId, fileId, sendTime, sourceFileId, fullPathName, sourceUserId,
+					sourceFileName);
+
+			List<RuleConfirm> ruleConfirms = ruleConfirmDao
+					.findByRuleIdAndDeleteTimeIsNullAndConfirmTimeIsNotNull(ruleId);
+			if (ruleConfirms.isEmpty()) {
+				log.info("rule confirms is null ruleId=>{}", ruleId);
+			}
+			for (RuleConfirm ruleConfirm : ruleConfirms) {
+				String targetUserId = ruleConfirm.getUserId();
+				Integer ruleConfirmId = ruleConfirm.getId();
+				String saveFolderId = ruleConfirm.getSaveFileId();
+
+				sendFileCopyMessage(sendTime, fullPathName, sourceFileName, ruleId, sourceUserId, swapFileId,
+						targetUserId, ruleConfirmId, saveFolderId);
+			}
+			fileSendHisService.addFileSendHis(userId, ruleId, ruleConfirms.size(), fileId, sourceFileName, sendTime);
 		}
 	}
 

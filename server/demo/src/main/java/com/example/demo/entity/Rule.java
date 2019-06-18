@@ -30,10 +30,12 @@ public class Rule {
 
 	@Column(name = "`desc`")
 	private String desc;
+
 	private String createBy;
 
 	private Date createTime;
 
+	private String fileName;
 	/**
 	 */
 	private Date deleteTime;
@@ -134,12 +136,19 @@ public class Rule {
 		this.swapFolder = swapFolder;
 	}
 
+	public String getFileName() {
+		return fileName;
+	}
+
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
+	}
+
 	@Override
 	public String toString() {
 		return "Rule [ruleId=" + ruleId + ", ruleName=" + ruleName + ", sourcePath=" + sourcePath + ", sourceFileId="
 				+ sourceFileId + ", sourcePathName=" + sourcePathName + ", rootIds=" + rootIds + ", userId=" + userId
-				+ ", desc=" + desc + ", createBy=" + createBy + ", createTime=" + createTime + ", deleteTime="
-				+ deleteTime + "]";
+				+ ", swapFolder=" + swapFolder + ", desc=" + desc + ", createBy=" + createBy + ", createTime="
+				+ createTime + ", fileName=" + fileName + ", deleteTime=" + deleteTime + "]";
 	}
-
 }
