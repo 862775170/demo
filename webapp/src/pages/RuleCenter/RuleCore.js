@@ -295,20 +295,6 @@ class RuleCore extends PureComponent {
   }
 
   // 发送规则  新建和修改共用  源路径
-  // ruleGetFileList = () => {
-  //   const { dispatch } = this.props;
-  //   const fileId = getRootIds();
-  //   dispatch({
-  //     type: 'core/getFileList',
-  //     payload:{ fileId },
-  //     callback: (result) => {
-  //       this.state.fileArr = result.result;
-  //       this.setState({treeData:result.result});
-  //     } 
-  //   });
-  // }
-
-  // 发送规则  新建和修改共用  源路径
   onLoadData = treeNode => {
       const { dispatch } = this.props;
       return new Promise(resolve => {
