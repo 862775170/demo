@@ -328,9 +328,10 @@ class FriendsCore extends PureComponent {
     const { dispatch } =  this.props;
     const { friendsId, userId } = this.state;
     const ruleIds = item.ruleId;
+    const userIds = friendsId;
     dispatch({
       type: 'friend/getUserDelete',
-      payload:{ friendsId, ruleIds },
+      payload:{ userIds, ruleIds },
       callback: () => {
         this.coreRuleRelation(userId, friendsId);              // 发送规则列表
       } 
@@ -440,6 +441,32 @@ ruleModalCancel = () => {
     acceptanceRule: false,
   });
 };
+
+// 接收规则 删除
+showSaveRuleModal = item => {
+  Modal.confirm({
+    title: '删除',
+    content: `确定删除“${ item.ruleName }”的关系吗？`,
+    okText: '确认',
+    cancelText: '取消',
+    onOk: () => this.deleteItem2(item),
+  });
+};  
+
+// 接收规则 删除
+deleteItem2 = item => {
+  const { dispatch } =  this.props;
+  const { userId, friendsId } = this.state;
+  const ruleIds = item.ruleId;
+  const userIds = userId;
+  dispatch({
+    type: 'friend/getUserDelete',
+    payload:{ userIds, ruleIds },
+    callback: () => {
+      this.coreRuleReceive(userId, friendsId);              // 接收规则列表
+    } 
+  });
+}
 
   
   
