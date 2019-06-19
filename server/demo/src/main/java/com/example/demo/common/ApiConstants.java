@@ -8,4 +8,6 @@ public class ApiConstants {
 	public static final String api_copy_object = "/file/copyObject";
 
 	public static final String api_create_folder = "/file/createFolder";
+
+	public static final String api_user_user_info = "/user/getUserInfo";
 }
