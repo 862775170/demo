@@ -703,13 +703,11 @@ deleteItem2 = item => {
     };
 
     return (
-      <Layout style={{width: '100%',minHeight:'91%',position: 'absolute',marginTop: '0px'}}>
-        <Sider width={200}>
+      <Layout style={{width: '100%',height:'91%',position: 'absolute',marginTop: '0px'}}>
+        <Sider className={styles.leftColumn} width={200} style={{background: '#fff',borderRight: '1px solid #e8e8e8'}}>
           <Menu
             mode="inline"
-            // defaultSelectedKeys={friendsName}
-            defaultOpenKeys={['sub1']}
-            style={{ height: '100%', borderRight: '1px solid #e8e8e8' }}
+            style={{borderRight: '1px solid #e8e8e8' }}
           >
             {
               isTips ?
@@ -790,6 +788,9 @@ deleteItem2 = item => {
                 {receiveCurrent.ruleName}
               </Form.Item>
               <Divider style={{ margin: '24px 0' }} />
+              <Form.Item {...formItemLayout} label="源保存路径" required={false}>
+                <span style={{color:'#1890FF'}}>{receiveCurrent.savePathName}</span>
+              </Form.Item>
               <Form.Item {...formItemLayout} label="选择路径" required={false}>
                 <Tree loadData={this.onLoadData} onSelect={this.getOnSelect}>{this.renderTreeNodes(treeData)}</Tree>
               </Form.Item>

@@ -364,7 +364,7 @@ class RuleCore extends PureComponent {
   coreRuleMyRuleDelete = item => {
     Modal.confirm({
       title: '删除',
-      content: `确定删除“${ item.createBy }”吗？`,
+      content: `确定删除“${ item.ruleName }”吗？`,
       okText: '确认',
       cancelText: '取消',
       onOk: () => this.deleteItem(item),
