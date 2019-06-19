@@ -886,7 +886,7 @@ class RuleCore extends PureComponent {
         >
           <DescriptionList size="large" style={{marginBottom:30}}>
             <div style={{ marginLeft:17,fontSize: 16,color: '#000000',marginTop:10 }}>
-              规则名: <span style={{fontWeight: 'bold'}}> {receiverName}</span>
+              规则名： <span style={{fontWeight: 'bold'}}> {receiverName}</span>
             </div>
           </DescriptionList>
           <Divider style={{ marginBottom: 15 }} />

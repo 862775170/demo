@@ -53,6 +53,16 @@ export async function ruleUpdate(params) {
   });
 }
 
+// 发送规则 删除
+export async function userDelete(params) {
+  const { friendsId, ruleIds } = params;
+  return request(`${baseurl}/rule/ruleConfirm/user/delete?userId=${friendsId}&ruleId=${ruleIds}`, {
+    method: 'POST',
+  });
+}
+
+
+
 // 接收规则 编辑
 export async function ruleConfirmUpdate(params) {
   return request(`${baseurl}/rule/ruleConfirm/update`, {

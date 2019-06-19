@@ -262,7 +262,7 @@ class FriendsCore extends PureComponent {
       type: 'friend/getSubmitRule',
       payload:{ ...fields, createBy, rootIds, sourcePath, sourceFileId, userIds },
       callback: () => {
-        this.coreRuleRelation(userId, friendsId);              // 接收规则列表
+        this.coreRuleRelation(userId, friendsId);              // 发送规则列表
       } 
     });
   }
@@ -289,7 +289,7 @@ class FriendsCore extends PureComponent {
       type: 'friend/getRuleUpdate',
       payload:{ ...fields, createBy, sourcePath, ruleId, sourceFileId, userIds },
       callback: () => {
-        this.coreRuleRelation(userId, friendsId);              // 接收规则列表
+        this.coreRuleRelation(userId, friendsId);              // 发送规则列表
       } 
     });
   }
@@ -311,6 +311,31 @@ class FriendsCore extends PureComponent {
       drawerParameter: item,     // 发送规则  存储某行对象参数
     });
   };
+
+  // 发送规则 删除
+  showUserDeleteModal = item => {
+    Modal.confirm({
+      title: '删除',
+      content: `确定删除“${ item.ruleName }”的关系吗？`,
+      okText: '确认',
+      cancelText: '取消',
+      onOk: () => this.deleteItem(item),
+    });
+  };  
+
+  // 发送规则 删除
+  deleteItem = item => {
+    const { dispatch } =  this.props;
+    const { friendsId, userId } = this.state;
+    const ruleIds = item.ruleId;
+    dispatch({
+      type: 'friend/getUserDelete',
+      payload:{ friendsId, ruleIds },
+      callback: () => {
+        this.coreRuleRelation(userId, friendsId);              // 发送规则列表
+      } 
+    });
+  }
 
   // 新建规则 抽屉取消
   onClose = () => {
@@ -552,7 +577,7 @@ ruleModalCancel = () => {
           <Fragment>
             <a onClick={() => this.showUpdateDrawer(record)}>编辑</a>
             <Divider type="vertical" />
-            <a onClick={() => this.showSaveRuleModal(record)}>删除</a>
+            <a onClick={() => this.showUserDeleteModal(record)}>删除</a>
           </Fragment>
         ),
       },

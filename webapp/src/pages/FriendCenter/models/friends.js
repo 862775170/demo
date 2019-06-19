@@ -8,6 +8,7 @@ import {
   submitRule,
   ruleUpdate,
   ruleConfirmUpdate,
+  userDelete,
 } from '@/services/friends';
 
 // 规则中心
@@ -58,6 +59,11 @@ export default {
     // 发送规则  编辑
     *getRuleUpdate({ payload, callback }, { call }) {
       const response = yield call(ruleUpdate, payload);
+      if (callback) callback(response);  // 后端返回回调
+    },
+    // 发送规则  删除
+    *getUserDelete({ payload, callback }, { call }) {
+      const response = yield call(userDelete, payload);
       if (callback) callback(response);  // 后端返回回调
     },
 
