@@ -161,8 +161,6 @@ class Home extends PureComponent {
           sendList:result.list,
           sendTotals:result.pagination.total
         })
-        // this.state.sendList = result.list;
-        // this.state.sendTotals = result.pagination.total;
       } 
     });
   };
@@ -184,75 +182,9 @@ class Home extends PureComponent {
           sendList: result.list,
           sendTotals:result.pagination.total
         })
-        // this.state.sendList = result.list;
-        // this.state.sendTotals = result.pagination.total;
       } 
     });
   };
-
-  // 最新发送文件
-  // homeNewestSendOut = () => {
-  //   const { dispatch } = this.props;
-  //   const { userId, startTime, endTime  } = this.state;   // 查询条件参数
-  //   dispatch({
-  //     type: 'homePage/getNewestSendOut',
-  //     payload: { userId, startTime, endTime, page: 1, size: 5 },
-  //     callback: (result) => {
-  //       this.state.sendOutList = result.list;
-  //       this.state.sendOutTotal = result.pagination.total;
-  //     } 
-  //   });
-  // };
-
-  // 点击翻页 最新发送文件
-  // sendOutTableChange = (pagination) => {
-  //   const { dispatch } = this.props;
-  //   const { userId, startTime, endTime  } = this.state;   // 查询条件参数
-  //   const params = {
-  //     page: pagination,
-  //     size: 5,
-  //   };
-  //   dispatch({
-  //     type: 'homePage/getNewestSendOut',
-  //     payload: { userId, startTime, endTime, ...params },
-  //     callback: (result) => {
-  //       this.state.sendOutList = result.list;
-  //       this.state.sendOutTotal = result.pagination.total;
-  //     } 
-  //   });
-  // };
-
-  // 最新接收文件
-  // homeNewestSendIn = () => {
-  //   const { dispatch } = this.props;
-  //   const { userId, startTime, endTime  } = this.state;   // 查询条件参数
-  //   dispatch({
-  //     type: 'homePage/getNewestSendIn',
-  //     payload: { userId, startTime, endTime, page: 1, size: 5 },
-  //     callback: (result) => {
-  //       this.state.sendList = result.list;
-  //       this.state.sendTotals = result.pagination.total;
-  //     } 
-  //   });
-  // };
-
-  // 点击翻页 最新接收文件
-  // sendTableChange = (pagination) => {
-  //   const { dispatch } = this.props;
-  //   const { userId, startTime, endTime  } = this.state;   // 查询条件参数
-  //   const params = {
-  //     page: pagination,
-  //     size: 5,
-  //   };
-  //   dispatch({
-  //     type: 'homePage/getNewestSendIn',
-  //     payload: { userId, startTime, endTime, ...params },
-  //     callback: (result) => {
-  //       this.state.sendList = result.list;
-  //       this.state.sendTotals = result.pagination.total;
-  //     } 
-  //   });
-  // };
 
   // 最新动态
   homeTrends = () => {

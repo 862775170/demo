@@ -14,28 +14,6 @@ export async function ruleFriends(params) {
   return request(`${baseurl}/rule/getFriends?userId=${userId}`);
 }
 
-// 最新发送文件
-// export async function newestSendOut(params) {
-//   const {userId, startTime, endTime, page, size } = params;
-//   const json = `page=${page}&size=${size}&sourceUserId=${userId}&startTime=${startTime}&endTime=${endTime}`;
-//   return request(`${baseurl}/file/exchage/search?${json}`);
-// }
-
-
-// 最新接收文件
-// export async function newestSendIn(params) {
-//   const { userId, startTime, endTime, page, size } = params;
-//   const json = `page=${page}&size=${size}&targetUserId=${userId}&startTime=${startTime}&endTime=${endTime}`;
-//   return request(`${baseurl}/file/exchage/search?${json}`);
-// }
-
-// 发送文件
-// export async function ruleRetRuleCount(params) {
-//   const {userId, page, size } = params;
-//   const json = `page=${page}&size=${size}&userId=${userId}`;
-//   return request(`${baseurl}/rule/getRuleCount?${json}`);
-// }
-
 // 上传文件
 export async function fileSendHis(params) {
   const { page, size } = params;
@@ -45,13 +23,6 @@ export async function fileSendHis(params) {
     body: params,
   });
 }
-
-// 接收文件
-// export async function ruleMyRuleReceiveCount(params) {
-//   const { userId, page, size } = params;
-//   const json = `page=${page}&size=${size}&userId=${userId}`;
-//   return request(`${baseurl}/rule/getMyRuleReceiveCount?${json}`);
-// }
 
 // 接收文件
 export async function ruleMyRuleReceiveCount(params) {

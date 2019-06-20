@@ -1,9 +1,6 @@
 import { 
   fileCount, 
   ruleFriends,
-  // newestSendOut,
-  // newestSendIn,
-  // ruleRetRuleCount,
   fileSendHis,
   ruleMyRuleReceiveCount,
   trends,
@@ -29,20 +26,6 @@ export default {
       const response = yield call(ruleFriends, payload);
       if (callback) callback(response);  
     },
-
-    // 发送文件
-    // *getRuleRetRuleCount({ payload, callback }, { call }) {
-    //   const response = yield call(ruleRetRuleCount, payload);
-    //   const result = {
-    //     list: response.data.content,
-    //     pagination: {
-    //       total: response.data.totalElements,
-    //       pageSize: response.data.size,
-    //       current: response.data.number,
-    //     },
-    //   };
-    //   if (callback) callback(result);  
-    // },
     
     // 发送文件
     *getFileSendHis({ payload, callback }, { call }) {
@@ -65,42 +48,12 @@ export default {
         list: response.data.content,
         pagination: {
           total: response.data.totalElements,
-          // total: response.data.content.length,
           pageSize: response.data.size,
-          // pageSize: 5,
           current: response.data.number,
         },
       };
       if (callback) callback(result);
     },
-
-    // 最新发送文件
-    // *getNewestSendOut({ payload, callback }, { call }) {
-    //   const response = yield call(newestSendOut, payload);
-    //   const result = {
-    //     list: response.data.content,
-    //     pagination: {
-    //       total: response.data.totalElements,
-    //       pageSize: response.data.size,
-    //       current: response.data.number,
-    //     },
-    //   };
-    //   if (callback) callback(result);  
-    // },
-
-    // 最新接收文件
-    // *getNewestSendIn({ payload, callback }, { call }) {
-    //   const response = yield call(newestSendIn, payload);
-    //   const result = {
-    //     list: response.data.content,
-    //     pagination: {
-    //       total: response.data.totalElements,
-    //       pageSize: response.data.size,
-    //       current: response.data.number,
-    //     },
-    //   };
-    //   if (callback) callback(result);
-    // },
 
     // 最新动态
     *getTrends({ payload }, { call, put }) {
