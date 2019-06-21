@@ -29,18 +29,34 @@ export default {
     // 好友中心 发送规则
     *getRuleRelation({ payload }, { call, put }) {
       const response = yield call(ruleRelation, payload);
+      const result = {
+        list: response.content,
+        pagination: {
+          total: response.totalElements,
+          pageSize: response.size,
+          current: response.number + 1,
+        }
+      }
       yield put({
-        type: 'saveRuleList',
-        payload: response.content,
+        type: 'saveList',
+        payload: result,
       });
     },
 
     // 好友中心 接收规则
     *getRuleReceive({ payload }, { call, put }) {
       const response = yield call(ruleReceive, payload);
+      const result = {
+        list: response.content,
+        pagination: {
+          total: response.totalElements,
+          pageSize: response.size,
+          current: response.number + 1,
+        }
+      }
       yield put({
-        type: 'saveRuleList',
-        payload: response.content,
+        type: 'saveList',
+        payload: result,
       });
     },
 
@@ -98,6 +114,14 @@ export default {
       return {
         ...state,
         ruleList: action.payload,
+      };
+    },
+
+    
+    saveList(state, action) {
+      return {
+        ...state,
+        friendsList: action.payload,
       };
     },
 

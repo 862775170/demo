@@ -10,14 +10,14 @@ export async function ruleFriends(params) {
 
 // 好友中心 发送规则
 export async function ruleRelation(params) {
-  const { userId, targetUserId } = params;
-  return request(`${baseurl}/rule/${userId}/${targetUserId}`);
+  const { userId, targetUserId, size, page } = params;
+  return request(`${baseurl}/rule/${userId}/${targetUserId}?size=${size}&page=${page}`);
 }
 
 // 好友中心 接收规则
 export async function ruleReceive(params) {
-  const { userId, targetUserId } = params;
-  return request(`${baseurl}/rule/receive/${userId}/${targetUserId}`);
+  const { userId, targetUserId, size, page } = params;
+  return request(`${baseurl}/rule/receive/${userId}/${targetUserId}?size=${size}&page=${page}`);
 }
 
 // 源路径

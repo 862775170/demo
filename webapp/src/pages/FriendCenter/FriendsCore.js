@@ -191,9 +191,27 @@ class FriendsCore extends PureComponent {
     const targetUserId = id;
     dispatch({
       type: 'friend/getRuleRelation',
-      payload: { userId, targetUserId },
+      payload: { userId, targetUserId, page: 1, size: 10 },
     });
   }
+
+  handleTableChange1 = (pagination) => {
+    const { dispatch } = this.props;
+    const { userId, friendsId } = this.state;   // 查询条件参数
+    const targetUserId = friendsId;
+    const params = {
+      page: pagination.current,
+      size: pagination.pageSize,
+    };
+    dispatch({
+      type: 'friend/getRuleRelation',
+      payload: {
+        userId,
+        targetUserId,
+        ...params,
+      }
+    });
+  };
 
   // 接收规则
   coreRuleReceive = (userid, id) => {
@@ -202,9 +220,27 @@ class FriendsCore extends PureComponent {
     const targetUserId = id;
     dispatch({
       type: 'friend/getRuleReceive',
-      payload: { userId, targetUserId },
+      payload: { userId, targetUserId, page: 1, size: 10 },
     });
   }
+
+  handleTableChange2 = (pagination) => {
+    const { dispatch } = this.props;
+    const { userId, friendsId } = this.state;   // 查询条件参数
+    const targetUserId = friendsId;
+    const params = {
+      page: pagination.current,
+      size: pagination.pageSize,
+    };
+    dispatch({
+      type: 'friend/getRuleReceive',
+      payload: {
+        userId,
+        targetUserId,
+        ...params,
+      }
+    });
+  };
 
   // 已发送
   coreSender = (id, userId) => {
@@ -428,8 +464,10 @@ class FriendsCore extends PureComponent {
     const { 
       loading, 
       form: {getFieldDecorator}, 
-      friend: { ruleList },   // 规则列表返回数据
+      friend: { ruleList, friendsList = {} },   // 规则列表返回数据
     } = this.props;
+
+    const { list = [], pagination } = friendsList;
 
     const { 
       operationkey, 
@@ -503,6 +541,14 @@ class FriendsCore extends PureComponent {
       showSizeChanger: true,
       showQuickJumper: false,
       showTotal: total => `总数 ${total} 条`,
+    };
+
+    // table组件属性
+    const paginationProps1 = {
+      showSizeChanger: true,
+      showQuickJumper: false,
+      showTotal: total => `总数 ${total} 条`,
+      ...pagination,
     };
 
     // 发送规则
@@ -579,11 +625,12 @@ class FriendsCore extends PureComponent {
           rowKey="id"
           pagination={false}
           loading={loading}
-          dataSource={ruleList}
+          dataSource={list}
           columns={columns}
           size="middle"
           // eslint-disable-next-line react/jsx-no-duplicate-props
-          pagination={paginationProps}
+          pagination={paginationProps1}
+          onChange={this.handleTableChange1}
         />
       ),
       tab2: (
@@ -591,11 +638,12 @@ class FriendsCore extends PureComponent {
           rowKey="id"
           pagination={false}
           loading={loading}
-          dataSource={ruleList}
+          dataSource={list}
           columns={columns5}
           size="middle"
           // eslint-disable-next-line react/jsx-no-duplicate-props
-          pagination={paginationProps}
+          pagination={paginationProps1}
+          onChange={this.handleTableChange2}
         />
       ),
       tab3: (
