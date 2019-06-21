@@ -215,7 +215,15 @@ class Home extends PureComponent {
   
 
   render() {
-    const { loading, homePage, getFleCountLoading, getNewestSendOutLoading, getNewestSendInLoading, getTrendsLoading } = this.props;
+    const { 
+      loading, 
+      homePage, 
+      getFleCountLoading, 
+      getNewestSendOutLoading, 
+      getNewestSendInLoading, 
+      getTrendsLoading 
+    } = this.props;
+    
     const { trendsData } = homePage;
     
     const { 
