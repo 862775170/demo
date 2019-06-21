@@ -93,9 +93,7 @@ class FriendsCore extends PureComponent {
 
     receiveCurrent: {},      // 接收规则 存储某行对象参数
     acceptanceRule: false,   // 接收规则 模态框属性
-
-    drawerParameter: {},      // 新建规则    
-    isRoute: false,            // 用于判断调用新建还是修改
+  
     visibles: false,           // 发送规则  抽屉属性
     fileId: '',
     path: '',
@@ -234,14 +232,9 @@ class FriendsCore extends PureComponent {
    handleSubmit = e => {
     e.preventDefault();
     const { form } = this.props;
-    const { isRoute } = this.state;
     form.validateFields((err, fieldsValue) => { 
       if (err) return;
-      if(isRoute){     // true 为新建规则
-        this.urleGetSubmitRule(fieldsValue);   // 新建规则提交方法
-      }else{           // false 为发送规则-->修改
-        this.coreRuleUpdate(fieldsValue);  // 发送规则  修改 
-      }
+      this.urleGetSubmitRule(fieldsValue);   // 新建规则提交方法
       this.onClose();   // 关闭抽屉
     });
   };
@@ -267,48 +260,10 @@ class FriendsCore extends PureComponent {
     });
   }
 
-  // 发送规则 修改  提交方法
-  coreRuleUpdate = fields => {
-    const { dispatch } = this.props;
-    const { path, drawerParameter, userId, friendsId } = this.state;
-    const createBy = getUserId();
-    const {ruleId} = drawerParameter;
-
-    // 用于判断修改规则 有没有选源路径 如选则用新路径，无则用就路径
-    let sourcePath = "";
-    if(path === ""){
-      sourcePath = fields.pathValue;
-    }else{
-      sourcePath = path;
-    }
-
-    const fileid = this.state
-    const sourceFileId = fileid.fileId;
-    const userIds = friendsId;
-    dispatch({
-      type: 'friend/getRuleUpdate',
-      payload:{ ...fields, createBy, sourcePath, ruleId, sourceFileId, userIds },
-      callback: () => {
-        this.coreRuleRelation(userId, friendsId);              // 发送规则列表
-      } 
-    });
-  }
-
   // 新建规则  点击新建按钮点击此方法   抽屉  源路径实现方法  start
   showDrawer = () => {
     this.setState({
-      isRoute: true,            // 发送规则  用于判断调用新建还是修改
       visibles: true,           // 发送规则抽屉属性
-      drawerParameter: {},      // 发送规则  存储某行对象参数
-    });
-  };
-
-  // 发送规则 修改  调出抽屉  
-  showUpdateDrawer = item => {
-    this.setState({
-      isRoute: false,            // 发送规则  false调用修改
-      visibles: true,            // 发送规则抽屉属性
-      drawerParameter: item,     // 发送规则  存储某行对象参数
     });
   };
 
@@ -349,131 +304,129 @@ class FriendsCore extends PureComponent {
   onLoadData = treeNode => {
     const { dispatch } = this.props;
     return new Promise(resolve => {
-    if (treeNode.props.children) {
-      resolve();
-      return;
-    }
-    const { file_id:fileId } = treeNode.props.dataRef;
-    dispatch({
-      type: 'friend/getFileList',
-      payload:{ fileId },
-      callback: (result) => {
-        const fileArr = [];
-        const dataValue = result.result;
-        // eslint-disable-next-line no-restricted-syntax
-        for( const i of dataValue){
-          if(i.isdir === true){
-            fileArr.push(i);
-          }
-        }
-        // eslint-disable-next-line no-param-reassign
-        treeNode.props.dataRef.children = fileArr;
-        const { treeData } = this.state;
-        this.setState({
-          treeData,
-        });
+      if (treeNode.props.children) {
         resolve();
+        return;
+      }
+      const { file_id:fileId } = treeNode.props.dataRef;
+      dispatch({
+        type: 'friend/getFileList',
+        payload:{ fileId },
+        callback: (result) => {
+          const fileArr = [];
+          const dataValue = result.result;
+          // eslint-disable-next-line no-restricted-syntax
+          for( const i of dataValue){
+            if(i.isdir === true){
+              fileArr.push(i);
+            }
+          }
+          // eslint-disable-next-line no-param-reassign
+          treeNode.props.dataRef.children = fileArr;
+          const { treeData } = this.state;
+          this.setState({
+            treeData,
+          });
+          resolve();
+        } 
+      });
+    })
+  };
+
+  // 新建和修改共用  源路径
+  getOnSelect = (selectedKeys, e) => {
+    if(e.selectedNodes.length > 0){
+      const titleValue = e.selectedNodes[0].props.title;
+      let paths = "";
+      let fileid ="";
+      if(titleValue === '/'){
+        paths = e.selectedNodes[0].props.dataRef.filename_KeywordIkPinyin;
+        fileid = e.selectedNodes[0].props.dataRef.file_id;
+      }else{
+        paths = e.selectedNodes[0].props.dataRef.fullpath;
+        fileid = e.selectedNodes[0].props.dataRef.file_id;
+      }
+      this.setState({
+        path: paths,  // 源路径
+        fileId: fileid,
+      });      
+    }
+  }
+
+  // 新建和修改共用  源路径
+  renderTreeNodes = data => data.map(item => {
+    if (item.children) {
+      return (
+        <TreeNode title={item.filename_KeywordIkPinyin} key={item.file_id} dataRef={item}>
+          {this.renderTreeNodes(item.children)}
+        </TreeNode>
+      );
+    }
+    return <TreeNode title={item.filename_KeywordIkPinyin} key={item.file_id} dataRef={item} />;
+  });
+
+  // 接收规则 修改  点击修改弹出模态框
+  showReceiveModal = item => {
+    this.setState({
+      acceptanceRule: true,
+      receiveCurrent: item,
+    });
+  }
+
+  // 接收规则 修改
+  ruleModalOk = () => {
+    const { dispatch } =  this.props;
+    const { path, receiveCurrent, userId, friendsId } = this.state;
+    const {id} = receiveCurrent;
+    const {rootIds} = receiveCurrent;
+    const savePath = path;
+    dispatch({
+      type: 'friend/getRuleConfirmUpdate',
+      payload:{ savePath, id, rootIds },
+      callback: () => {
+        this.coreRuleReceive(userId, friendsId);              // 接收规则列表
+        this.ruleModalCancel(); // 接收规则  修改规则  取消模态框
       } 
     });
-  })
-};
+  }
 
-// 新建和修改共用  源路径
-getOnSelect = (selectedKeys, e) => {
-  if(e.selectedNodes.length > 0){
-    const titleValue = e.selectedNodes[0].props.title;
-    let paths = "";
-    let fileid ="";
-    if(titleValue === '/'){
-      paths = e.selectedNodes[0].props.dataRef.filename_KeywordIkPinyin;
-      fileid = e.selectedNodes[0].props.dataRef.file_id;
-    }else{
-      paths = e.selectedNodes[0].props.dataRef.fullpath;
-      fileid = e.selectedNodes[0].props.dataRef.file_id;
-    }
+  // 接收规则  修改规则  取消模态框
+  ruleModalCancel = () => {
     this.setState({
-      path: paths,  // 源路径
-      fileId: fileid,
-    });      
+      acceptanceRule: false,
+    });
+  };
+
+  // 接收规则 删除
+  showSaveRuleModal = item => {
+    Modal.confirm({
+      title: '删除',
+      content: `确定删除“${ item.ruleName }”的关系吗？`,
+      okText: '确认',
+      cancelText: '取消',
+      onOk: () => this.deleteItem2(item),
+    });
+  };  
+
+  // 接收规则 删除
+  deleteItem2 = item => {
+    const { dispatch } =  this.props;
+    const { userId, friendsId } = this.state;
+    const ruleIds = item.ruleId;
+    const userIds = userId;
+    dispatch({
+      type: 'friend/getUserDelete',
+      payload:{ userIds, ruleIds },
+      callback: () => {
+        this.coreRuleReceive(userId, friendsId);              // 接收规则列表
+      } 
+    });
   }
-}
 
-// 新建和修改共用  源路径
-renderTreeNodes = data => data.map(item => {
-  if (item.children) {
-    return (
-      <TreeNode title={item.filename_KeywordIkPinyin} key={item.file_id} dataRef={item}>
-        {this.renderTreeNodes(item.children)}
-      </TreeNode>
-    );
-  }
-  return <TreeNode title={item.filename_KeywordIkPinyin} key={item.file_id} dataRef={item} />;
-});
-
-// 接收规则 修改  点击修改弹出模态框
-showReceiveModal = item => {
-  this.setState({
-    acceptanceRule: true,
-    receiveCurrent: item,
-  });
-}
-
-// 接收规则 修改
-ruleModalOk = () => {
-  const { dispatch } =  this.props;
-  const { path, receiveCurrent, userId, friendsId } = this.state;
-  const {id} = receiveCurrent;
-  const {rootIds} = receiveCurrent;
-  const savePath = path;
-  dispatch({
-    type: 'friend/getRuleConfirmUpdate',
-    payload:{ savePath, id, rootIds },
-    callback: () => {
-      this.coreRuleReceive(userId, friendsId);              // 接收规则列表
-      this.ruleModalCancel(); // 接收规则  修改规则  取消模态框
-    } 
-  });
-}
-
-// 接收规则  修改规则  取消模态框
-ruleModalCancel = () => {
-  this.setState({
-    acceptanceRule: false,
-  });
-};
-
-// 接收规则 删除
-showSaveRuleModal = item => {
-  Modal.confirm({
-    title: '删除',
-    content: `确定删除“${ item.ruleName }”的关系吗？`,
-    okText: '确认',
-    cancelText: '取消',
-    onOk: () => this.deleteItem2(item),
-  });
-};  
-
-// 接收规则 删除
-deleteItem2 = item => {
-  const { dispatch } =  this.props;
-  const { userId, friendsId } = this.state;
-  const ruleIds = item.ruleId;
-  const userIds = userId;
-  dispatch({
-    type: 'friend/getUserDelete',
-    payload:{ userIds, ruleIds },
-    callback: () => {
-      this.coreRuleReceive(userId, friendsId);              // 接收规则列表
-    } 
-  });
-}
-
-  
-  
-  
 
   render() {
-    const { loading, 
+    const { 
+      loading, 
       form: {getFieldDecorator}, 
       friend: { ruleList },   // 规则列表返回数据
     } = this.props;
@@ -483,8 +436,6 @@ deleteItem2 = item => {
       friendsArr, 
       friendsName, 
       isTips, 
-      drawerParameter, 
-      isRoute, 
       treeData, 
       visibles, 
       subEdit, 
@@ -502,25 +453,6 @@ deleteItem2 = item => {
               <FormItem label="规则名">
                 {getFieldDecorator('ruleName', {
                   rules: [{ required: true, message: '请输入规则名! ' }],
-                  initialValue: drawerParameter.ruleName,
-                })(<Input placeholder="请输入规则名" />)}
-              </FormItem>
-            </Col>
-          </Row>
-          <Row gutter={16} style={{ display: isRoute ? 'none' : 'block'}}>
-            <Col span={16}>
-              <FormItem label="当前路径 (如不选新源路径，则用当前源路径)">
-                <span style={{color:'#1890FF'}}>{drawerParameter.sourcePathName}</span>
-              </FormItem>
-            </Col>
-          </Row>
-          {/* 隐藏域 */}
-          <Row gutter={16} style={{ display: 'none'}}>
-            <Col span={16}>
-              <FormItem label="当前路径ID">
-                {getFieldDecorator('pathValue', {
-                  rules: [{ required: false}],
-                  initialValue: drawerParameter.sourcePath,
                 })(<Input placeholder="请输入规则名" />)}
               </FormItem>
             </Col>
@@ -537,12 +469,11 @@ deleteItem2 = item => {
               <FormItem label="文件名规则">
                 {getFieldDecorator('fileName', {
                   rules: [{ required: true, message: '请输入文件名规则! '}],
-                  initialValue: drawerParameter.fileName,
                 })(<Input placeholder="请输入文件名规则" />)}
               </FormItem>
             </Col>
           </Row>
-          <Row gutter={16} style={{ display: isRoute ? 'block' : 'none'}}>
+          <Row gutter={16}>
             <Col span={16}>
               <FormItem label="接收方">
                 {getFieldDecorator('userIds', {
@@ -559,7 +490,6 @@ deleteItem2 = item => {
               <FormItem label="备注">
                 {getFieldDecorator('desc', {
                   rules: [{ required: false}],
-                  initialValue: drawerParameter.desc,
                 })(<Input placeholder="请输入备注" />)}
               </FormItem>
             </Col>
@@ -602,9 +532,10 @@ deleteItem2 = item => {
         title: '操作',
         render: (record) => (
           <Fragment>
-            <a onClick={() => this.showUpdateDrawer(record)}>编辑</a>
-            <Divider type="vertical" />
+            {/* <a onClick={() => this.showUpdateDrawer(record)}>编辑</a> */}
+            
             <a onClick={() => this.showUserDeleteModal(record)}>删除</a>
+            <Divider type="vertical" style={{display: 'none'}} />
           </Fragment>
         ),
       },
@@ -745,7 +676,7 @@ deleteItem2 = item => {
 
         {/* 抽屉  新建规则 */}
         <Drawer
-          title={isRoute ? '新建规则' : '修改规则'}
+          title='新建规则'
           width={600}
           onClose={this.onClose}
           visible={visibles}
