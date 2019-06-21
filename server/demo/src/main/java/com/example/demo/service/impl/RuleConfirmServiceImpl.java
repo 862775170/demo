@@ -53,12 +53,12 @@ public class RuleConfirmServiceImpl implements RuleConfirmService {
 	public Page<Map<String, Object>> getRuleConfirmFileCount(String userId, String targetUserId, Pageable pageable) {
 		List<Integer> ruleIds = new ArrayList<Integer>();
 		Map<Integer, String> rulenameMap = new HashMap<Integer, String>();
-		ruleDao.findByUserId(targetUserId).forEach(action -> {
+		ruleDao.findByUserIdAndDeleteTimeIsNull(targetUserId).forEach(action -> {
 			ruleIds.add(action.getRuleId());
 			rulenameMap.put(action.getRuleId(), action.getRuleName());
 		});
 
-		Page<RuleConfirm> page = ruleConfirmDao.findByRuleIdInAndUserId(ruleIds, userId, pageable);
+		Page<RuleConfirm> page = ruleConfirmDao.findByRuleIdInAndUserIdAndDeleteTimeIsNull(ruleIds, userId, pageable);
 		Page<Map<String, Object>> page2 = page.map(f -> {
 			Map<String, Object> objectToMap = ObjectUtils.objectToMap(f);
 			Long countFile = fileExchangeLogDao.countByRuleConfirmId(f.getId());

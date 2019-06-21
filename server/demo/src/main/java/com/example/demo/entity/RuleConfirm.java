@@ -158,4 +158,11 @@ public class RuleConfirm {
 		this.deleteBy = deleteBy;
 	}
 
+	@Override
+	public String toString() {
+		return "RuleConfirm [id=" + id + ", ruleId=" + ruleId + ", saveFileId=" + saveFileId + ", savePath=" + savePath
+				+ ", savePathName=" + savePathName + ", userId=" + userId + ", createBy=" + createBy + ", createTime="
+				+ createTime + ", deleteTime=" + deleteTime + ", deleteBy=" + deleteBy + ", rootIds=" + rootIds
+				+ ", desc=" + desc + ", confirmTime=" + confirmTime + ", confirmBy=" + confirmBy + "]";
+	}
 }

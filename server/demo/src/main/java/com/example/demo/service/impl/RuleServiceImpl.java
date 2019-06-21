@@ -28,6 +28,7 @@ import org.springframework.util.PatternMatchUtils;
 import com.example.demo.common.ConfirmSyncModel;
 import com.example.demo.common.ObjectUtils;
 import com.example.demo.common.ParamException;
+import com.example.demo.common.TokenUtils;
 import com.example.demo.config.MqProperties;
 import com.example.demo.dao.FileExchangeLogDao;
 import com.example.demo.dao.RuleConfirmDao;
@@ -584,7 +585,8 @@ public class RuleServiceImpl extends PatternMatchUtils implements RuleService {
 
 	@Override
 	public Page<Map<String, Object>> getRuleOutCount(String userId, String targetUserId, Pageable pageable) {
-		List<RuleConfirm> ruleConfirmList = ruleConfirmDao.findByUserId(targetUserId);
+		List<RuleConfirm> ruleConfirmList = ruleConfirmDao
+				.findByUserIdAndConfirmTimeIsNullAndDeleteTimeIsNull(targetUserId);
 		List<Integer> ruleIds = ruleConfirmList.stream().map(RuleConfirm::getRuleId).collect(Collectors.toList());
 		Page<Rule> page = ruleDao.findByRuleIdInAndUserId(ruleIds, userId, pageable);
 		Page<Map<String, Object>> map = page.map(r -> {
@@ -594,5 +596,15 @@ public class RuleServiceImpl extends PatternMatchUtils implements RuleService {
 			return objectToMap;
 		});
 		return map;
+	}
+
+	@Override
+	public void deleteRuleConfirmByUserIdAndRuleId(String userId, Integer ruleId) {
+		Date date = new Date();
+		RuleConfirm ruleConfirm = ruleConfirmDao.findByRuleIdAndUserId(ruleId, userId);
+		ruleConfirm.setDeleteTime(date);
+		ruleConfirm.setDeleteBy(TokenUtils.getUserId());
+		RuleConfirm saveAndFlush = ruleConfirmDao.saveAndFlush(ruleConfirm);
+		log.debug("update success {}", saveAndFlush);
 	}
 }

@@ -166,4 +166,12 @@ public interface RuleService {
 	 */
 	Page<Map<String, Object>> getRuleOutCount(String userId, String targetUserId, Pageable pageable);
 
+	/**
+	 * 删除规则接收人
+	 * 
+	 * @param userId 接收人
+	 * @param ruleId 规则id
+	 */
+	void deleteRuleConfirmByUserIdAndRuleId(String userId, Integer ruleId);
+
 }

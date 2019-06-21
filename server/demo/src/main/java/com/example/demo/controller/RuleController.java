@@ -91,6 +91,13 @@ public class RuleController {
 		return Result.ok();
 	}
 
+	@PostMapping("/ruleConfirm/user/delete")
+	@ApiOperation("删除文件接收人userId and ruleId")
+	public Result deleteByUserIdAndRuleId(String userId, Integer ruleId) {
+		ruleService.deleteRuleConfirmByUserIdAndRuleId(userId, ruleId);
+		return Result.ok();
+	}
+
 	@PostMapping("/confirmRule")
 	@ApiOperation("接收人却认规则")
 	public Result confirmRule(String savePath, String saveFildId, String rootIds, Integer taskId,
