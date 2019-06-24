@@ -80,7 +80,7 @@ class FileCore extends PureComponent {
 
   state = {
     userId: getUserId(),       // 获取登录用户的用户ID
-    crumbs: '当日发送',
+    crumbs: '已发送',
     startKey: 'tab1',
     isTask: false,
     parameter:[],    // 查询条件参数
@@ -380,7 +380,7 @@ class FileCore extends PureComponent {
         </Sider>
         <Content style={{ background: '#fff', padding: '12px 24px 24px 24px', margin: 0, minHeight: 280, }}>
           <Breadcrumb>
-            <Breadcrumb.Item>文件中心</Breadcrumb.Item>
+            <Breadcrumb.Item>收发记录</Breadcrumb.Item>
             <Breadcrumb.Item>{ crumbs }</Breadcrumb.Item>
           </Breadcrumb>
           <Divider style={{marginTop: '10px'}} />
