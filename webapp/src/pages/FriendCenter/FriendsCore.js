@@ -121,8 +121,9 @@ class FriendsCore extends PureComponent {
             friendsId: userIds,
             friendsName: userName,
             isTips: true,
+            friendsArr:result.data
           });
-          this.state.friendsArr = result.data;   // 存储好友列表数据
+          // this.state.friendsArr = result.data;   // 存储好友列表数据
           this.coreRuleRelation(userId, userIds);      // 好友中心 规则
         }else{
           this.setState({
@@ -687,11 +688,12 @@ class FriendsCore extends PureComponent {
           <Menu
             mode="inline"
             style={{borderRight: '1px solid #e8e8e8' }}
+            selectedKeys={this.state.friendsId}
           >
             {
               isTips ?
                 friendsArr.map((item) => { 
-                  return <Menu.Item key={item.userId} value={item.userName} onClick={this.userList} style={{marginTop: '0px'}}><Icon type="user" />{item.userName}</Menu.Item>
+                  return <Menu.Item  key={item.userId} value={item.userName} onClick={this.userList} style={{marginTop: '0px'}}><Icon type="user" />{item.userName}</Menu.Item>
                 }) : <Alert message="暂无数据" type="info" style={{padding:'10px'}} />
             }
           </Menu>
